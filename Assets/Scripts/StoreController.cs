@@ -32,9 +32,11 @@ public class StoreController : MonoBehaviour
 
     void Update()
     {
+        // make the text face the camera
         uiBalance.GetComponentInChildren<TextMeshProUGUI>().text = "" + balance.ToString("#.##") + "$";
         uiBalance.transform.LookAt(Camera.main.transform.position);
         uiBalance.transform.Rotate(new Vector3(0, 180, 0));
+
         if (SafeDequeue(out CustomerController cc))
             Transaction(cc);
     }

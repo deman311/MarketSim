@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -9,21 +10,21 @@ using Random = UnityEngine.Random;
 
 public class CustomerController : MonoBehaviour
 {
-    readonly int EPSILON = 10;
-
-    List<GameObject> storePath = new();
+    List<GameObject> storePath = new List<GameObject>();
     List<Product> shoppingList = new List<Product>();
 
     StockManager sm;
-    public int lifeExpectancy = 3;
+    public int ttl = 3;
     NavMeshAgent agent;
     bool isSelling = false, isDone = false, isIdle = false;
+
+    [SerializeField] TextMeshProUGUI TMP_ttl;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
-        InitShoppingList();
+        InitShoppingList(10);
 
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
@@ -34,6 +35,8 @@ public class CustomerController : MonoBehaviour
 
     void Update()
     {
+        HandleTTL();
+
         if (storePath.Count > 0 && agent.remainingDistance < 0.01f && !isSelling)
         {
             isSelling = true;
@@ -56,6 +59,23 @@ public class CustomerController : MonoBehaviour
         }
     }
 
+    private void HandleTTL()
+    {
+        // face camera
+        TMP_ttl.text = "" + ttl;
+        TMP_ttl.transform.LookAt(Camera.main.transform.position);
+        TMP_ttl.transform.Rotate(new Vector3(0, 180, 0));
+
+        // decice on color
+        // [?] change the color marker to be the customer shirts?
+        switch (ttl)
+        {
+            case 3: TMP_ttl.color = Color.white; break;
+            case 2: TMP_ttl.color = Color.yellow; break;
+            case 1: TMP_ttl.color = Color.red; break;
+        }
+    }
+
     public void StartNewStartingPointAndPath()
     {
         transform.position = GameObject.Find("SimulationController").GetComponent<CustomerManager>().GetRandomPositionInBounds();
@@ -74,8 +94,8 @@ public class CustomerController : MonoBehaviour
 
     public void FinishDay()
     {
-        lifeExpectancy--;
-        if (lifeExpectancy == 0 || shoppingList.TrueForAll(p => p.amount == 0))
+        ttl--;
+        if (ttl == 0 || shoppingList.TrueForAll(p => p.amount == 0))
             CustomerManager.KillMe(this);
     }
 
@@ -111,14 +131,20 @@ public class CustomerController : MonoBehaviour
             Debug.Log(sb.ToString());
     }
 
-    private void InitShoppingList()
+    /// <summary>
+    /// Initialize the shopping list of the customer by taking the average price in the market and applying a alpha.
+    /// Each item has a 50% chance to be included. Item list takes into consideration the max level store in the market.
+    /// 
+    /// [?] chance of appearing in the shopping list is decreased with each item level.
+    /// </summary>
+    private void InitShoppingList(int alpha)
     {
         foreach (string prodName in sm.BuyList(sm.GetMaxLevel()))
         {
             if (Random.Range(0, 2) == 0) // 50%
             {
                 int amount = Random.Range(1, 6);
-                float cpp = sm.GetMaxPrice(prodName) / 2 + sm.GetMaxPrice(prodName) * Random.Range(-EPSILON, EPSILON) / 100;
+                float cpp = sm.GetAveragePrice(prodName) + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;
                 shoppingList.Add(new Product(prodName, amount, cpp));
             }
         }

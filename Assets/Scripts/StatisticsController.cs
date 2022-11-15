@@ -18,7 +18,7 @@ public class StatisticsController : MonoBehaviour
         mainText.text = GetAveragePrices();
     }
 
-    public string GetAveragePrices()
+    private string GetAveragePrices()
     {
         PathfindingManager pm =
             GameObject.Find("SimulationController").GetComponent<PathfindingManager>();

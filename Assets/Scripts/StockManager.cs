@@ -30,6 +30,28 @@ public class StockManager : MonoBehaviour
         {prodNames[3], 2 },
         {prodNames[4], 3 }
     };
+    Dictionary<string, float> productToAvgPrice = new Dictionary<string, float>
+    {
+        {prodNames[0], 0 },
+        {prodNames[1], 0 },
+        {prodNames[2], 0 },
+        {prodNames[3], 0 },
+        {prodNames[4], 0 }
+    };
+
+    public float GetAveragePrice(string prodName)
+    {
+        float avg = 0;
+        int amount = 0;
+
+        foreach (StoreController sc in GameObject.Find("Stores").GetComponentsInChildren<StoreController>())
+            if (sc.GetProductPrices().TryGetValue(prodName, out float value))
+            {
+                avg += value;
+                amount++;
+            }
+        return avg / amount;
+    }
 
     public int GetMaxLevel()
     {
