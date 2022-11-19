@@ -37,7 +37,11 @@ public class WorkdayManager : MonoBehaviour
     void FinishWorkDay()
     {
         foreach (StoreController s in storesFolder.GetComponentsInChildren<StoreController>())
+        {
             s.Tax(TAX);
+            if (s.GetLevel() == 1 && s.GetBalance() > 1200 && Random.Range(0, 2) == 0)
+                s.LevelUp();
+        }
 
         // EACH STORE DECIDES IF TO UPGRADE ALSO
     }

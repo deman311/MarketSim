@@ -5,8 +5,10 @@ using UnityEngine;
 public class CustomerManager : MonoBehaviour
 {
     [SerializeField] int MAX_COUNT = 5;
+    [SerializeField] int MAX_TTL = 3;
     [SerializeField] GameObject cfolder;    // customer folder
     static int currentCount = 0;
+    static int _maxTTL;
 
     static object _lock = new object();
 
@@ -15,6 +17,7 @@ public class CustomerManager : MonoBehaviour
 
     void Start()
     {
+        _maxTTL = MAX_TTL;
         bounds = ground.GetComponent<Renderer>().bounds;
     }
 
@@ -31,6 +34,11 @@ public class CustomerManager : MonoBehaviour
             currentCount--;
             Destroy(cc.gameObject);
         }
+    }
+
+    public static int GetMaxTTL()
+    {
+        return _maxTTL;
     }
 
     private void Spawn()

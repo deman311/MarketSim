@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.SearchService;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -39,6 +35,22 @@ public class StoreController : MonoBehaviour
 
         if (SafeDequeue(out CustomerController cc))
             Transaction(cc);
+    }
+
+    public float GetBalance()
+    {
+        return balance;
+    }
+
+    public void LevelUp()
+    {
+        level++;
+        transform.localScale *= 1.5f;
+    }
+
+    public int GetLevel()
+    {
+        return level;
     }
 
     public void SafeEnqueue(CustomerController cc)
@@ -96,7 +108,7 @@ public class StoreController : MonoBehaviour
 
     public void Tax(int TAX)
     {
-        balance -= TAX * level * level;
+        balance -= TAX * level * 1.5f;
         if (balance < 0)
             GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
     }
@@ -104,7 +116,7 @@ public class StoreController : MonoBehaviour
     public void Transaction(CustomerController cc)
     {
         foreach (Product p in cc.GetProducts())
-            SellProduct(p);
+            SellProduct(p, cc);
         cc.CompleteTransaction();
     }
 
@@ -138,7 +150,7 @@ public class StoreController : MonoBehaviour
         float price = sm.GetProductionPrice(product.name);
         if (products.TryGetValue(product.name, out Product existingProd))
         {
-            product.amount = existingProd.invest_tend;
+            product.amount = existingProd.Invest_tend;
             if (balance - existingProd.amount * price < 0)
                 product.amount = Mathf.FloorToInt(balance / price);
             balance -= product.amount * price;
@@ -146,9 +158,9 @@ public class StoreController : MonoBehaviour
         }
         else
         {
-            product.invest_tend = Random.Range(1, 11);
+            product.Invest_tend = Random.Range(1, 11);
             RandomOffsetPrice(product, 10);
-            product.amount = product.invest_tend;
+            product.amount = product.Invest_tend;
             if (balance - product.amount * price < 0)
                 product.amount = Mathf.FloorToInt(balance / price);
             balance -= product.amount * price;
@@ -163,7 +175,7 @@ public class StoreController : MonoBehaviour
     ///     price / invest_rate - change for a transaction
     ///  returns the amount sold.
     /// </summary>
-    public void SellProduct(Product product)
+    public void SellProduct(Product product, CustomerController cc)
     {
         int IT = Random.Range(1, 4);
         float price_delta =
@@ -181,14 +193,19 @@ public class StoreController : MonoBehaviour
             if (existingProd.Price <= product.Price)
             {
                 existingProd.Price += price_delta * sold;
-                existingProd.invest_tend += IT * sold;
+                existingProd.Invest_tend += IT * sold;
                 existingProd.amount -= sold;
                 balance += sold * existingProd.Price;
             }
-            else
+            else // could not sell
             {
-                existingProd.Price -= price_delta * sold;
-                existingProd.invest_tend -= IT * sold;
+                // Store changes
+                float bankruptPanic = Mathf.Clamp(existingProd.Price / balance, 0, existingProd.Price * 3); // can only range from 0 to 3x
+                existingProd.Price -= (price_delta + 20 * bankruptPanic) * sold; // 10% + delta + (20% to epsilon)
+                existingProd.Invest_tend -= IT * sold;
+
+                // Customer changes
+                product.Price -= price_delta * (CustomerManager.GetMaxTTL() / cc.ttl) * sold;
             }
         }
     }

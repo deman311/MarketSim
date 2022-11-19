@@ -5,6 +5,7 @@ public class Product
 {
 	public string name;
 	private float price;
+	private int invest_tend;
 	public float Price
 	{
 		get { return price; }
@@ -17,7 +18,16 @@ public class Product
 		}
 	}
 	public int amount;
-	public int invest_tend { get; set; }
+	public int Invest_tend
+	{
+		get { return invest_tend; }
+		set
+		{
+			if (value < 0)
+                value = 0;
+			invest_tend = value;
+		}
+	}
 
 	public Product(string name, int amount = 0, float price = 0, int invest_tend = 0)
     {

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18332127, g: 0.22894508, b: 0.30623555, a: 1}
+  m_IndirectSpecularColor: {r: 0.18332061, g: 0.22894396, b: 0.3062337, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -395,6 +395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MAX_COUNT: 10
+  MAX_TTL: 3
   cfolder: {fileID: 898320023}
   ground: {fileID: 1672090641}
 --- !u!114 &780465689
@@ -411,7 +412,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customersFolder: {fileID: 898320023}
   storesFolder: {fileID: 1518328903}
-  TAX: 200
+  TAX: 100
 --- !u!4 &826476933 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2659031059199591621, guid: e3aa206e59e854329877d7ed23469ed0, type: 3}

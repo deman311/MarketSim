@@ -7,15 +7,24 @@ using UnityEngine;
 public class StatisticsController : MonoBehaviour
 {
     TextMeshProUGUI mainText;
+    private float timer = 0f;
 
     void Start()
     {
         mainText = GetComponent<TextMeshProUGUI>();
+        mainText.text = GetAveragePrices();
     }
 
     void Update()
     {
-        mainText.text = GetAveragePrices();
+        timer += Time.deltaTime;
+
+        // update the statistics once every 1 second to not overwhelm cpu.
+        if (timer >= 1)
+        {
+            timer = 0;
+            mainText.text = GetAveragePrices();
+        }
     }
 
     private string GetAveragePrices()

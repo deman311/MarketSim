@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
@@ -14,7 +11,7 @@ public class CustomerController : MonoBehaviour
     List<Product> shoppingList = new List<Product>();
 
     StockManager sm;
-    public int ttl = 3;
+    public int ttl = CustomerManager.GetMaxTTL();
     NavMeshAgent agent;
     bool isSelling = false, isDone = false, isIdle = false;
 
