@@ -21,7 +21,7 @@ public class CustomerController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
-        InitShoppingList(10);
+        InitShoppingList(15);
 
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
@@ -138,7 +138,7 @@ public class CustomerController : MonoBehaviour
     {
         foreach (string prodName in sm.BuyList(sm.GetMaxLevel()))
         {
-            if (Random.Range(0, 2) == 0) // 50%
+            if (Random.Range(0, (int)(sm.GetScarsityOfProduct(prodName) / 10) + 1) == 0) // Precentage for each product to spawn, +1 because exclusive
             {
                 int amount = Random.Range(1, 6);
                 float cpp = sm.GetAveragePrice(prodName) + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;

@@ -22,6 +22,9 @@ public class StockManager : MonoBehaviour
         {prodNames[3], 2000 },  // 300 - 2000
         {prodNames[4], 5000 }   // 1500 - 5000
     };
+    /// <summary>
+    /// The minimum store level per product required to be able to sell it.
+    /// </summary>
     Dictionary<string, int> productToLevel = new Dictionary<string, int>
     {
         {prodNames[0], 1 },
@@ -38,6 +41,22 @@ public class StockManager : MonoBehaviour
         {prodNames[3], 0 },
         {prodNames[4], 0 }
     };
+    /// <summary>
+    /// The precentage per product it is likely to be generated in the shopping list for each new generated customer.
+    /// </summary>
+    Dictionary<string, int> productToScarsity = new Dictionary<string, int>
+    {
+        {prodNames[0], 50 },
+        {prodNames[1], 40 },
+        {prodNames[2], 30 },
+        {prodNames[3], 20 },
+        {prodNames[4], 10 }
+    };
+
+    public int GetScarsityOfProduct(string prodName)
+    {
+        return productToScarsity[prodName];
+    }
 
     public float GetAveragePrice(string prodName)
     {

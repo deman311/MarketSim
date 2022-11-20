@@ -45,7 +45,11 @@ public class StoreController : MonoBehaviour
     public void LevelUp()
     {
         level++;
-        transform.localScale *= 1.5f;
+        transform.localScale *= 1.2f;
+        if (level == 2)
+            GetComponent<Renderer>().material.color = Color.green;
+        else
+            GetComponent<Renderer>().material.color = Color.red;
     }
 
     public int GetLevel()
@@ -93,12 +97,12 @@ public class StoreController : MonoBehaviour
 
     public void Restock()
     {
-        if (IsStockEmpty()) // restock only when stock is empty
-            foreach (string prodName in sm.BuyList(level))
-            {
-                if (Random.Range(0, 2) == 0) // 50%
-                    BuyProduct(new Product(prodName).SetInvestmentTendency(Random.Range(1, 11)));
-            }
+        foreach (string prodName in sm.BuyList(level))
+        {
+            // 50% to restock if no such product in stock
+            if (Random.Range(0, 2) == 0 && (!products.TryGetValue(prodName, out Product p) || p.amount == 0))
+                BuyProduct(new Product(prodName).SetInvestmentTendency(Random.Range(1, 11)));
+        }
     }
 
     private bool IsStockEmpty()
@@ -108,7 +112,7 @@ public class StoreController : MonoBehaviour
 
     public void Tax(int TAX)
     {
-        balance -= TAX * level * 1.5f;
+        balance -= TAX * level * level;
         if (balance < 0)
             GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
     }
@@ -180,7 +184,7 @@ public class StoreController : MonoBehaviour
         int IT = Random.Range(1, 4);
         float price_delta =
             GameObject.Find("SimulationController").GetComponent<StockManager>().GetMaxPrice(product.name)
-            * (0.1f + Random.Range(-0.05f, 0.05f)); // 10% + delta(-5%,5%) of max price
+            * (0.1f + Random.Range(-0.05f, 0.05f)); // 10% + alpha(-5%,5%) of max price
 
         if (products.TryGetValue(product.name, out Product existingProd))
         {
@@ -200,7 +204,7 @@ public class StoreController : MonoBehaviour
             else // could not sell
             {
                 // Store changes
-                float bankruptPanic = Mathf.Clamp(existingProd.Price / balance, 0, existingProd.Price * 3); // can only range from 0 to 3x
+                float bankruptPanic = Mathf.Clamp(existingProd.Price / balance, 0, 0.2f * existingProd.Price); // can only range from 0 to 3x
                 existingProd.Price -= (price_delta + 20 * bankruptPanic) * sold; // 10% + delta + (20% to epsilon)
                 existingProd.Invest_tend -= IT * sold;
 

@@ -7,12 +7,7 @@ public class WorkdayManager : MonoBehaviour
     [SerializeField] GameObject customersFolder;
     [SerializeField] GameObject storesFolder;
 
-    [SerializeField] int TAX = 300;
-
-    void Start()
-    {
-        
-    }
+    [SerializeField] int TAX = 100;
 
     void Update()
     {
@@ -39,11 +34,12 @@ public class WorkdayManager : MonoBehaviour
         foreach (StoreController s in storesFolder.GetComponentsInChildren<StoreController>())
         {
             s.Tax(TAX);
+            // check-decide if to upgrade
             if (s.GetLevel() == 1 && s.GetBalance() > 1200 && Random.Range(0, 2) == 0)
                 s.LevelUp();
+            else if (s.GetLevel() == 2 && s.GetBalance() > 10000 && Random.Range(0, 2) == 0)
+                s.LevelUp();
         }
-
-        // EACH STORE DECIDES IF TO UPGRADE ALSO
     }
 
     void StartWorkDay()
