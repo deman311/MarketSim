@@ -3,10 +3,13 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class CustomerController : MonoBehaviour
 {
+    private const int HAPPY = 1, SAD = 2;
+
     List<GameObject> storePath = new List<GameObject>();
     List<Product> shoppingList = new List<Product>();
 
@@ -16,6 +19,7 @@ public class CustomerController : MonoBehaviour
     bool isSelling = false, isDone = false, isIdle = false;
 
     [SerializeField] TextMeshProUGUI TMP_ttl;
+    [SerializeField] RawImage mood;
 
     void Start()
     {
@@ -32,7 +36,7 @@ public class CustomerController : MonoBehaviour
 
     void Update()
     {
-        HandleTTL();
+        HandleCanvas();
 
         if (storePath.Count > 0 && agent.remainingDistance < 0.01f && !isSelling)
         {
@@ -56,12 +60,27 @@ public class CustomerController : MonoBehaviour
         }
     }
 
-    private void HandleTTL()
+    private void SetMood(int modID)
+    {
+        switch (modID)
+        {
+            case HAPPY:
+                mood.texture = Resources.Load("Icons/happy") as Texture;
+                break;
+            case SAD:
+                mood.texture = Resources.Load("Icons/sad") as Texture;
+                break;
+        }
+        mood.gameObject.SetActive(true);
+    }
+
+    private void HandleCanvas()
     {
         // face camera
+        TMP_ttl.transform.parent.LookAt(Camera.main.transform.position);
+        //TMP_ttl.transform.parent.Rotate(new Vector3(0, 180, 0));
+
         TMP_ttl.text = "" + ttl;
-        TMP_ttl.transform.LookAt(Camera.main.transform.position);
-        TMP_ttl.transform.Rotate(new Vector3(0, 180, 0));
 
         // decice on color
         // [?] change the color marker to be the customer shirts?
@@ -92,12 +111,16 @@ public class CustomerController : MonoBehaviour
     public void FinishDay()
     {
         ttl--;
+        mood.gameObject.SetActive(false);
         if (ttl == 0 || shoppingList.TrueForAll(p => p.amount == 0))
             CustomerManager.KillMe(this);
     }
 
     public void GoToEnd()
     {
+        if (!mood.gameObject.activeSelf)
+            SetMood(SAD);
+
         Bounds endBounds = PathfindingManager.endPos.GetComponent<Renderer>().bounds;
         Vector3 endPos = new Vector3(
             Random.Range(endBounds.min.x, endBounds.max.x),
@@ -159,6 +182,11 @@ public class CustomerController : MonoBehaviour
             agent.isStopped = false;
 
         if (shoppingList.TrueForAll(p => p.amount == 0))
+        {
             storePath.Clear();
+            SetMood(HAPPY);
+        }
+
+        Instantiate(Resources.Load("CashThrow") as GameObject, transform);
     }
 }

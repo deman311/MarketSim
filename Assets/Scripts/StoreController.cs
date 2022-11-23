@@ -11,6 +11,7 @@ public class StoreController : MonoBehaviour
 
     int level = 1;
     float balance = 200f;
+    float timer = 0f;
     StockManager sm;
 
     Dictionary<string, Product> products = new Dictionary<string, Product>();
@@ -18,23 +19,46 @@ public class StoreController : MonoBehaviour
 
     public static object _QueueLock = new object();
 
+    [SerializeField] TextMeshProUGUI cash, apple, shirt, phone, gpu, rolex; // UI Amounts
+
     void Awake()
     {
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         InitPricesAndIT();
+        UpdateUIPrices(); // inital price set
+        phone.transform.parent.gameObject.SetActive(false);
+        gpu.transform.parent.gameObject.SetActive(false);
+        rolex.transform.parent.gameObject.SetActive(false);
 
         //PrintShop();
     }
 
     void Update()
     {
+        timer += Time.deltaTime;
+
+        if (timer >= 0.5f)
+        {
+            UpdateUIPrices();
+            timer = 0;
+        }
+
         // make the text face the camera
-        uiBalance.GetComponentInChildren<TextMeshProUGUI>().text = "" + balance.ToString("#.##") + "$";
+        cash.text = "" + balance.ToString("#.##") + "$";
         uiBalance.transform.LookAt(Camera.main.transform.position);
         uiBalance.transform.Rotate(new Vector3(0, 180, 0));
 
         if (SafeDequeue(out CustomerController cc))
             Transaction(cc);
+    }
+
+    private void UpdateUIPrices()
+    {
+        apple.text = products.TryGetValue("Apple", out Product val) ? "" + val.amount : "0";
+        shirt.text = products.TryGetValue("Shirt", out Product val2) ? "" + val2.amount : "0";
+        phone.text = products.TryGetValue("Phone", out Product val3) ? "" + val3.amount : "0";
+        gpu.text = products.TryGetValue("GPU", out Product val4) ? "" + val4.amount : "0";
+        rolex.text = products.TryGetValue("Rolex", out Product val5) ? "" + val5.amount : "0";
     }
 
     public float GetBalance()
@@ -47,9 +71,16 @@ public class StoreController : MonoBehaviour
         level++;
         transform.localScale *= 1.2f;
         if (level == 2)
+        {
             GetComponent<Renderer>().material.color = Color.green;
+            phone.transform.parent.gameObject.SetActive(true);
+            gpu.transform.parent.gameObject.SetActive(true);
+        }
         else
+        {
             GetComponent<Renderer>().material.color = Color.red;
+            rolex.transform.parent.gameObject.SetActive(true);
+        }
     }
 
     public int GetLevel()
@@ -141,7 +172,7 @@ public class StoreController : MonoBehaviour
 
     void InitPricesAndIT()
     {
-        foreach(string prodName in sm.BuyList(level))
+        foreach (string prodName in sm.BuyList(level))
             BuyProduct(new Product(prodName));
     }
 
@@ -188,6 +219,9 @@ public class StoreController : MonoBehaviour
 
         if (products.TryGetValue(product.name, out Product existingProd))
         {
+            if (existingProd.amount == 0)   // none in stock
+                return;
+
             int sold = 0;
             if (existingProd.amount < product.amount)
                 sold = existingProd.amount;
