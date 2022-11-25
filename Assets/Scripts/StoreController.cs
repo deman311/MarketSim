@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using Unity.VisualScripting;
@@ -150,9 +151,23 @@ public class StoreController : MonoBehaviour
 
     public void Transaction(CustomerController cc)
     {
+        bool hasBoughtSomething = false;
+        Dictionary<string, bool> hasLooked = new Dictionary<string, bool>();
+        foreach (string prodName in StockManager.prodNames)
+            hasLooked.Add(prodName, false);
+
         foreach (Product p in cc.GetProducts())
-            SellProduct(p, cc);
-        cc.CompleteTransaction();
+        {
+            SellProduct(p, cc, ref hasBoughtSomething);
+            hasLooked[p.name] = true;
+        }
+
+        // interate over all the products that were overlooked and exist in the shop and decrease IT.
+        foreach (KeyValuePair<string, bool> kvp in hasLooked.Where(kvp => !kvp.Value))
+            if (products.TryGetValue(kvp.Key, out Product p))
+                p.Invest_tend -= 1;
+
+        cc.CompleteTransaction(hasBoughtSomething);
     }
 
     public void RandomOffsetPrice(Product product, int epsilon)
@@ -210,7 +225,7 @@ public class StoreController : MonoBehaviour
     ///     price / invest_rate - change for a transaction
     ///  returns the amount sold.
     /// </summary>
-    public void SellProduct(Product product, CustomerController cc)
+    public void SellProduct(Product product, CustomerController cc, ref bool hasBoughtSomething)
     {
         int IT = Random.Range(1, 4);
         float price_delta =
@@ -219,9 +234,6 @@ public class StoreController : MonoBehaviour
 
         if (products.TryGetValue(product.name, out Product existingProd))
         {
-            if (existingProd.amount == 0)   // none in stock
-                return;
-
             int sold = 0;
             if (existingProd.amount < product.amount)
                 sold = existingProd.amount;
@@ -231,19 +243,24 @@ public class StoreController : MonoBehaviour
             if (existingProd.Price <= product.Price)
             {
                 existingProd.Price += price_delta * sold;
-                existingProd.Invest_tend += IT * sold;
                 existingProd.amount -= sold;
+                existingProd.Invest_tend += IT * (sold > 0 ? sold : 1);
+                product.amount -= sold;
+
+                if (!hasBoughtSomething && sold > 0)
+                    hasBoughtSomething = true;
+
                 balance += sold * existingProd.Price;
             }
-            else // could not sell
+            else // price too high
             {
                 // Store changes
                 float bankruptPanic = Mathf.Clamp(existingProd.Price / balance, 0, 0.2f * existingProd.Price); // can only range from 0 to 3x
-                existingProd.Price -= (price_delta + 20 * bankruptPanic) * sold; // 10% + delta + (20% to epsilon)
-                existingProd.Invest_tend -= IT * sold;
+                existingProd.Price -= (price_delta + 20 * bankruptPanic); // 10% + delta + (20% to epsilon)
+                product.Price -= price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
 
                 // Customer changes
-                product.Price -= price_delta * (CustomerManager.GetMaxTTL() / cc.ttl) * sold;
+                product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
             }
         }
     }

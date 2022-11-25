@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -38,7 +39,7 @@ public class CustomerController : MonoBehaviour
     {
         HandleCanvas();
 
-        if (storePath.Count > 0 && agent.remainingDistance < 0.01f && !isSelling)
+        if (storePath.Count > 0 && agent.remainingDistance < 0.1f && !isSelling)
         {
             isSelling = true;
             agent.isStopped = true;
@@ -118,7 +119,7 @@ public class CustomerController : MonoBehaviour
 
     public void GoToEnd()
     {
-        if (!mood.gameObject.activeSelf)
+        if (!mood.gameObject.activeInHierarchy)
             SetMood(SAD);
 
         Bounds endBounds = PathfindingManager.endPos.GetComponent<Renderer>().bounds;
@@ -161,7 +162,7 @@ public class CustomerController : MonoBehaviour
     {
         foreach (string prodName in sm.BuyList(sm.GetMaxLevel()))
         {
-            if (Random.Range(0, (int)(sm.GetScarsityOfProduct(prodName) / 10) + 1) == 0) // Precentage for each product to spawn, +1 because exclusive
+            if (Random.Range(0, sm.GetScarsityOfProduct(prodName) / 10 + 1) == 0) // Precentage for each product to spawn, +1 because exclusive
             {
                 int amount = Random.Range(1, 6);
                 float cpp = sm.GetAveragePrice(prodName) + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;
@@ -175,7 +176,7 @@ public class CustomerController : MonoBehaviour
         return ref shoppingList;
     }
 
-    public void CompleteTransaction()
+    public void CompleteTransaction(bool hasBoughtSomething)
     {
         isSelling = false;
         if (agent != null && agent.isActiveAndEnabled)
@@ -187,6 +188,15 @@ public class CustomerController : MonoBehaviour
             SetMood(HAPPY);
         }
 
-        Instantiate(Resources.Load("CashThrow") as GameObject, transform);
+        if (hasBoughtSomething)
+            Instantiate(Resources.Load("CashThrow") as GameObject, transform);
+    }
+
+    public Dictionary<string, float> GetProductPrices()
+    {
+        Dictionary<string, float> temp = new Dictionary<string, float>();
+        foreach (Product p in shoppingList)
+            temp.Add(p.name, p.Price);
+        return temp;
     }
 }
