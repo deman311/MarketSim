@@ -18,6 +18,7 @@ public class CustomerController : MonoBehaviour
     public int ttl = CustomerManager.GetMaxTTL();
     NavMeshAgent agent;
     bool isSelling = false, isDone = false, isIdle = false;
+    public bool isKillable = false;
 
     [SerializeField] TextMeshProUGUI TMP_ttl;
     [SerializeField] RawImage mood;
@@ -113,7 +114,7 @@ public class CustomerController : MonoBehaviour
     {
         ttl--;
         mood.gameObject.SetActive(false);
-        if (ttl == 0 || shoppingList.TrueForAll(p => p.amount == 0))
+        if (ttl == 0 || isKillable)
             CustomerManager.KillMe(this);
     }
 
@@ -160,7 +161,8 @@ public class CustomerController : MonoBehaviour
     /// </summary>
     private void InitShoppingList(int alpha)
     {
-        foreach (string prodName in sm.BuyList(sm.GetMaxLevel()))
+        List<string> buylist = sm.BuyList(sm.GetMaxLevel());
+        foreach (string prodName in buylist)
         {
             if (Random.Range(0, sm.GetScarsityOfProduct(prodName) / 10 + 1) == 0) // Precentage for each product to spawn, +1 because exclusive
             {
@@ -169,6 +171,10 @@ public class CustomerController : MonoBehaviour
                 shoppingList.Add(new Product(prodName, amount, cpp));
             }
         }
+
+        // if empty, add a random product
+        if (shoppingList.Count == 0)
+            shoppingList.Add(new Product(buylist[Random.Range(0, buylist.Count)], Random.Range(1, 5)));
     }
 
     public ref List<Product> GetProducts()
@@ -179,13 +185,14 @@ public class CustomerController : MonoBehaviour
     public void CompleteTransaction(bool hasBoughtSomething)
     {
         isSelling = false;
-        if (agent != null && agent.isActiveAndEnabled)
+        if (agent.isActiveAndEnabled)
             agent.isStopped = false;
 
         if (shoppingList.TrueForAll(p => p.amount == 0))
         {
             storePath.Clear();
             SetMood(HAPPY);
+            isKillable = true;
         }
 
         if (hasBoughtSomething)

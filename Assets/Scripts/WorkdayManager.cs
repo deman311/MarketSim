@@ -40,14 +40,18 @@ public class WorkdayManager : MonoBehaviour
             else if (s.GetLevel() == 2 && s.GetBalance() > 10000 && Random.Range(0, 2) == 0)
                 s.LevelUp();
         }
+        foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
+        {
+            c.FinishDay();
+        }
     }
 
     void StartWorkDay()
     {
         foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
         {
-            c.StartNewStartingPointAndPath();
-            c.FinishDay();
+            if (c.isActiveAndEnabled && !c.isKillable)
+                c.StartNewStartingPointAndPath();
         }
 
         foreach (StoreController s in storesFolder.GetComponentsInChildren<StoreController>())

@@ -132,8 +132,14 @@ public class StoreController : MonoBehaviour
         foreach (string prodName in sm.BuyList(level))
         {
             // 50% to restock if no such product in stock
-            if (Random.Range(0, 2) == 0 && (!products.TryGetValue(prodName, out Product p) || p.amount == 0))
-                BuyProduct(new Product(prodName).SetInvestmentTendency(Random.Range(1, 11)));
+            if (Random.Range(0, 2) == 0)
+            {
+                if (!products.TryGetValue(prodName, out Product p))
+                    BuyProduct(new Product(prodName).SetInvestmentTendency(Random.Range(1, 11)));
+                else if (p.amount == 0)
+                    BuyProduct(p);
+
+            }
         }
     }
 
@@ -244,7 +250,7 @@ public class StoreController : MonoBehaviour
             {
                 existingProd.Price += price_delta * sold;
                 existingProd.amount -= sold;
-                existingProd.Invest_tend += IT * (sold > 0 ? sold : 1);
+                existingProd.Invest_tend += IT * (sold > 0 ? sold : product.amount);
                 product.amount -= sold;
 
                 if (!hasBoughtSomething && sold > 0)
