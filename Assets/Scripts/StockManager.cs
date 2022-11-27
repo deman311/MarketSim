@@ -22,6 +22,14 @@ public class StockManager : MonoBehaviour
         {prodNames[3], 2000 },  // 300 - 2000
         {prodNames[4], 5000 }   // 1500 - 5000
     };
+    Dictionary<string, int> productToTax = new Dictionary<string, int>
+    {
+        {prodNames[0], 1 },     // 1 - 20
+        {prodNames[1], 5 },    // 15 - 100
+        {prodNames[2], 10 },    // 90 - 500
+        {prodNames[3], 50 },   // 300 - 2000
+        {prodNames[4], 200 }   // 1500 - 5000
+    };
     /// <summary>
     /// The minimum store level per product required to be able to sell it.
     /// </summary>
@@ -47,10 +55,10 @@ public class StockManager : MonoBehaviour
     Dictionary<string, int> productToScarsity = new Dictionary<string, int>
     {
         {prodNames[0], 50 },
-        {prodNames[1], 40 },
-        {prodNames[2], 30 },
-        {prodNames[3], 20 },
-        {prodNames[4], 10 }
+        {prodNames[1], 35 },
+        {prodNames[2], 25 },
+        {prodNames[3], 15 },
+        {prodNames[4], 5 }
     };
 
     public int GetScarsityOfProduct(string prodName)
@@ -70,6 +78,11 @@ public class StockManager : MonoBehaviour
                 amount++;
             }
         return avg / amount;
+    }
+
+    public int GetProductTax(string prodName)
+    {
+        return productToTax[prodName];
     }
 
     public int GetMaxLevel()

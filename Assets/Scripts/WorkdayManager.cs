@@ -48,13 +48,13 @@ public class WorkdayManager : MonoBehaviour
 
     void StartWorkDay()
     {
+        foreach (StoreController s in storesFolder.GetComponentsInChildren<StoreController>())
+            s.Restock();
+
         foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
         {
             if (c.isActiveAndEnabled && !c.isKillable)
                 c.StartNewStartingPointAndPath();
         }
-
-        foreach (StoreController s in storesFolder.GetComponentsInChildren<StoreController>())
-            s.Restock();
     }
 }

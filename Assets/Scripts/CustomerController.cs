@@ -40,7 +40,7 @@ public class CustomerController : MonoBehaviour
     {
         HandleCanvas();
 
-        if (storePath.Count > 0 && agent.remainingDistance < 0.1f && !isSelling)
+        if (storePath.Count > 0 && agent.remainingDistance <= 0.1f && !isSelling && !agent.pathPending)
         {
             isSelling = true;
             agent.isStopped = true;
@@ -164,7 +164,7 @@ public class CustomerController : MonoBehaviour
         List<string> buylist = sm.BuyList(sm.GetMaxLevel());
         foreach (string prodName in buylist)
         {
-            if (Random.Range(0, sm.GetScarsityOfProduct(prodName) / 10 + 1) == 0) // Precentage for each product to spawn, +1 because exclusive
+            if (Random.Range(0, 100) < sm.GetScarsityOfProduct(prodName)) // Precentage for each product to spawn, +1 because exclusive
             {
                 int amount = Random.Range(1, 6);
                 float cpp = sm.GetAveragePrice(prodName) + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;
