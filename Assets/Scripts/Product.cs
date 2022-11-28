@@ -51,7 +51,7 @@ public class Product
 
     public override string ToString()
     {
-		return name + ": " + price;
+		return name + ": " + price + " (" + amount + ")";
     }
 
 	public Product SetInvestmentTendency(int it)

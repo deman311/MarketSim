@@ -9,8 +9,8 @@ public class StockManager : MonoBehaviour
     Dictionary<string, float> productToProduction = new Dictionary<string, float>
     {
         {prodNames[0], 1 },     // 1 - 20
-        {prodNames[1], 15 },    // 15 - 100
-        {prodNames[2], 90 },    // 90 - 500
+        {prodNames[1], 10 },    // 10 - 100
+        {prodNames[2], 75 },    // 75 - 500
         {prodNames[3], 300 },   // 300 - 2000
         {prodNames[4], 1500 }   // 1500 - 5000
     };
@@ -24,11 +24,11 @@ public class StockManager : MonoBehaviour
     };
     Dictionary<string, int> productToTax = new Dictionary<string, int>
     {
-        {prodNames[0], 1 },     // 1 - 20
-        {prodNames[1], 5 },    // 15 - 100
-        {prodNames[2], 10 },    // 90 - 500
-        {prodNames[3], 50 },   // 300 - 2000
-        {prodNames[4], 200 }   // 1500 - 5000
+        {prodNames[0], 1 },
+        {prodNames[1], 5 },
+        {prodNames[2], 60 },
+        {prodNames[3], 250 },
+        {prodNames[4], 700 }
     };
     /// <summary>
     /// The minimum store level per product required to be able to sell it.
@@ -40,14 +40,6 @@ public class StockManager : MonoBehaviour
         {prodNames[2], 2 },
         {prodNames[3], 2 },
         {prodNames[4], 3 }
-    };
-    Dictionary<string, float> productToAvgPrice = new Dictionary<string, float>
-    {
-        {prodNames[0], 0 },
-        {prodNames[1], 0 },
-        {prodNames[2], 0 },
-        {prodNames[3], 0 },
-        {prodNames[4], 0 }
     };
     /// <summary>
     /// The precentage per product it is likely to be generated in the shopping list for each new generated customer.

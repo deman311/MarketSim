@@ -42,7 +42,7 @@ public class CustomerController : MonoBehaviour
     {
         HandleCanvas();
 
-        if (storePath.Count > 0 && agent.remainingDistance <= 0.2f && !isSelling && agent.hasPath)
+        if (storePath.Count > 0 && !isSelling && !isDone && agent.hasPath && agent.remainingDistance < 0.2) // hasPath is for a bug when just spawning and AIlib delay
         {
             isSelling = true;
             agent.isStopped = true;
@@ -51,13 +51,12 @@ public class CustomerController : MonoBehaviour
                 agent.SetDestination(storePath[1].transform.position);
             storePath.Remove(storePath[0]);
         }
-
-        if (storePath.Count == 0 && !isDone)
+        else if (storePath.Count == 0 && !isDone)
         {
             isDone = true;
             GoToEnd();
         }
-        else if (isDone && agent.remainingDistance <= 0.2f)
+        else if (isDone && agent.remainingDistance < 0.3)
         {
             isIdle = true;
             //CustomerManager.KillMe(this);
@@ -152,6 +151,7 @@ public class CustomerController : MonoBehaviour
             sb.Append("[C]" + this.name + " ");
         foreach (Product p in shoppingList)
             sb.Append(p + ", ");
+        sb.Append("isIdle: " + agent.isStopped);
 
         if (!string.IsNullOrEmpty(sb.ToString()))
             Debug.Log(sb.ToString());
@@ -194,7 +194,7 @@ public class CustomerController : MonoBehaviour
     public void CompleteTransaction(bool hasBoughtSomething)
     {
         isSelling = false;
-        if (agent.isActiveAndEnabled)
+        if (agent != null && agent.isActiveAndEnabled)
             agent.isStopped = false;
 
         if (shoppingList.TrueForAll(p => p.amount == 0))

@@ -132,9 +132,10 @@ public class StoreController : MonoBehaviour
     {
         StringBuilder sb = new();
         if (products.Count > 0)
-            sb.Append("[S]" + this.name + " ");
+            sb.Append("[S]" + name + " ");
         foreach (Product p in products.Values)
             sb.Append(p + ", ");
+        sb.Append("Balance: " + balance);
 
         if (!string.IsNullOrEmpty(sb.ToString()))
             Debug.Log(sb.ToString());
@@ -151,11 +152,12 @@ public class StoreController : MonoBehaviour
         int total_IT = 0;
         products.Values.ToList().ForEach(p => total_IT += p.Invest_tend);
 
+        if (total_IT == 0)
+            total_IT = maxStock;
+
         if (products.TryGetValue(prodName, out Product p))
             return (int)Mathf.Round((float)p.Invest_tend / total_IT * (maxStock - currentStock));
 
-        if (total_IT == 0)
-            total_IT = maxStock;
         return (int)Mathf.Round((float)Random.Range(1, 11) / total_IT * (maxStock - currentStock));
     }
 
@@ -167,10 +169,10 @@ public class StoreController : MonoBehaviour
 
     public void Tax(int TAX)
     {
-        balance -= TAX * level * level;
-
+        int finalTax = TAX * level * level;
         foreach (Product product in products.Values.Where(p => p.amount > 0))
-            TAX += sm.GetProductTax(product.name) * product.amount;
+            finalTax += sm.GetProductTax(product.name) * product.amount;
+        balance -= finalTax;
 
         if (balance < 0)
             GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
@@ -201,10 +203,10 @@ public class StoreController : MonoBehaviour
         cc.CompleteTransaction(hasBoughtSomething);
     }
 
-    public void RandomOffsetPrice(Product product, int epsilon)
+    public void RandomOffsetPrice(Product product, int alpha)
     {
         float price = sm.GetProductionPrice(product.name);
-        float offset = sm.GetMaxPrice(product.name) * Random.Range(0, epsilon) / 100;
+        float offset = sm.GetMaxPrice(product.name) * Random.Range(0, alpha) / 100f;
         product.Price = price + offset;
     }
 
@@ -233,16 +235,17 @@ public class StoreController : MonoBehaviour
         {
             //product.amount = existingProd.Invest_tend;
             if (balance - product.amount * price < 0)
-                product.amount = Mathf.FloorToInt(balance / price);
+                product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
             balance -= product.amount * price;
             existingProd.amount += product.amount;
+            Debug.Log(product.amount);
         }
         else
         {
             RandomOffsetPrice(product, 10);
             //product.amount = product.Invest_tend;
             if (balance - product.amount * price < 0)
-                product.amount = Mathf.FloorToInt(balance / price);
+                product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
             balance -= product.amount * price;
             products.Add(product.name, product);
         }
@@ -286,7 +289,7 @@ public class StoreController : MonoBehaviour
             else // price too high
             {
                 // Store changes
-                float bankruptPanic = Mathf.Clamp(existingProd.Price / balance != 0 ? balance : 1, 0, 0.2f * existingProd.Price); // can only range from 0 to 3x
+                float bankruptPanic = Mathf.Clamp(existingProd.Price / (balance > 0 ? balance : 1), 0, 0.2f * existingProd.Price); // can only range from 0 to 3x
                 existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (20% to epsilon)
                 existingProd.Invest_tend -= 1;
 
