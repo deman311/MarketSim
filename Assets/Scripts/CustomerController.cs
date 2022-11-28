@@ -15,6 +15,7 @@ public class CustomerController : MonoBehaviour
     List<Product> shoppingList = new List<Product>();
 
     StockManager sm;
+    CustomerManager cm;
     public int ttl = CustomerManager.GetMaxTTL();
     NavMeshAgent agent;
     bool isSelling = false, isDone = false, isIdle = false;
@@ -27,6 +28,7 @@ public class CustomerController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
+        cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
         InitShoppingList(15);
 
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
@@ -40,7 +42,7 @@ public class CustomerController : MonoBehaviour
     {
         HandleCanvas();
 
-        if (storePath.Count > 0 && agent.remainingDistance <= 0.1f && !isSelling && !agent.pathPending)
+        if (storePath.Count > 0 && agent.remainingDistance <= 0.2f && !isSelling && agent.hasPath)
         {
             isSelling = true;
             agent.isStopped = true;
@@ -52,10 +54,10 @@ public class CustomerController : MonoBehaviour
 
         if (storePath.Count == 0 && !isDone)
         {
-            GoToEnd();
             isDone = true;
+            GoToEnd();
         }
-        else if (isDone && agent.remainingDistance < 0.01f)
+        else if (isDone && agent.remainingDistance <= 0.2f)
         {
             isIdle = true;
             //CustomerManager.KillMe(this);
@@ -139,6 +141,8 @@ public class CustomerController : MonoBehaviour
         else
             Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, agent.destination);
+
+        PrintList();
     }
 
     private void PrintList()
@@ -166,8 +170,13 @@ public class CustomerController : MonoBehaviour
         {
             if (Random.Range(0, 100) < sm.GetScarsityOfProduct(prodName)) // Precentage for each product to spawn, +1 because exclusive
             {
+                // try to get the avg from Customers, if no customers exists then get avg from stores.
+                float avg = cm.GetAveragePrice(prodName);
+                if (avg == 0)
+                    avg = sm.GetAveragePrice(prodName);
+
                 int amount = Random.Range(1, 6);
-                float cpp = sm.GetAveragePrice(prodName) + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;
+                float cpp = avg + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;
                 shoppingList.Add(new Product(prodName, amount, cpp));
             }
         }

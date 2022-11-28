@@ -41,6 +41,24 @@ public class CustomerManager : MonoBehaviour
         return _maxTTL;
     }
 
+    public float GetAveragePrice(string prodName)
+    {
+        float avg = 0;
+        int amount = 0;
+
+        foreach (CustomerController cc in GameObject.Find("Customers").GetComponentsInChildren<CustomerController>())
+            if (cc.GetProductPrices().TryGetValue(prodName, out float value))
+            {
+                avg += value;
+                amount++;
+            }
+
+        if (amount == 0)
+            return 0;
+
+        return avg / amount;
+    }
+
     private void Spawn()
     {
         for (int i = 0; MAX_COUNT > currentCount; i++)

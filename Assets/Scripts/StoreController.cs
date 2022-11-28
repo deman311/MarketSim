@@ -286,8 +286,9 @@ public class StoreController : MonoBehaviour
             else // price too high
             {
                 // Store changes
-                float bankruptPanic = Mathf.Clamp(existingProd.Price / balance, 0, 0.1f * existingProd.Price); // can only range from 0 to 3x
-                existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (10% to epsilon)
+                float bankruptPanic = Mathf.Clamp(existingProd.Price / balance != 0 ? balance : 1, 0, 0.2f * existingProd.Price); // can only range from 0 to 3x
+                existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (20% to epsilon)
+                existingProd.Invest_tend -= 1;
 
                 // Customer changes
                 product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
