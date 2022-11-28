@@ -9,7 +9,7 @@ public class CustomerManager : MonoBehaviour
     [SerializeField] GameObject cfolder;    // customer folder
     static int currentCount = 0;
     static int _maxTTL;
-
+    
     static object _lock = new object();
 
     [SerializeField] GameObject ground;

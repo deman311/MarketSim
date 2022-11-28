@@ -1,34 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
 public class StoreManager: MonoBehaviour
 {
-	[SerializeField] GameObject sfolder; // Store folder
-	[SerializeField] GameObject ground;
-	[SerializeField] GameObject stores;
-	[SerializeField] int MAX_STORES = 10;
+	[SerializeField] GameObject storeFolder; // Store folder
+	[SerializeField] GameObject markerFolder;
+	[SerializeField, Range(1, 32)] int MAX_STORES = 20;
 	static int currentStoreCount = 0;
 	static int _MAX_STORES;
 	static int balance;// = BASE_BALANCE;
 	static object _lock = new object();
-
-	private Bounds storeBounds;
-	private Bounds bounds;
 	private bool bankcrupt;
 
 	void Start()
     {
 		_MAX_STORES = MAX_STORES;
-        bounds = ground.GetComponent<Renderer>().bounds;
-		storeBounds = stores.GetComponent<Renderer>().bounds;
+		Spawn();    
+	
     }
 
 	void Update()
     {
-		if (currentStoreCount < MAX_STORES)
-			Spawn();
+
     }
 
     public static void SusspendsMe(StoreController sc)
@@ -43,22 +40,18 @@ public class StoreManager: MonoBehaviour
 
 	private void Spawn()
     {
-		for (int i=0; currentStoreCount < MAX_STORES; i++) 
-		{
-			GameObject store = Instantiate<GameObject>(Resources.Load<GameObject>("Store"));
-			store.transform.position = GetRandomPostionInBounds();
-			store.transform.SetParent(sfolder.transform);
+        List<Transform> markers = markerFolder.GetComponentsInChildren<Transform>().ToList<Transform>();
+        int rand;
+        for (int i = 0; i < MAX_STORES; i++)
+        {
+            rand = Random.Range(1, markers.Count);
 			
-			currentStoreCount++;
-		}
-    }
+            GameObject stores = Instantiate<GameObject>(Resources.Load<GameObject>("Store"));
+            stores.transform.position = markers[rand].position;
+			stores.transform.rotation = markers[rand].rotation;
+			stores.transform.localScale = markers[rand].localScale;
+            markers.RemoveAt(rand);
+        }
 
-	public Vector3 GetRandomPostionInBounds()
-    {
-		return new Vector3(
-			Random.Range(bounds.min.x - storeBounds.min.x, bounds.max.x - storeBounds.max.x),
-			bounds.max.y,
-			Random.Range(bounds.min.z - storeBounds.min.z, bounds.max.z - storeBounds.max.z)
-			);
     }
 }
