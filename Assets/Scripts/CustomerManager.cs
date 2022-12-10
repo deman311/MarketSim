@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class CustomerManager : MonoBehaviour
 {
-    [SerializeField] int MAX_COUNT = 5;
-    [SerializeField] int MAX_TTL = 3;
+    CustomerParams cp = new CustomerParams();
+/*    [SerializeField] int MAX_COUNT = 5;
+    [SerializeField] int MAX_TTL = 3;*/
     [SerializeField] GameObject cfolder;    // customer folder
     static int currentCount = 0;
     static int _maxTTL;
@@ -17,13 +18,13 @@ public class CustomerManager : MonoBehaviour
 
     void Start()
     {
-        _maxTTL = MAX_TTL;
+        _maxTTL = cp.TTL;
         bounds = ground.GetComponent<Renderer>().bounds;
     }
 
     void Update()
     {
-        if (currentCount < MAX_COUNT)
+        if (currentCount < cp.CUSTOMER_COUNT)
             Spawn();
     }
 
@@ -61,7 +62,7 @@ public class CustomerManager : MonoBehaviour
 
     private void Spawn()
     {
-        for (int i = 0; MAX_COUNT > currentCount; i++)
+        for (int i = 0; cp.CUSTOMER_COUNT > currentCount; i++)
         {
             GameObject customer = Instantiate<GameObject>(Resources.Load<GameObject>("Customer"));
             customer.transform.position = GetRandomPositionInBounds();

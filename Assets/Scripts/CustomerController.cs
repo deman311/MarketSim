@@ -13,7 +13,7 @@ public class CustomerController : MonoBehaviour
 
     List<GameObject> storePath = new List<GameObject>();
     List<Product> shoppingList = new List<Product>();
-
+    CustomerParams cp = new CustomerParams();
     StockManager sm;
     CustomerManager cm;
     public int ttl = CustomerManager.GetMaxTTL();
@@ -29,7 +29,7 @@ public class CustomerController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
-        InitShoppingList(15);
+        InitShoppingList(cp.ALPHA);
 
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
@@ -42,7 +42,7 @@ public class CustomerController : MonoBehaviour
     {
         HandleCanvas();
 
-        if (storePath.Count > 0 && !isSelling && !isDone && agent.hasPath && agent.remainingDistance < 0.2) // hasPath is for a bug when just spawning and AIlib delay
+        if (storePath.Count > 0 && !isSelling && !isDone && agent.hasPath && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
         {
             isSelling = true;
             agent.isStopped = true;
@@ -56,7 +56,7 @@ public class CustomerController : MonoBehaviour
             isDone = true;
             GoToEnd();
         }
-        else if (isDone && agent.remainingDistance < 0.3)
+        else if (isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY)
         {
             isIdle = true;
             //CustomerManager.KillMe(this);
@@ -175,7 +175,7 @@ public class CustomerController : MonoBehaviour
                 if (avg == 0)
                     avg = sm.GetAveragePrice(prodName);
 
-                int amount = Random.Range(1, 6);
+                int amount = Random.Range(cp.SHOPPING_LIST_PRODUCT_AMOUNT_MIN, cp.SHOPPING_LIST_PRODUCT_AMOUNT_MAX + 1);
                 float cpp = avg + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;
                 shoppingList.Add(new Product(prodName, amount, cpp));
             }
@@ -183,7 +183,7 @@ public class CustomerController : MonoBehaviour
 
         // if empty, add a random product
         if (shoppingList.Count == 0)
-            shoppingList.Add(new Product(buylist[Random.Range(0, buylist.Count)], Random.Range(1, 5)));
+            shoppingList.Add(new Product(buylist[Random.Range(0, buylist.Count)], Random.Range(cp.SHOPPING_LIST_PRODUCT_AMOUNT_MIN, cp.SHOPPING_LIST_PRODUCT_AMOUNT_MAX + 1)));
     }
 
     public ref List<Product> GetProducts()

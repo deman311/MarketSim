@@ -10,12 +10,20 @@ public class PathfindingManager : MonoBehaviour
 
     public static object _StoreLock = new object();
 
-    void Awake()
+    void Start()
     {
         endPos = GameObject.Find("EndPosition");
         foreach (GameObject store in GameObject.FindGameObjectsWithTag("Store"))
             SafeAdd(store);
     }
+
+
+/*    public void CreatePaths()
+    {
+        endPos = GameObject.Find("EndPosition");
+        foreach (GameObject store in GameObject.FindGameObjectsWithTag("Store"))
+            SafeAdd(store);
+    }*/
 
     public void SafeAdd(GameObject store)
     {
