@@ -9,20 +9,20 @@ using Random = UnityEngine.Random;
 
 public class CustomerController : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI TMP_ttl;
+    [SerializeField] RawImage mood;
+
     private const int HAPPY = 1, SAD = 2;
+    readonly CustomerParams cp = new CustomerParams();
 
     List<GameObject> storePath = new List<GameObject>();
     List<Product> shoppingList = new List<Product>();
-    CustomerParams cp = new CustomerParams();
     StockManager sm;
     CustomerManager cm;
     public int ttl = CustomerManager.GetMaxTTL();
     NavMeshAgent agent;
     bool isSelling = false, isDone = false, isIdle = false;
     public bool isKillable = false;
-
-    [SerializeField] TextMeshProUGUI TMP_ttl;
-    [SerializeField] RawImage mood;
 
     void Start()
     {
@@ -42,7 +42,7 @@ public class CustomerController : MonoBehaviour
     {
         HandleCanvas();
 
-        if (storePath.Count > 0 && !isSelling && !isDone && agent.hasPath && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
+        if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
         {
             isSelling = true;
             agent.isStopped = true;

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18332127, g: 0.22894508, b: 0.30623555, a: 1}
+  m_IndirectSpecularColor: {r: 0.18332061, g: 0.22894396, b: 0.3062337, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -576,8 +576,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ae89764113574db59f3fdbfc22540e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MAX_COUNT: 30
-  MAX_TTL: 3
   cfolder: {fileID: 898320023}
   ground: {fileID: 1672090641}
 --- !u!114 &780465689
@@ -608,7 +606,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   markersFolder: {fileID: 835649247}
-  MAX_STORES: 5
+  isReady: 0
 --- !u!1 &835649247
 GameObject:
   m_ObjectHideFlags: 0
@@ -902,7 +900,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.30679092, y: -0.63708663, z: 0.30679104, w: 0.6370866}
-  m_LocalPosition: {x: 25.84, y: 26, z: -4.1}
+  m_LocalPosition: {x: 27.7, y: 29.8, z: -4.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -13,17 +13,14 @@ public class PathfindingManager : MonoBehaviour
     void Start()
     {
         endPos = GameObject.Find("EndPosition");
-        foreach (GameObject store in GameObject.FindGameObjectsWithTag("Store"))
-            SafeAdd(store);
+        //foreach (GameObject store in GameObject.FindGameObjectsWithTag("Store"))
+          //  SafeAdd(store);
     }
 
-
-/*    public void CreatePaths()
+    public void SetStores(List<GameObject> stores)
     {
-        endPos = GameObject.Find("EndPosition");
-        foreach (GameObject store in GameObject.FindGameObjectsWithTag("Store"))
-            SafeAdd(store);
-    }*/
+        this.stores = stores;
+    }
 
     public void SafeAdd(GameObject store)
     {
