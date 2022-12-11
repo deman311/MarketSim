@@ -11,6 +11,13 @@ public class CamController : MonoBehaviour
 
     void Start()
     {
+        Camera.main.transform.position = new Vector3
+        (
+            spawnArea.gameObject.GetComponent<Renderer>().bounds.max.x,
+            20f,
+            0
+        );
+        Camera.main.transform.LookAt(spawnArea.transform.position);
         currentAngle = Camera.main.transform.rotation.eulerAngles.y;
     }
 

@@ -9,15 +9,16 @@ using Debug = UnityEngine.Debug;
 public class StoreController : MonoBehaviour
 {
     [SerializeField] Canvas uiBalance;
+    StockManager sm;
+    readonly StoreParams sp = new StoreParams();
 
     int level = 1;
-    float balance = 200f;
-    int maxStock = 20;
+    float balance;
+    int maxStock;
     int currentStock = 0;
 
     float timer = 0f;
-    StockManager sm;
-
+    
     Dictionary<string, Product> products = new Dictionary<string, Product>();
     List<CustomerController> queue = new List<CustomerController>();
     public static object _QueueLock = new object();
@@ -35,6 +36,8 @@ public class StoreController : MonoBehaviour
 
     void Awake()
     {
+        balance = sp.SHOP_STARTING_BALANCE;
+        maxStock = sp.STOCK_LEVEL_ONE;
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         InitPricesAndIT();
         UpdateUIPrices(); // inital price set
@@ -87,13 +90,15 @@ public class StoreController : MonoBehaviour
             GetComponent<Renderer>().material.color = Color.green;
             phone.transform.parent.gameObject.SetActive(true);
             gpu.transform.parent.gameObject.SetActive(true);
-            maxStock = 50;
+            maxStock = sp.STOCK_LEVEL_TWO;
+            balance -= sp.UPGRADE_LEVEL_TWO_PRICE;    
         }
         else
         {
             GetComponent<Renderer>().material.color = Color.red;
             rolex.transform.parent.gameObject.SetActive(true);
-            maxStock = 100;
+            maxStock = sp.STOCK_LEVEL_THREE;
+            balance -= sp.UPGRADE_LEVEL_THREE_PRICE;
         }
     }
 
@@ -238,11 +243,11 @@ public class StoreController : MonoBehaviour
                 product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
             balance -= product.amount * price;
             existingProd.amount += product.amount;
-            Debug.Log(product.amount);
+
         }
         else
         {
-            RandomOffsetPrice(product, 10);
+            RandomOffsetPrice(product, sp.PRICE_OFFSET);
             //product.amount = product.Invest_tend;
             if (balance - product.amount * price < 0)
                 product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
@@ -263,7 +268,7 @@ public class StoreController : MonoBehaviour
     {
         float price_delta =
             GameObject.Find("SimulationController").GetComponent<StockManager>().GetMaxPrice(product.name)
-            * (0.05f + Random.Range(-0.03f, 0.05f)); // 5% + alpha(-3%,5%) of max price
+            * (sp.PRICE_DELTA_BASE + Random.Range(sp.PRICE_DELTA_LOWER_BOUND, sp.PRICE_DELTA_UPPER_BOUND)); // see in MarketParams for further info
 
         if (products.TryGetValue(product.name, out Product existingProd) && existingProd.amount > 0)
         {
@@ -289,7 +294,7 @@ public class StoreController : MonoBehaviour
             else // price too high
             {
                 // Store changes
-                float bankruptPanic = Mathf.Clamp(existingProd.Price / (balance > 0 ? balance : 1), 0, 0.2f * existingProd.Price); // can only range from 0 to 3x
+                float bankruptPanic = Mathf.Clamp(existingProd.Price / (balance > 0 ? balance : 1), sp.BANKRUPT_LOWER_BOUND, sp.BANKRUPT_UPPER_BOUND * existingProd.Price); // see MarketParams for further info
                 existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (20% to epsilon)
                 existingProd.Invest_tend -= 1;
 
