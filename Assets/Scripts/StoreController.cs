@@ -10,7 +10,7 @@ public class StoreController : MonoBehaviour
 {
     [SerializeField] Canvas uiBalance;
     StockManager sm;
-    StoreParams sp = new StoreParams();
+    readonly StoreParams sp = new StoreParams();
 
     int level = 1;
     float balance;
@@ -90,13 +90,15 @@ public class StoreController : MonoBehaviour
             GetComponent<Renderer>().material.color = Color.green;
             phone.transform.parent.gameObject.SetActive(true);
             gpu.transform.parent.gameObject.SetActive(true);
-            maxStock = 50;
+            maxStock = sp.STOCK_LEVEL_TWO;
+            balance -= sp.UPGRADE_LEVEL_TWO_PRICE;    
         }
         else
         {
             GetComponent<Renderer>().material.color = Color.red;
             rolex.transform.parent.gameObject.SetActive(true);
-            maxStock = 100;
+            maxStock = sp.STOCK_LEVEL_THREE;
+            balance -= sp.UPGRADE_LEVEL_THREE_PRICE;
         }
     }
 
