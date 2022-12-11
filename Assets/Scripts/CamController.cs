@@ -7,31 +7,49 @@ public class CamController : MonoBehaviour
     [SerializeField] GameObject spawnArea;
     [SerializeField] int SPEED = 100;
 
-    float currentAngle;
+    // Define a Vector3 to store the initial position of the camera
+    Vector3 initialPosition, targetPosition;
+    GameObject target;
+
+    bool isFollowing;
 
     void Start()
     {
-        Camera.main.transform.position = new Vector3
-        (
-            spawnArea.gameObject.GetComponent<Renderer>().bounds.max.x,
-            20f,
-            0
-        );
-        Camera.main.transform.LookAt(spawnArea.transform.position);
-        currentAngle = Camera.main.transform.rotation.eulerAngles.y;
+        // Store the initial position of the camera in the initialPosition Vector3
+        initialPosition = new Vector3(spawnArea.GetComponent<Renderer>().bounds.max.x / 2f, 20, 0);
+        isFollowing = false;
+        ResetCamera();
     }
 
     void Update()
     {
+        // If the user presses the X key, pick a random game object from the children of the "Customers" game object
+        // and set it as the new target position for the camera
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            isFollowing = !isFollowing;
+            if (isFollowing)
+            {
+                GameObject customers = GameObject.Find("Customers");
+                int childIndex = Random.Range(0, customers.transform.childCount);
+                target = customers.transform.GetChild(childIndex).gameObject;
+                targetPosition = target.transform.position;
+            }
+            else
+                ResetCamera();
+        }
+
+        // Rotate the camera around the target position
         if (Input.GetKey(KeyCode.D))
         {
-            Camera.main.transform.RotateAround(spawnArea.transform.position, Vector3.up, Time.deltaTime * SPEED);
+            Camera.main.transform.RotateAround(targetPosition, Vector3.up, Time.deltaTime * SPEED);
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            Camera.main.transform.RotateAround(spawnArea.transform.position, Vector3.up, -Time.deltaTime * SPEED);
+            Camera.main.transform.RotateAround(targetPosition, Vector3.up, -Time.deltaTime * SPEED);
         }
 
+        // Move the camera towards or away from the target position
         if (Input.GetKey(KeyCode.S))
         {
             Camera.main.transform.position -= Camera.main.transform.forward * Time.deltaTime * SPEED;
@@ -40,5 +58,19 @@ public class CamController : MonoBehaviour
         {
             Camera.main.transform.position += Camera.main.transform.forward * Time.deltaTime * SPEED;
         }
+
+        // Make the camera look at the target position
+        if (isFollowing)
+            targetPosition = target.transform.position;
+        else
+            targetPosition = spawnArea.transform.position;
+
+        Camera.main.transform.LookAt(targetPosition);
+    }
+
+    private void ResetCamera()
+    {
+        Camera.main.transform.position = initialPosition;
+        Camera.main.transform.LookAt(spawnArea.transform.position);
     }
 }

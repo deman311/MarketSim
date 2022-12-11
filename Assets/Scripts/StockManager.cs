@@ -6,7 +6,7 @@ public class StockManager : MonoBehaviour
 {
     int maxLevel = 1;
     public readonly static List<string> prodNames = new List<string> { "Apple", "Shirt", "Phone", "GPU", "Rolex" };
-    Dictionary<string, float> productToProduction = new Dictionary<string, float>
+    public Dictionary<string, float> productToProduction = new Dictionary<string, float>
     {
         {prodNames[0], 1 },     // 1 - 20
         {prodNames[1], 10 },    // 10 - 100
@@ -63,7 +63,7 @@ public class StockManager : MonoBehaviour
         float avg = 0;
         int amount = 0;
 
-        foreach (StoreController sc in GameObject.Find("Stores").GetComponentsInChildren<StoreController>())
+        foreach (var sc in GameObject.Find("Stores").GetComponentsInChildren<StoreController>())
             if (sc.GetProductPrices().TryGetValue(prodName, out float value))
             {
                 avg += value;

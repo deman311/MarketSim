@@ -34,7 +34,7 @@ public class CustomerController : MonoBehaviour
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
             agent.SetDestination(storePath[0].transform.position);
-        Debug.Log(agent.hasPath);
+
         //PrintList();
     }
 
@@ -63,19 +63,18 @@ public class CustomerController : MonoBehaviour
         }
     }
 
-    private void SetMood(int modID)
+    private void SetMood(int moodID)
     {
-        switch (modID)
+        Dictionary<int, Texture> moodTextures = new Dictionary<int, Texture>
         {
-            case HAPPY:
-                mood.texture = Resources.Load("Icons/happy") as Texture;
-                break;
-            case SAD:
-                mood.texture = Resources.Load("Icons/sad") as Texture;
-                break;
-        }
+            { HAPPY, Resources.Load("Icons/happy") as Texture },
+            { SAD, Resources.Load("Icons/sad") as Texture }
+        };
+
+        mood.texture = moodTextures[moodID];
         mood.gameObject.SetActive(true);
     }
+
 
     private void HandleCanvas()
     {
