@@ -36,6 +36,7 @@ public class StoreController : MonoBehaviour
 
     void Awake()
     {
+        UpdateModel();
         balance = sp.SHOP_STARTING_BALANCE;
         maxStock = sp.STOCK_LEVEL_ONE;
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
@@ -67,6 +68,26 @@ public class StoreController : MonoBehaviour
             Transaction(cc);
     }
 
+    private void UpdateModel()
+    {
+        GameObject model = null;
+        switch (level)
+        {
+            case 1:
+                model = Instantiate(Resources.Load("Stand"), transform.position, transform.rotation, transform) as GameObject;
+                break;
+            case 2:
+                model = Instantiate(Resources.Load("JapStore"), transform.position, transform.rotation, transform) as GameObject;
+                break;
+            case 3:
+                model = Instantiate(Resources.Load("Arcade"), transform.position, transform.rotation, transform) as GameObject;
+                break;
+        }
+
+        model.transform.position -= Vector3.up * 0.5f;
+        GetComponentInChildren<Canvas>().gameObject.transform.localPosition += Vector3.up * level;
+    }
+
     private void UpdateUIPrices()
     {
         apple.text = products.TryGetValue("Apple", out Product val) ? "" + val.amount : "0";
@@ -84,18 +105,17 @@ public class StoreController : MonoBehaviour
     public void LevelUp()
     {
         level++;
-        transform.localScale *= 1.2f;
+        UpdateModel();
+
         if (level == 2)
         {
-            GetComponent<Renderer>().material.color = Color.green;
             phone.transform.parent.gameObject.SetActive(true);
             gpu.transform.parent.gameObject.SetActive(true);
             maxStock = sp.STOCK_LEVEL_TWO;
             balance -= sp.UPGRADE_LEVEL_TWO_PRICE;    
         }
-        else
+        else if (level == 3)
         {
-            GetComponent<Renderer>().material.color = Color.red;
             rolex.transform.parent.gameObject.SetActive(true);
             maxStock = sp.STOCK_LEVEL_THREE;
             balance -= sp.UPGRADE_LEVEL_THREE_PRICE;

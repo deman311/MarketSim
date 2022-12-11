@@ -4,22 +4,22 @@ using UnityEngine;
 
 public class CustomerManager : MonoBehaviour
 {
-    CustomerParams cp = new CustomerParams();
-/*    [SerializeField] int MAX_COUNT = 5;
-    [SerializeField] int MAX_TTL = 3;*/
-    [SerializeField] GameObject cfolder;    // customer folder
+    [SerializeField] GameObject customerFolder;
+    [SerializeField] GameObject spawnArea;
+
+    readonly CustomerParams cp = new CustomerParams();
+
     static int currentCount = 0;
     static int _maxTTL;
 
     static object _lock = new object();
 
-    [SerializeField] GameObject ground;
     private Bounds bounds;
 
     void Start()
     {
         _maxTTL = cp.TTL;
-        bounds = ground.GetComponent<Renderer>().bounds;
+        bounds = spawnArea.GetComponent<Renderer>().bounds;
     }
 
     void Update()
@@ -66,7 +66,7 @@ public class CustomerManager : MonoBehaviour
         {
             GameObject customer = Instantiate<GameObject>(Resources.Load<GameObject>("Customer"));
             customer.transform.position = GetRandomPositionInBounds();
-            customer.transform.SetParent(cfolder.transform);
+            customer.transform.SetParent(customerFolder.transform);
             currentCount++;
         }
     }
