@@ -27,7 +27,7 @@ public class StoreManager : MonoBehaviour
             rand = Random.Range(1, markers.Count);
 
             GameObject store = Instantiate<GameObject>(Resources.Load<GameObject>("Store"),
-                markers[rand].transform.position, markers[rand].transform.rotation);
+               markers[rand].transform.position, markers[rand].transform.rotation);
             store.transform.SetParent(storeFolder.transform);
             markers.RemoveAt(rand);
             currentStoreCount++;

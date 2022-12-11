@@ -34,7 +34,7 @@ public class CustomerController : MonoBehaviour
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
             agent.SetDestination(storePath[0].transform.position);
-
+        Debug.Log(agent.hasPath);
         //PrintList();
     }
 
@@ -42,7 +42,7 @@ public class CustomerController : MonoBehaviour
     {
         HandleCanvas();
 
-        if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
+        if (storePath.Count > 0 && !isSelling && !isDone && agent.hasPath && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
         {
             isSelling = true;
             agent.isStopped = true;
