@@ -85,7 +85,7 @@ public class StoreController : MonoBehaviour
         }
 
         model.transform.position -= Vector3.up * 0.5f;
-        GetComponentInChildren<Canvas>().gameObject.transform.localPosition += Vector3.up * level;
+        GetComponentInChildren<Canvas>().gameObject.transform.localPosition += Vector3.up * level * 1.5f;
     }
 
     private void UpdateUIPrices()
@@ -305,7 +305,7 @@ public class StoreController : MonoBehaviour
                 //existingProd.Invest_tend += sold;
                 product.amount -= sold;
 
-                if (!hasBoughtSomething)
+                if (!hasBoughtSomething && sold != 0)
                     hasBoughtSomething = true;
 
                 balance += sold * existingProd.Price;

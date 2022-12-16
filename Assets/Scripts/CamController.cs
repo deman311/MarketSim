@@ -60,7 +60,7 @@ public class CamController : MonoBehaviour
         }
 
         // Make the camera look at the target position
-        if (isFollowing)
+        if (isFollowing && target != null)
             targetPosition = target.transform.position;
         else
             targetPosition = spawnArea.transform.position;

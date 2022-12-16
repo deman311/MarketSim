@@ -3,7 +3,27 @@ guid: 957d54baeb75740429b9dd223d912347
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bus
+    second: {fileID: 2100000, guid: 857a12dd2603d25408392dea4eab2992, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bus_Wheel
+    second: {fileID: 2100000, guid: 84536599d783b374d84fd01a9115b8c8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: metal
+    second: {fileID: 2100000, guid: 0dbf132c6d03d9e41ad0c0cdc88e8b3b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: susp
+    second: {fileID: 2100000, guid: c8f7df823c180fd439900faa637bda38, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
