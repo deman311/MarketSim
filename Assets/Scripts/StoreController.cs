@@ -32,6 +32,12 @@ public class StoreController : MonoBehaviour
         { StockManager.prodNames[4], 1 }
     };
 
+    internal void SetLevel(int level)
+    {
+        this.level = level;
+        UpdateModel();
+    }
+
     [SerializeField] TextMeshProUGUI cash, apple, shirt, phone, gpu, rolex; // UI Amounts
 
     void Awake()
@@ -70,9 +76,18 @@ public class StoreController : MonoBehaviour
 
     private void UpdateModel()
     {
+        //delete old model
+        foreach (var g in GetComponentsInChildren<Transform>())
+            if (g.tag == "StoreModel")
+                Destroy(g.gameObject);
+
         GameObject model = null;
         switch (level)
         {
+            case 0:
+                model = Instantiate(Resources.Load("Trash"), transform.position, transform.rotation, transform) as GameObject;
+                uiBalance.enabled = false;
+                break;
             case 1:
                 model = Instantiate(Resources.Load("Stand"), transform.position, transform.rotation, transform) as GameObject;
                 break;
@@ -84,7 +99,6 @@ public class StoreController : MonoBehaviour
                 break;
         }
 
-        model.transform.position -= Vector3.up * 0.5f;
         GetComponentInChildren<Canvas>().gameObject.transform.localPosition += Vector3.up * level * 1.5f;
     }
 
@@ -112,7 +126,7 @@ public class StoreController : MonoBehaviour
             phone.transform.parent.gameObject.SetActive(true);
             gpu.transform.parent.gameObject.SetActive(true);
             maxStock = sp.STOCK_LEVEL_TWO;
-            balance -= sp.UPGRADE_LEVEL_TWO_PRICE;    
+            balance -= sp.UPGRADE_LEVEL_TWO_PRICE;
         }
         else if (level == 3)
         {
@@ -300,10 +314,10 @@ public class StoreController : MonoBehaviour
 
             if (existingProd.Price <= product.Price)
             {
-                existingProd.Price += price_delta * sold;
+                existingProd.Price += price_delta * sold;   // shops more interested in selling
                 existingProd.amount -= sold;
-                //existingProd.Invest_tend += sold;
                 product.amount -= sold;
+                product.Price -= price_delta * sold;    // customers less interested in buying
 
                 if (!hasBoughtSomething && sold != 0)
                     hasBoughtSomething = true;
@@ -321,7 +335,7 @@ public class StoreController : MonoBehaviour
                 // Customer changes
                 product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
             }
-            existingProd.Invest_tend += product.amount;
+            existingProd.Invest_tend += product.amount / 2 + 1;
         }
         else // product does not exist in store
         {

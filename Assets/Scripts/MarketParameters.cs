@@ -28,7 +28,7 @@ public class StoreParams
     public int STOCK_LEVEL_TWO = 35;
     public int STOCK_LEVEL_THREE = 50;
     public int UPGRADE_LEVEL_TWO_PRICE = 1200;
-    public int UPGRADE_LEVEL_THREE_PRICE = 15000;
+    public int UPGRADE_LEVEL_THREE_PRICE = 8000;
     public int PRICE_OFFSET = 15;
     public float PRICE_DELTA_BASE = 0.05f;
     public float PRICE_DELTA_UPPER_BOUND = 0.05f;

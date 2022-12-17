@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Store
+  - StoreModel
   layers:
   - Default
   - TransparentFX

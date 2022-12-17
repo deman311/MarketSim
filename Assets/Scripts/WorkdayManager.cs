@@ -7,7 +7,12 @@ public class WorkdayManager : MonoBehaviour
     [SerializeField] GameObject customersFolder;
     [SerializeField] GameObject storesFolder;
 
-    [SerializeField] int TAX = 100;
+    StoreParams sp;
+
+    void Awake()
+    {
+        sp = new StoreParams();    
+    }
 
     void Update()
     {
@@ -20,10 +25,13 @@ public class WorkdayManager : MonoBehaviour
 
     bool CheckIfAllDone()
     {
+        if (customersFolder.GetComponentsInChildren<CustomerController>().Length == 0)
+            return false;
+
         bool alldone = true;
 
-        foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
-            if (!c.IsIdle())
+        foreach (CustomerController customer in customersFolder.GetComponentsInChildren<CustomerController>())
+            if (!customer.IsIdle())
                 alldone = false;
 
         return alldone;
@@ -31,14 +39,14 @@ public class WorkdayManager : MonoBehaviour
 
     void FinishWorkDay()
     {
-        foreach (StoreController s in storesFolder.GetComponentsInChildren<StoreController>())
+        foreach (StoreController store in storesFolder.GetComponentsInChildren<StoreController>())
         {
-            s.Tax(TAX);
+            store.Tax(sp.BASE_TAX);
             // check-decide if to upgrade
-            if (s.GetLevel() == 1 && s.GetBalance() > 1200 && Random.Range(0, 2) == 0)
-                s.LevelUp();
-            else if (s.GetLevel() == 2 && s.GetBalance() > 10000 && Random.Range(0, 2) == 0)
-                s.LevelUp();
+            if (store.GetLevel() == 1 && store.GetBalance() > 2000 && Random.Range(0, 2) == 0)
+                store.LevelUp();
+            else if (store.GetLevel() == 2 && store.GetBalance() > 10000 && Random.Range(0, 2) == 0)
+                store.LevelUp();
         }
         foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
         {
@@ -48,13 +56,13 @@ public class WorkdayManager : MonoBehaviour
 
     void StartWorkDay()
     {
-        foreach (StoreController s in storesFolder.GetComponentsInChildren<StoreController>())
-            s.Restock();
+        foreach (StoreController store in storesFolder.GetComponentsInChildren<StoreController>())
+            store.Restock();
 
-        foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
+        foreach (CustomerController customer in customersFolder.GetComponentsInChildren<CustomerController>())
         {
-            if (c.isActiveAndEnabled && !c.isKillable)
-                c.StartNewStartingPointAndPath();
+            if (customer.isActiveAndEnabled && !customer.isKillable)
+                customer.StartNewStartingPointAndPath();
         }
     }
 }

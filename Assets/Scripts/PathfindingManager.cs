@@ -35,7 +35,8 @@ public class PathfindingManager : MonoBehaviour
         lock (_StoreLock)
         {
             stores.Remove(store);
-            store.SetActive(false);
+            //store.SetActive(false);
+            store.GetComponent<StoreController>().SetLevel(0);
         }
     }
 
