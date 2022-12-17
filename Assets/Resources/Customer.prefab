@@ -507,10 +507,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797f9ac9b10634ef99241fc121cdb3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ttl: 3
-  isKillable: 0
   TMP_ttl: {fileID: 5008212225462850769}
   mood: {fileID: 7077837119625521013}
+  ttl: 3
+  isKillable: 0
 --- !u!195 &8140216324289934010
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -530,6 +530,6 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1.9999999
-  m_BaseOffset: 0.99999994
+  m_BaseOffset: 0.7
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0

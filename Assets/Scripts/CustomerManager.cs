@@ -64,9 +64,7 @@ public class CustomerManager : MonoBehaviour
     {
         for (int i = 0; cp.CUSTOMER_COUNT > currentCount; i++)
         {
-            GameObject customer = Instantiate<GameObject>(Resources.Load<GameObject>("Customer"));
-            customer.transform.position = GetRandomPositionInBounds();
-            customer.transform.SetParent(customerFolder.transform);
+            GameObject customer = Instantiate<GameObject>(Resources.Load<GameObject>("Customer"), GetRandomPositionInBounds(), Quaternion.identity, customerFolder.transform);
             currentCount++;
         }
     }
@@ -75,7 +73,7 @@ public class CustomerManager : MonoBehaviour
     {
         return new Vector3(
                     Random.Range(bounds.min.x, bounds.max.x),
-                    bounds.max.y,
+                    0,
                     Random.Range(bounds.min.z, bounds.max.z)
                     );
     }

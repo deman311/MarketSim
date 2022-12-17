@@ -30,6 +30,7 @@ public class CustomerController : MonoBehaviour
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
         InitShoppingList(cp.ALPHA);
+        gameObject.GetComponentsInChildren<Renderer>()[1].material.color = new Color(Random.value, Random.value, Random.value); // set random shirt color
 
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
