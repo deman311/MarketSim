@@ -314,6 +314,9 @@ public class StoreController : MonoBehaviour
 
             if (existingProd.Price <= product.Price)
             {
+                balance += sold * existingProd.Price;
+                currentStock -= sold;
+
                 existingProd.Price += price_delta * sold;   // shops more interested in selling
                 existingProd.amount -= sold;
                 product.amount -= sold;
@@ -322,8 +325,7 @@ public class StoreController : MonoBehaviour
                 if (!hasBoughtSomething && sold != 0)
                     hasBoughtSomething = true;
 
-                balance += sold * existingProd.Price;
-                currentStock -= sold;
+                
             }
             else // price too high
             {

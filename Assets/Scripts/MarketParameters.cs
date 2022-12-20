@@ -10,7 +10,7 @@ public class CustomerParams
 {
     public int CUSTOMER_COUNT = 30;
     public int SHOPPING_LIST_PRODUCT_AMOUNT_MAX = 5;
-    public int SHOPPING_LIST_PRODUCT_AMOUNT_MIN = 5;
+    public int SHOPPING_LIST_PRODUCT_AMOUNT_MIN = 1;
     public int TTL = 3;
     public int ALPHA = 15;
     public float CUSTOMER_SHOP_PROXIMITY = 0.02f;
