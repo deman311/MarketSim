@@ -20,12 +20,7 @@ public class CustomerManager : MonoBehaviour
     {
         _maxTTL = cp.TTL;
         bounds = spawnArea.GetComponent<Renderer>().bounds;
-    }
-
-    void Update()
-    {
-        if (currentCount < cp.CUSTOMER_COUNT)
-            Spawn();
+        Spawn(true);
     }
 
     public static void KillMe(CustomerController cc)
@@ -40,6 +35,11 @@ public class CustomerManager : MonoBehaviour
     public static int GetMaxTTL()
     {
         return _maxTTL;
+    }
+
+    public int GetCustomerCount()
+    {
+        return currentCount;
     }
 
     public float GetAveragePrice(string prodName)
@@ -60,12 +60,15 @@ public class CustomerManager : MonoBehaviour
         return avg / amount;
     }
 
-    private void Spawn()
+    public void Spawn(bool firstDay = false)
     {
-        for (int i = 0; cp.CUSTOMER_COUNT > currentCount; i++)
+        for (int i = currentCount; i < cp.CUSTOMER_COUNT; i++)
         {
-            GameObject customer = Instantiate<GameObject>(Resources.Load<GameObject>("Customer"), GetRandomPositionInBounds(), Quaternion.identity, customerFolder.transform);
-            currentCount++;
+            if (firstDay || Random.Range(0, 2) == 0)    // 50% to spawn a new customer
+            {
+                GameObject customer = Instantiate<GameObject>(Resources.Load<GameObject>("Customer"), GetRandomPositionInBounds(), Quaternion.identity, customerFolder.transform);
+                currentCount++;
+            }
         }
     }
 

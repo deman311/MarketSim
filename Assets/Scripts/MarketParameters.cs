@@ -8,7 +8,7 @@ using UnityEngine;
 /*Customer Params*/
 public class CustomerParams
 {
-    public int CUSTOMER_COUNT = 20;
+    public int CUSTOMER_COUNT = 30;
     public int SHOPPING_LIST_PRODUCT_AMOUNT_MAX = 5;
     public int SHOPPING_LIST_PRODUCT_AMOUNT_MIN = 5;
     public int TTL = 3;

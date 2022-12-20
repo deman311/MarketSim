@@ -51,6 +51,9 @@ public class StatisticsController : MonoBehaviour
         {
             sb.Append(kvp.Key + ": " + (kvp.Value / stores.Count) + "\n");
         }
+
+        var cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
+        sb.Append("Customer Count: " + cm.GetCustomerCount());
         return sb.ToString();
     }
 }

@@ -102,7 +102,7 @@ public class CustomerController : MonoBehaviour
         isDone = false;
         isIdle = false;
 
-        if (storePath.Count > 0)
+        if (storePath.Count > 0 && agent != null)
             agent.SetDestination(storePath[0].transform.position);
     }
 

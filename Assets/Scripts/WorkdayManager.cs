@@ -52,6 +52,8 @@ public class WorkdayManager : MonoBehaviour
         {
             c.FinishDay();
         }
+
+        GameObject.Find("SimulationController").GetComponent<CustomerManager>().Spawn();
     }
 
     void StartWorkDay()
