@@ -165,7 +165,7 @@ public class CustomerController : MonoBehaviour
     /// </summary>
     private void InitShoppingList(int alpha)
     {
-        List<string> buylist = sm.BuyList(sm.GetMaxLevel());
+        List<string> buylist = sm.GetBuyList(sm.GetMaxLevel());
         foreach (string prodName in buylist)
         {
             if (Random.Range(0, 100) < sm.GetScarsityOfProduct(prodName)) // Precentage for each product to spawn, +1 because exclusive

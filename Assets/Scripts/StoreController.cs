@@ -182,7 +182,7 @@ public class StoreController : MonoBehaviour
 
     public void Restock()
     {
-        foreach (string prodName in sm.BuyList(level))
+        foreach (string prodName in sm.GetBuyList(level))
             BuyProduct(new Product(prodName, GetRestockAmount(prodName)));
     }
 
@@ -259,7 +259,7 @@ public class StoreController : MonoBehaviour
 
     void InitPricesAndIT()
     {
-        foreach (string prodName in sm.BuyList(level))
+        foreach (string prodName in sm.GetBuyList(level))
             BuyProduct(new Product(prodName, GetRestockAmount(prodName)));
     }
 
@@ -332,7 +332,6 @@ public class StoreController : MonoBehaviour
                 // Store changes
                 float bankruptPanic = Mathf.Clamp(existingProd.Price / (balance > 0 ? balance : 1), sp.BANKRUPT_LOWER_BOUND, sp.BANKRUPT_UPPER_BOUND * existingProd.Price); // see MarketParams for further info
                 existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (20% to epsilon)
-                existingProd.Invest_tend -= 1;
 
                 // Customer changes
                 product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);

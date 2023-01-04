@@ -92,7 +92,7 @@ public class StockManager : MonoBehaviour
         return productToMaxPrice[prodName];
     }
 
-    public List<string> BuyList(int level)
+    public List<string> GetBuyList(int level)
     {
         if (maxLevel < level)
             maxLevel = level;

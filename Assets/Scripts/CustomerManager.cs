@@ -10,15 +10,15 @@ public class CustomerManager : MonoBehaviour
     readonly CustomerParams cp = new CustomerParams();
 
     static int currentCount = 0;
-    static int _maxTTL;
+    static int maxTTL;
 
-    static object _lock = new object();
+    static readonly object _lock = new object();
 
     private Bounds bounds;
 
     void Start()
     {
-        _maxTTL = cp.TTL;
+        maxTTL = cp.TTL;
         bounds = spawnArea.GetComponent<Renderer>().bounds;
         Spawn(true);
     }
@@ -34,7 +34,7 @@ public class CustomerManager : MonoBehaviour
 
     public static int GetMaxTTL()
     {
-        return _maxTTL;
+        return maxTTL;
     }
 
     public int GetCustomerCount()
