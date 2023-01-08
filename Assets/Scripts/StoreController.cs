@@ -84,17 +84,21 @@ public class StoreController : MonoBehaviour
                 break;
             case 1:
                 model = Instantiate(Resources.Load("Stand"), transform.position, transform.rotation, transform) as GameObject;
+                model.transform.localPosition = new Vector3(0, 0.3f);
                 uiBalance.enabled = true;
                 break;
             case 2:
                 model = Instantiate(Resources.Load("JapStore"), transform.position, transform.rotation, transform) as GameObject;
+                model.transform.localPosition = new Vector3(0, -0.15f);
                 break;
             case 3:
                 model = Instantiate(Resources.Load("Arcade"), transform.position, transform.rotation, transform) as GameObject;
+                model.transform.localPosition = new Vector3(0, -0.2f);
                 break;
         }
 
-        GetComponentInChildren<Canvas>().gameObject.transform.localPosition = Vector3.up * level * level;
+        GetComponentInChildren<Canvas>().gameObject.transform.localPosition = Vector3.up * level * level *
+            (level < 3 ? 2 : 1);
     }
 
     private void UpdateUIPrices()
@@ -216,13 +220,13 @@ public class StoreController : MonoBehaviour
             {
                 balance += sp.UPGRADE_LEVEL_TWO_PRICE / 2f;
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
-                SetLevel(level--);
+                SetLevel(--level);
             }
             else if (level == 3)
             {
                 balance += sp.UPGRADE_LEVEL_THREE_PRICE / 2f;
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
-                SetLevel(level--);
+                SetLevel(--level);
             }
         }
     }
