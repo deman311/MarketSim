@@ -27,7 +27,7 @@ public class StoreManager : MonoBehaviour
             {
                 stores[i].SetLevel(1);
                 stores[i].Awake();
-                GameObject.Find("SimulationControllers").GetComponent<PathfindingManager>().SafeAdd(stores[i].gameObject);
+                GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeAdd(stores[i].gameObject);
             }
         }
     }

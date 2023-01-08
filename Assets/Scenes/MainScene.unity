@@ -272,6 +272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   markersFolder: {fileID: 835649247}
+  storeFolder: {fileID: 1518328903}
 --- !u!114 &377717670
 MonoBehaviour:
   m_ObjectHideFlags: 0

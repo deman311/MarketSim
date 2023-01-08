@@ -42,7 +42,7 @@ public class WorkdayManager : MonoBehaviour
         foreach (StoreController store in storesFolder.GetComponentsInChildren<StoreController>())
         {
             if (store.GetLevel() == 0) // don't update bankrupt stores.
-                return;
+                continue;
 
             store.Tax(sp.BASE_TAX);
             // check-decide if to upgrade
@@ -56,14 +56,15 @@ public class WorkdayManager : MonoBehaviour
             c.FinishDay();
         }
 
-        GameObject.Find("SimulationController").GetComponent<CustomerManager>().Spawn();
+        GameObject.Find("SimulationController").GetComponent<CustomerManager>().CheckSpawn();
+        GameObject.Find("SimulationController").GetComponent<StoreManager>().CheckSpawn();
     }
 
     void StartWorkDay()
     {
         foreach (StoreController store in storesFolder.GetComponentsInChildren<StoreController>())
             if (store.GetLevel() == 0)
-                return;
+                continue;
             else
                 store.Restock();
 

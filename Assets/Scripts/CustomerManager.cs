@@ -20,7 +20,7 @@ public class CustomerManager : MonoBehaviour
     {
         maxTTL = cp.TTL;
         bounds = spawnArea.GetComponent<Renderer>().bounds;
-        Spawn(firstDay: true);
+        CheckSpawn(firstDay: true);
     }
 
     public static void KillMe(CustomerController cc)
@@ -60,7 +60,7 @@ public class CustomerManager : MonoBehaviour
         return avg / amount;
     }
 
-    public void Spawn(bool firstDay = false)
+    public void CheckSpawn(bool firstDay = false)
     {
         for (int i = currentCount; i < cp.CUSTOMER_COUNT; i++)
         {

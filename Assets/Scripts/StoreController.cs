@@ -94,7 +94,7 @@ public class StoreController : MonoBehaviour
                 break;
         }
 
-        GetComponentInChildren<Canvas>().gameObject.transform.localPosition = Vector3.up * level * 1.5f;
+        GetComponentInChildren<Canvas>().gameObject.transform.localPosition = Vector3.up * level * level;
     }
 
     private void UpdateUIPrices()
