@@ -8,6 +8,7 @@ using UnityEngine;
 public class StoreManager : MonoBehaviour
 {
     [SerializeField] GameObject markersFolder;
+    [SerializeField] GameObject storeFolder;
     readonly StoreParams sp = new StoreParams();
 
     private int currentStoreCount = 0;
@@ -17,12 +18,26 @@ public class StoreManager : MonoBehaviour
         SpawnStores();
     }
 
+    public void CheckSpawn()
+    {
+        StoreController[] stores = storeFolder.GetComponentsInChildren<StoreController>();
+        for (int i = 0; i < stores.Length; i++)
+        {
+            if (stores[i].GetLevel() == 0 && Random.Range(0, 10) < 3)
+            {
+                stores[i].SetLevel(1);
+                stores[i].Awake();
+                GameObject.Find("SimulationControllers").GetComponent<PathfindingManager>().SafeAdd(stores[i].gameObject);
+            }
+        }
+    }
+
     private void SpawnStores()
     {
         GameObject storeFolder = GameObject.Find("Stores");
         List<Transform> markers = markersFolder.GetComponentsInChildren<Transform>().ToList();
         int rand;
-        for (int i = 0; i < sp.MAX_SHOP_COUNT; i++)
+        for (int i = 0; i < sp.MAX_STORE_COUNT; i++)
         {
             rand = Random.Range(1, markers.Count);
 

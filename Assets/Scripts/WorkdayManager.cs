@@ -41,12 +41,15 @@ public class WorkdayManager : MonoBehaviour
     {
         foreach (StoreController store in storesFolder.GetComponentsInChildren<StoreController>())
         {
+            if (store.GetLevel() == 0) // don't update bankrupt stores.
+                return;
+
             store.Tax(sp.BASE_TAX);
             // check-decide if to upgrade
             if (store.GetLevel() == 1 && store.GetBalance() > 2000 && Random.Range(0, 2) == 0)
-                store.LevelUp();
+                store.SetLevel(2);
             else if (store.GetLevel() == 2 && store.GetBalance() > 10000 && Random.Range(0, 2) == 0)
-                store.LevelUp();
+                store.SetLevel(3);
         }
         foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
         {
@@ -59,7 +62,10 @@ public class WorkdayManager : MonoBehaviour
     void StartWorkDay()
     {
         foreach (StoreController store in storesFolder.GetComponentsInChildren<StoreController>())
-            store.Restock();
+            if (store.GetLevel() == 0)
+                return;
+            else
+                store.Restock();
 
         foreach (CustomerController customer in customersFolder.GetComponentsInChildren<CustomerController>())
         {

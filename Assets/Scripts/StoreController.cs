@@ -32,18 +32,12 @@ public class StoreController : MonoBehaviour
         { StockManager.prodNames[4], 1 }
     };
 
-    internal void SetLevel(int level)
-    {
-        this.level = level;
-        UpdateModel();
-    }
-
     [SerializeField] TextMeshProUGUI cash, apple, shirt, phone, gpu, rolex; // UI Amounts
 
-    void Awake()
+    public void Awake()
     {
         UpdateModel();
-        balance = sp.SHOP_STARTING_BALANCE;
+        balance = sp.STORE_STARTING_BALANCE;
         maxStock = sp.STOCK_LEVEL_ONE;
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         InitPricesAndIT();
@@ -90,6 +84,7 @@ public class StoreController : MonoBehaviour
                 break;
             case 1:
                 model = Instantiate(Resources.Load("Stand"), transform.position, transform.rotation, transform) as GameObject;
+                uiBalance.enabled = true;
                 break;
             case 2:
                 model = Instantiate(Resources.Load("JapStore"), transform.position, transform.rotation, transform) as GameObject;
@@ -99,7 +94,7 @@ public class StoreController : MonoBehaviour
                 break;
         }
 
-        GetComponentInChildren<Canvas>().gameObject.transform.localPosition += Vector3.up * level * 1.5f;
+        GetComponentInChildren<Canvas>().gameObject.transform.localPosition = Vector3.up * level * 1.5f;
     }
 
     private void UpdateUIPrices()
@@ -116,9 +111,9 @@ public class StoreController : MonoBehaviour
         return balance;
     }
 
-    public void LevelUp()
+    public void SetLevel(int level)
     {
-        level++;
+        this.level = level;
         UpdateModel();
 
         if (level == 2)
@@ -214,7 +209,30 @@ public class StoreController : MonoBehaviour
         balance -= finalTax;
 
         if (balance < 0)
-            GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
+        {
+            if (level == 1)
+                GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
+            else if (level == 2)
+            {
+                balance += sp.UPGRADE_LEVEL_TWO_PRICE / 2f;
+                products.ToList().ForEach(kvp => kvp.Value.amount = 0);
+                SetLevel(level--);
+            }
+            else if (level == 3)
+            {
+                balance += sp.UPGRADE_LEVEL_THREE_PRICE / 2f;
+                products.ToList().ForEach(kvp => kvp.Value.amount = 0);
+                SetLevel(level--);
+            }
+        }
+    }
+
+    public float GetTotalTax()
+    {
+        int finalTax = sp.BASE_TAX * level * level;
+        foreach (Product product in products.Values.Where(p => p.amount > 0))
+            finalTax += sm.GetProductTax(product.name) * product.amount;
+        return finalTax;
     }
 
     public void Transaction(CustomerController cc)
@@ -330,7 +348,8 @@ public class StoreController : MonoBehaviour
             else // price too high
             {
                 // Store changes
-                float bankruptPanic = Mathf.Clamp(existingProd.Price / (balance > 0 ? balance : 1), sp.BANKRUPT_LOWER_BOUND, sp.BANKRUPT_UPPER_BOUND * existingProd.Price); // see MarketParams for further info
+                float bankruptPanic = Mathf.Clamp(existingProd.Price / (balance - GetTotalTax() > 0 ? balance : 1),
+                    sp.BANKRUPT_LOWER_BOUND, sp.BANKRUPT_UPPER_BOUND * existingProd.Price); // see MarketParams for further info
                 existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (20% to epsilon)
 
                 // Customer changes

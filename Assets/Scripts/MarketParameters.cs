@@ -21,8 +21,8 @@ public class CustomerParams
 /*Store Params*/
 public class StoreParams
 {
-    public int MAX_SHOP_COUNT = 8;
-    public int SHOP_STARTING_BALANCE = 250;
+    public int MAX_STORE_COUNT = 8;
+    public int STORE_STARTING_BALANCE = 250;
     public int BASE_TAX = 150;
     public int STOCK_LEVEL_ONE = 20;
     public int STOCK_LEVEL_TWO = 35;

@@ -20,7 +20,7 @@ public class CustomerManager : MonoBehaviour
     {
         maxTTL = cp.TTL;
         bounds = spawnArea.GetComponent<Renderer>().bounds;
-        Spawn(true);
+        Spawn(firstDay: true);
     }
 
     public static void KillMe(CustomerController cc)
