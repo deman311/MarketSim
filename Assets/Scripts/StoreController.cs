@@ -39,6 +39,7 @@ public class StoreController : MonoBehaviour
         UpdateModel();
         balance = sp.STORE_STARTING_BALANCE;
         maxStock = sp.STOCK_LEVEL_ONE;
+        currentStock = 0;
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         InitPricesAndIT();
         UpdateUIPrices(); // inital price set
@@ -115,23 +116,32 @@ public class StoreController : MonoBehaviour
         return balance;
     }
 
-    public void SetLevel(int level)
+    public void SetLevel(int level, bool upgrade=true)
     {
         this.level = level;
         UpdateModel();
-
-        if (level == 2)
+        if(level ==1)
+        {
+            phone.transform.parent.gameObject.SetActive(false);
+            gpu.transform.parent.gameObject.SetActive(false);
+            rolex.transform.parent.gameObject.SetActive(false);
+            maxStock = sp.STOCK_LEVEL_ONE;
+        }
+        else if (level == 2)
         {
             phone.transform.parent.gameObject.SetActive(true);
             gpu.transform.parent.gameObject.SetActive(true);
+            rolex.transform.parent.gameObject.SetActive(false);
             maxStock = sp.STOCK_LEVEL_TWO;
-            balance -= sp.UPGRADE_LEVEL_TWO_PRICE;
+            if(upgrade)
+                balance -= sp.UPGRADE_LEVEL_TWO_PRICE;
         }
         else if (level == 3)
         {
             rolex.transform.parent.gameObject.SetActive(true);
             maxStock = sp.STOCK_LEVEL_THREE;
-            balance -= sp.UPGRADE_LEVEL_THREE_PRICE;
+            if(upgrade)
+                balance -= sp.UPGRADE_LEVEL_THREE_PRICE;
         }
     }
 
@@ -181,8 +191,11 @@ public class StoreController : MonoBehaviour
 
     public void Restock()
     {
-        foreach (string prodName in sm.GetBuyList(level))
-            BuyProduct(new Product(prodName, GetRestockAmount(prodName)));
+        if (balance > 0)
+        {
+            foreach (string prodName in sm.GetBuyList(level))
+                BuyProduct(new Product(prodName, GetRestockAmount(prodName)));
+        }
     }
 
     private int GetRestockAmount(string prodName)
@@ -195,6 +208,7 @@ public class StoreController : MonoBehaviour
 
         if (products.TryGetValue(prodName, out Product p))
             return (int)Mathf.Round((float)p.Invest_tend / total_IT * (maxStock - currentStock));
+            
 
         return (int)Mathf.Round((float)Random.Range(1, 11) / total_IT * (maxStock - currentStock));
     }
@@ -215,7 +229,10 @@ public class StoreController : MonoBehaviour
         if (balance < 0)
         {
             if (level == 1)
+            {
+                products.ToList().ForEach(kvp => kvp.Value.amount = 0);
                 GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
+            }
             else if (level == 2)
             {
                 balance += sp.UPGRADE_LEVEL_TWO_PRICE / 2f;
@@ -228,6 +245,7 @@ public class StoreController : MonoBehaviour
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
                 SetLevel(--level);
             }
+            currentStock = 0;
         }
     }
 
@@ -283,6 +301,11 @@ public class StoreController : MonoBehaviour
     {
         foreach (string prodName in sm.GetBuyList(level))
             BuyProduct(new Product(prodName, GetRestockAmount(prodName)));
+    }
+
+    public Dictionary<string, Product> GetProducts()
+    {
+        return products;
     }
 
     /// <summary>
