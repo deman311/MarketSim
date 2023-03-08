@@ -285,6 +285,11 @@ public class StoreController : MonoBehaviour
             BuyProduct(new Product(prodName, GetRestockAmount(prodName)));
     }
 
+    public Dictionary<string, Product> GetProducts()
+    {
+        return products;
+    }
+
     /// <summary>
     /// Update balance and add new products to the list,
     /// if they don't exist initiallize them.

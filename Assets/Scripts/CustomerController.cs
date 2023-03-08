@@ -24,6 +24,10 @@ public class CustomerController : MonoBehaviour
     bool isSelling = false, isDone = false, isIdle = false;
     public bool isKillable = false;
 
+    // store visiting
+    List<StoreController> storeStack = new List<StoreController>();
+    bool isVisiting = true;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -45,9 +49,17 @@ public class CustomerController : MonoBehaviour
 
         if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
         {
-            isSelling = true;
-            agent.isStopped = true;
-            storePath[0].GetComponent<StoreController>().SafeEnqueue(this);
+            if (isVisiting)
+            {
+                storeStack.Add(storePath[0].GetComponent<StoreController>());
+            }
+            else
+            {
+                isSelling = true;
+                agent.isStopped = true;
+                isVisiting = true;
+                storePath[0].GetComponent<StoreController>().SafeEnqueue(this);
+            }
             if (storePath.Count > 1)
                 agent.SetDestination(storePath[1].transform.position);
             storePath.Remove(storePath[0]);
@@ -62,6 +74,40 @@ public class CustomerController : MonoBehaviour
             isIdle = true;
             //CustomerManager.KillMe(this);
         }
+
+        if (storeStack.Count == cp.VISIT_COUNT || (storePath.Count == 0 && storeStack.Count > 0))
+        {
+            CompareStores();
+        }
+    }
+
+    private void CompareStores()
+    {
+        Dictionary<StoreController, long> storeToScore = new Dictionary<StoreController, long>();
+        foreach (StoreController store in storeStack)
+        {
+            var storeProducts = store.GetProducts();
+            int score = 0;
+            foreach (Product cp in shoppingList)
+            {
+                if (storeProducts.TryGetValue(cp.name, out var sp))
+                {
+                    if (sp.Price <= cp.Price && sp.amount > 0)
+                        score += 1;
+                    else
+                        score -= 1;
+                }
+            }
+            storeToScore.Add(store, score);
+        }
+        var sorted = storeToScore.ToListPooled();
+        sorted.Sort((a, b) => a.Value.CompareTo(b.Value));
+        if (storePath.Count > 0)
+            storePath.Insert(0, sorted[0].Key.gameObject);
+        else
+            storePath.Add(sorted[0].Key.gameObject);
+        isVisiting = false;
+        storeStack.Clear();
     }
 
     private void SetMood(int moodID)
