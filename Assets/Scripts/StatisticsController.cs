@@ -8,7 +8,7 @@ public class StatisticsController : MonoBehaviour
 {
     TextMeshProUGUI mainText;
     private float timer = 0f;
-
+    public static int daysPassed = 0;
     void Start()
     {
         mainText = GetComponent<TextMeshProUGUI>();
@@ -54,6 +54,7 @@ public class StatisticsController : MonoBehaviour
 
         var cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
         sb.Append("Customer Count: " + cm.GetCustomerCount());
+        sb.Append("\nDays passed: " + daysPassed);
         return sb.ToString();
     }
 }

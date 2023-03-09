@@ -6,7 +6,6 @@ public class WorkdayManager : MonoBehaviour
 {
     [SerializeField] GameObject customersFolder;
     [SerializeField] GameObject storesFolder;
-
     StoreParams sp;
 
     void Awake()
@@ -58,6 +57,7 @@ public class WorkdayManager : MonoBehaviour
 
         GameObject.Find("SimulationController").GetComponent<CustomerManager>().CheckSpawn();
         GameObject.Find("SimulationController").GetComponent<StoreManager>().CheckSpawn();
+        StatisticsController.daysPassed++;
     }
 
     void StartWorkDay()
