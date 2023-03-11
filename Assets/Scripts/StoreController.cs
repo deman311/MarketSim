@@ -32,6 +32,8 @@ public class StoreController : MonoBehaviour
         { StockManager.prodNames[4], 1 }
     };
 
+    Dictionary<string, int> soldProducts = new Dictionary<string, int>();
+
     [SerializeField] TextMeshProUGUI cash, apple, shirt, phone, gpu, rolex; // UI Amounts
 
     public void Awake()
@@ -50,7 +52,7 @@ public class StoreController : MonoBehaviour
         //PrintShop();
     }
 
-    void Update()
+    public void Update()
     {
         timer += Time.deltaTime;
 
@@ -383,6 +385,9 @@ public class StoreController : MonoBehaviour
                 product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
             }
             existingProd.Invest_tend += product.amount / 2 + 1;
+            if(!soldProducts.TryAdd(product.name, sold))
+                soldProducts[product.name] += sold;
+            
         }
         else // product does not exist in store
         {
@@ -390,6 +395,18 @@ public class StoreController : MonoBehaviour
             if (existingProd != null)
                 existingProd.Invest_tend += product.amount / 2; // buy half of wanted
         }
+    }
+
+    public int[] GetSoldProducts()
+    {
+        int[] sold = soldProducts.Values.ToArray();
+        soldProducts.Clear();
+        return sold;
+    }
+
+    public int GetQueueSize()
+    {
+        return queue.Count;
     }
 
     public void OnDrawGizmosSelected()

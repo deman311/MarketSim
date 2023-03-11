@@ -23,17 +23,28 @@ public class CustomerController : MonoBehaviour
     NavMeshAgent agent;
     bool isSelling = false, isDone = false, isIdle = false;
     public bool isKillable = false;
-
+    bool isFictional = false;
     // store visiting
     List<StoreController> storeStack = new List<StoreController>();
     bool isVisiting = true;
 
+    public CustomerController(bool isFictional)
+    {
+        this.isFictional = isFictional;
+    }
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
         InitShoppingList(cp.ALPHA);
+
+        if (isFictional)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        agent = GetComponent<NavMeshAgent>();
         gameObject.GetComponentsInChildren<Renderer>()[1].material.color = new Color(Random.value, Random.value, Random.value); // set random shirt color
 
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
@@ -44,7 +55,7 @@ public class CustomerController : MonoBehaviour
     }
 
     void Update()
-    {
+    {       
         HandleCanvas();
 
         if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
