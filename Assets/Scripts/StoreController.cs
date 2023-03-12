@@ -18,7 +18,7 @@ public class StoreController : MonoBehaviour
     int currentStock = 0;
 
     float timer = 0f;
-    
+
     Dictionary<string, Product> products = new Dictionary<string, Product>();
     List<CustomerController> queue = new List<CustomerController>();
     public static object _QueueLock = new object();
@@ -118,11 +118,11 @@ public class StoreController : MonoBehaviour
         return balance;
     }
 
-    public void SetLevel(int level, bool upgrade=true)
+    public void SetLevel(int level, bool payFromBalance = true)
     {
         this.level = level;
         UpdateModel();
-        if(level ==1)
+        if (level == 1)
         {
             phone.transform.parent.gameObject.SetActive(false);
             gpu.transform.parent.gameObject.SetActive(false);
@@ -135,14 +135,14 @@ public class StoreController : MonoBehaviour
             gpu.transform.parent.gameObject.SetActive(true);
             rolex.transform.parent.gameObject.SetActive(false);
             maxStock = sp.STOCK_LEVEL_TWO;
-            if(upgrade)
+            if (payFromBalance)
                 balance -= sp.UPGRADE_LEVEL_TWO_PRICE;
         }
         else if (level == 3)
         {
             rolex.transform.parent.gameObject.SetActive(true);
             maxStock = sp.STOCK_LEVEL_THREE;
-            if(upgrade)
+            if (payFromBalance)
                 balance -= sp.UPGRADE_LEVEL_THREE_PRICE;
         }
     }
@@ -210,7 +210,7 @@ public class StoreController : MonoBehaviour
 
         if (products.TryGetValue(prodName, out Product p))
             return (int)Mathf.Round((float)p.Invest_tend / total_IT * (maxStock - currentStock));
-            
+
 
         return (int)Mathf.Round((float)Random.Range(1, 11) / total_IT * (maxStock - currentStock));
     }
@@ -281,7 +281,8 @@ public class StoreController : MonoBehaviour
                 prodToITbeta[p.name]++;
             }
 
-        cc.CompleteTransaction(hasBoughtSomething);
+        if (GameObject.Find("SimulationController").GetComponent<CustomerManager>() != null)
+            cc.CompleteTransaction(hasBoughtSomething);
     }
 
     public void RandomOffsetPrice(Product product, int alpha)
@@ -372,7 +373,7 @@ public class StoreController : MonoBehaviour
                 if (!hasBoughtSomething && sold != 0)
                     hasBoughtSomething = true;
 
-                
+
             }
             else // price too high
             {
@@ -385,9 +386,9 @@ public class StoreController : MonoBehaviour
                 product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
             }
             existingProd.Invest_tend += product.amount / 2 + 1;
-            if(!soldProducts.TryAdd(product.name, sold))
+            if (!soldProducts.TryAdd(product.name, sold))
                 soldProducts[product.name] += sold;
-            
+
         }
         else // product does not exist in store
         {
@@ -397,9 +398,9 @@ public class StoreController : MonoBehaviour
         }
     }
 
-    public int[] GetSoldProducts()
+    public List<float> GetSoldProducts()
     {
-        int[] sold = soldProducts.Values.ToArray();
+        List<float> sold = soldProducts.Values.Select(val => (float)val).ToList();
         soldProducts.Clear();
         return sold;
     }
@@ -412,5 +413,21 @@ public class StoreController : MonoBehaviour
     public void OnDrawGizmosSelected()
     {
         PrintShop();
+    }
+
+    // MLAgents logic
+    public void UpdateFromModelOutput(List<float> deltas)
+    {
+        for (int i = 0; i < products.Count; i++)
+        {
+            Product p = products.Values.ToList()[i];
+            p.Price += deltas[i];
+            p.Invest_tend += (int)deltas[i + 5];
+        }
+        float prob = deltas[10];
+        if (prob > 0.5)
+        {
+            SetLevel(++level, true);
+        }
     }
 }
