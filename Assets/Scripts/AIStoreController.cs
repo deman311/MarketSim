@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class AIStoreController : Agent
@@ -10,12 +12,15 @@ public class AIStoreController : Agent
     StoreController store;
     Teacher teacher;
     StockManager sm;
+    int step = 9;
+    bool sensorLock = false;
 
     private void Awake()
     {
         store = GetComponent<StoreController>();
         teacher = GameObject.Find("Academy").GetComponent<Teacher>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
+        store.isAI = true;
         store.Awake();
     }
 
@@ -24,7 +29,7 @@ public class AIStoreController : Agent
         store.Update();
     }
 
-    public async override void OnEpisodeBegin()
+    public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
 
@@ -34,20 +39,24 @@ public class AIStoreController : Agent
             {
                 var cc = teacher.GetACustomer();
                 store.SafeEnqueue(cc);
-                await Task.Run(() => { while (store.GetQueueSize() > 0) { } }); //Might not work, so if there is bug check this line
                 Destroy(cc);
-                Academy.Instance.EnvironmentStep();
             }
         }
-        EndEpisode();
+        //EndEpisode();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         base.CollectObservations(sensor);
 
+        List<float> sold = new List<float> { 0, 0, 0, 0, 0 };
+        for (int i = 0; i < store.GetSoldProducts().Count; i++)
+        {
+            sold[i] = store.GetSoldProducts()[i];
+        }
+
         // collect the total inputs from the store, 13 in total.
-        sensor.AddObservation(store.GetSoldProducts()); // 5
+        sensor.AddObservation(sold); // 5
         sensor.AddObservation(sm.GetAllAvgPrices()); // 5
         sensor.AddObservation(store.GetBalance());
         sensor.AddObservation(store.GetTotalTax());

@@ -1,7 +1,9 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMPro;
+using Unity.MLAgents;
 using Unity.VisualScripting;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -16,8 +18,9 @@ public class StoreController : MonoBehaviour
     float balance;
     int maxStock;
     int currentStock = 0;
-
+    int step = 0;
     float timer = 0f;
+    public bool isAI = false;
 
     Dictionary<string, Product> products = new Dictionary<string, Product>();
     List<CustomerController> queue = new List<CustomerController>();
@@ -32,7 +35,7 @@ public class StoreController : MonoBehaviour
         { StockManager.prodNames[4], 1 }
     };
 
-    Dictionary<string, int> soldProducts = new Dictionary<string, int>();
+    ConcurrentDictionary<string, int> soldProducts = new ConcurrentDictionary<string, int>();
 
     [SerializeField] TextMeshProUGUI cash, apple, shirt, phone, gpu, rolex; // UI Amounts
 
@@ -68,7 +71,14 @@ public class StoreController : MonoBehaviour
         uiBalance.transform.Rotate(new Vector3(0, 180, 0));
 
         if (SafeDequeue(out CustomerController cc))
+        {
             Transaction(cc);
+            if (isAI)
+            {
+                Academy.Instance.EnvironmentStep();
+                Debug.Log("current step " + ++step);
+            }
+        }
     }
 
     private void UpdateModel()
@@ -401,7 +411,7 @@ public class StoreController : MonoBehaviour
     public List<float> GetSoldProducts()
     {
         List<float> sold = soldProducts.Values.Select(val => (float)val).ToList();
-        soldProducts.Clear();
+        //soldProducts.Clear();
         return sold;
     }
 
