@@ -27,34 +27,43 @@ public class AIStoreController : Agent
     void Update()
     {
         store.Update();
+        if(store.step % 3 == 0)
+        {
+            RequestDecision();
+            if(store.step % 9 != 0)
+                store.isSelling = true;
+        }
+        if (store.step % 9 == 0)
+        {
+            store.step = 1;
+            store.isSelling = false;
+            EndEpisode();
+        }
     }
 
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
-
+        store.isSelling = true;
         for (int i = 0; i < 3; i++)
-        {
             for (int j = 0; j < 3; j++)
-            {
-                var cc = teacher.GetACustomer();
-                store.SafeEnqueue(cc);
-                Destroy(cc);
-            }
-        }
+                store.SafeEnqueue(teacher.GetACustomer());
+        //Destroy(cc);
+
+
         //EndEpisode();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         base.CollectObservations(sensor);
-
+        Debug.Log("Collecting observations on step " + store.step);
         List<float> sold = new List<float> { 0, 0, 0, 0, 0 };
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
         {
             sold[i] = store.GetSoldProducts()[i];
         }
-
+        store.ClearSoldProducts();
         // collect the total inputs from the store, 13 in total.
         sensor.AddObservation(sold); // 5
         sensor.AddObservation(sm.GetAllAvgPrices()); // 5
@@ -62,7 +71,7 @@ public class AIStoreController : Agent
         sensor.AddObservation(store.GetTotalTax());
         sensor.AddObservation(store.GetLevel());
 
-        Debug.Log("SIZE: " + sensor.ObservationSize());
+        //Debug.Log("SIZE: " + sensor.ObservationSize());
     }
 
     public override void OnActionReceived(ActionBuffers actions)

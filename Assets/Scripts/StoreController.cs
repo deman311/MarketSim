@@ -18,9 +18,10 @@ public class StoreController : MonoBehaviour
     float balance;
     int maxStock;
     int currentStock = 0;
-    int step = 0;
+    public int step = 1;
     float timer = 0f;
     public bool isAI = false;
+    public bool isSelling = true;
 
     Dictionary<string, Product> products = new Dictionary<string, Product>();
     List<CustomerController> queue = new List<CustomerController>();
@@ -57,6 +58,7 @@ public class StoreController : MonoBehaviour
 
     public void Update()
     {
+
         timer += Time.deltaTime;
 
         if (timer >= 0.5f)
@@ -70,13 +72,17 @@ public class StoreController : MonoBehaviour
         uiBalance.transform.LookAt(Camera.main.transform.position);
         uiBalance.transform.Rotate(new Vector3(0, 180, 0));
 
-        if (SafeDequeue(out CustomerController cc))
+        if ((!isAI || isSelling) && SafeDequeue(out CustomerController cc))
         {
             Transaction(cc);
             if (isAI)
             {
-                Academy.Instance.EnvironmentStep();
-                Debug.Log("current step " + ++step);
+                Destroy(cc.gameObject);
+                step++;
+                if (step == 3)
+                    isSelling = false;
+                //Academy.Instance.EnvironmentStep();
+                //Debug.Log("current step " + ++step);
             }
         }
     }
@@ -413,6 +419,11 @@ public class StoreController : MonoBehaviour
         List<float> sold = soldProducts.Values.Select(val => (float)val).ToList();
         //soldProducts.Clear();
         return sold;
+    }
+
+    public void ClearSoldProducts()
+    {
+        soldProducts.Values.Select(val => val = 0);
     }
 
     public int GetQueueSize()

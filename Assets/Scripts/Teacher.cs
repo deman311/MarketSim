@@ -15,8 +15,7 @@ public class Teacher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Academy.IsInitialized && Academy.Instance.AutomaticSteppingEnabled)
-            Academy.Instance.AutomaticSteppingEnabled = false;
+       
     }
 
     public CustomerController GetACustomer()
