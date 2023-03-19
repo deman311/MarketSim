@@ -15,7 +15,7 @@ public class Teacher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+
     }
 
     public CustomerController GetACustomer()

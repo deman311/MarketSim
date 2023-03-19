@@ -18,7 +18,7 @@ public class StoreController : MonoBehaviour
     float balance;
     int maxStock;
     int currentStock = 0;
-    public int step = 1;
+    public int step;
     float timer = 0f;
     public bool isAI = false;
     public bool isSelling = true;
@@ -79,7 +79,7 @@ public class StoreController : MonoBehaviour
             {
                 Destroy(cc.gameObject);
                 step++;
-                if (step == 3)
+                if (step % 3 == 0)
                     isSelling = false;
                 //Academy.Instance.EnvironmentStep();
                 //Debug.Log("current step " + ++step);
@@ -446,7 +446,7 @@ public class StoreController : MonoBehaviour
             p.Invest_tend += (int)deltas[i + 5];
         }
         float prob = deltas[10];
-        if (prob > 0.5)
+        if (prob > 0.5 && level < 3)
         {
             SetLevel(++level, true);
         }

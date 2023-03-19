@@ -12,8 +12,6 @@ public class AIStoreController : Agent
     StoreController store;
     Teacher teacher;
     StockManager sm;
-    int step = 9;
-    bool sensorLock = false;
 
     private void Awake()
     {
@@ -27,17 +25,15 @@ public class AIStoreController : Agent
     void Update()
     {
         store.Update();
-        if(store.step % 3 == 0)
+        if (store.step != 0 && store.step % 3 == 0 && !store.isSelling)
         {
             RequestDecision();
-            if(store.step % 9 != 0)
-                store.isSelling = true;
-        }
-        if (store.step % 9 == 0)
-        {
-            store.step = 1;
-            store.isSelling = false;
-            EndEpisode();
+            if (store.step != 0 && store.step % 9 == 0)
+            {
+                store.step = 0;
+                EndEpisode();
+            }
+            store.isSelling = true;
         }
     }
 
@@ -48,16 +44,13 @@ public class AIStoreController : Agent
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 3; j++)
                 store.SafeEnqueue(teacher.GetACustomer());
-        //Destroy(cc);
-
-
-        //EndEpisode();
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         base.CollectObservations(sensor);
         Debug.Log("Collecting observations on step " + store.step);
+
         List<float> sold = new List<float> { 0, 0, 0, 0, 0 };
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
         {

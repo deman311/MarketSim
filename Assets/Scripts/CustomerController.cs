@@ -30,7 +30,6 @@ public class CustomerController : MonoBehaviour
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
         gameObject.GetComponentsInChildren<Renderer>()[1].material.color = new Color(Random.value, Random.value, Random.value); // set random shirt color
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
@@ -39,11 +38,21 @@ public class CustomerController : MonoBehaviour
         if (cm == null) // mlagents scenario
             return;
 
+        CreateNavMesh(); // create navmesh dynamically to avoid error will only create if not Training Mode
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
             agent.SetDestination(storePath[0].transform.position);
 
         //PrintList();
+    }
+
+    private void CreateNavMesh()
+    {
+        gameObject.AddComponent(typeof(NavMeshAgent));
+        agent.speed = 1000;
+        agent.angularSpeed = 1000;
+        agent.acceleration = 3000;
+        agent = GetComponent<NavMeshAgent>();
     }
 
     void Update()
