@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class StockManager : MonoBehaviour
@@ -52,6 +53,16 @@ public class StockManager : MonoBehaviour
         {prodNames[3], 15 },
         {prodNames[4], 5 }
     };
+
+    public List<float> GetRewardsPerProduct(List<int> sold, List<int> held)
+    {
+        List<float> rewards = new List<float>();
+        var ptp = productToProduction.Values.ToList();
+        var pth = productToTax.Values.ToList();
+        for (int i = 0; i < sold.Count; i++)
+            rewards.Add(sold[i] * ptp[i] - held[i] * pth[i]);
+        return rewards;
+    }
 
     public int GetScarsityOfProduct(string prodName)
     {

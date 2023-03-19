@@ -7,8 +7,6 @@ public class CustomerManager : MonoBehaviour
     [SerializeField] GameObject customerFolder;
     [SerializeField] GameObject spawnArea;
 
-    readonly CustomerParams cp = new CustomerParams();
-
     static int currentCount = 0;
     static int maxTTL;
 
@@ -18,7 +16,7 @@ public class CustomerManager : MonoBehaviour
 
     void Start()
     {
-        maxTTL = cp.TTL;
+        maxTTL = CustomerParams.TTL;
         bounds = spawnArea.GetComponent<Renderer>().bounds;
         CheckSpawn(firstDay: true);
     }
@@ -62,7 +60,7 @@ public class CustomerManager : MonoBehaviour
 
     public void CheckSpawn(bool firstDay = false)
     {
-        for (int i = currentCount; i < cp.CUSTOMER_COUNT; i++)
+        for (int i = currentCount; i < CustomerParams.CUSTOMER_COUNT; i++)
         {
             if (firstDay || Random.Range(0, 2) == 0)    // 50% to spawn a new customer
             {

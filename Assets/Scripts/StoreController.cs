@@ -10,9 +10,8 @@ using Debug = UnityEngine.Debug;
 
 public class StoreController : MonoBehaviour
 {
-    [SerializeField] Canvas uiBalance;
+    Canvas uiBalance;
     StockManager sm;
-    readonly StoreParams sp = new StoreParams();
 
     int level = 1;
     float balance;
@@ -38,13 +37,15 @@ public class StoreController : MonoBehaviour
 
     ConcurrentDictionary<string, int> soldProducts = new ConcurrentDictionary<string, int>();
 
-    [SerializeField] TextMeshProUGUI cash, apple, shirt, phone, gpu, rolex; // UI Amounts
+    TextMeshProUGUI cash, apple, shirt, phone, gpu, rolex; // UI Amounts
 
     public void Awake()
     {
+        InitUiTMPs();
+        uiBalance = GetComponentInChildren<Canvas>();
         UpdateModel();
-        balance = sp.STORE_STARTING_BALANCE;
-        maxStock = sp.STOCK_LEVEL_ONE;
+        balance = StoreParams.STORE_STARTING_BALANCE;
+        maxStock = StoreParams.STOCK_LEVEL_ONE;
         currentStock = 0;
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         InitPricesAndIT();
@@ -54,6 +55,18 @@ public class StoreController : MonoBehaviour
         rolex.transform.parent.gameObject.SetActive(false);
 
         //PrintShop();
+    }
+
+    private void InitUiTMPs()
+    {
+        gameObject.SetActiveRecursively(true);
+        var uiAmounts = GetComponentsInChildren<TextMeshProUGUI>();
+        apple = uiAmounts[0];
+        shirt = uiAmounts[1];
+        phone = uiAmounts[2];
+        gpu = uiAmounts[3];
+        rolex = uiAmounts[4];
+        cash = uiAmounts[5];
     }
 
     public void Update()
@@ -79,7 +92,7 @@ public class StoreController : MonoBehaviour
             {
                 Destroy(cc.gameObject);
                 step++;
-                if (step % 3 == 0)
+                if (step % MLParams.TRANSACTION_DELTA == 0)
                     isSelling = false;
                 //Academy.Instance.EnvironmentStep();
                 //Debug.Log("current step " + ++step);
@@ -143,23 +156,23 @@ public class StoreController : MonoBehaviour
             phone.transform.parent.gameObject.SetActive(false);
             gpu.transform.parent.gameObject.SetActive(false);
             rolex.transform.parent.gameObject.SetActive(false);
-            maxStock = sp.STOCK_LEVEL_ONE;
+            maxStock = StoreParams.STOCK_LEVEL_ONE;
         }
         else if (level == 2)
         {
             phone.transform.parent.gameObject.SetActive(true);
             gpu.transform.parent.gameObject.SetActive(true);
             rolex.transform.parent.gameObject.SetActive(false);
-            maxStock = sp.STOCK_LEVEL_TWO;
+            maxStock = StoreParams.STOCK_LEVEL_TWO;
             if (payFromBalance)
-                balance -= sp.UPGRADE_LEVEL_TWO_PRICE;
+                balance -= StoreParams.UPGRADE_LEVEL_TWO_PRICE;
         }
         else if (level == 3)
         {
             rolex.transform.parent.gameObject.SetActive(true);
-            maxStock = sp.STOCK_LEVEL_THREE;
+            maxStock = StoreParams.STOCK_LEVEL_THREE;
             if (payFromBalance)
-                balance -= sp.UPGRADE_LEVEL_THREE_PRICE;
+                balance -= StoreParams.UPGRADE_LEVEL_THREE_PRICE;
         }
     }
 
@@ -249,17 +262,18 @@ public class StoreController : MonoBehaviour
             if (level == 1)
             {
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
-                GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
+                if (GameObject.Find("SimulationController").GetComponent<PathfindingManager>() != null) // race condition in Destroy on training loop
+                    GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
             }
             else if (level == 2)
             {
-                balance += sp.UPGRADE_LEVEL_TWO_PRICE / 2f;
+                balance += StoreParams.UPGRADE_LEVEL_TWO_PRICE / 2f;
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
                 SetLevel(--level);
             }
             else if (level == 3)
             {
-                balance += sp.UPGRADE_LEVEL_THREE_PRICE / 2f;
+                balance += StoreParams.UPGRADE_LEVEL_THREE_PRICE / 2f;
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
                 SetLevel(--level);
             }
@@ -269,7 +283,7 @@ public class StoreController : MonoBehaviour
 
     public float GetTotalTax()
     {
-        int finalTax = sp.BASE_TAX * level * level;
+        int finalTax = StoreParams.BASE_TAX * level * level;
         foreach (Product product in products.Values.Where(p => p.amount > 0))
             finalTax += sm.GetProductTax(product.name) * product.amount;
         return finalTax;
@@ -345,7 +359,7 @@ public class StoreController : MonoBehaviour
         }
         else
         {
-            RandomOffsetPrice(product, sp.PRICE_OFFSET);
+            RandomOffsetPrice(product, StoreParams.PRICE_OFFSET);
             //product.amount = product.Invest_tend;
             if (balance - product.amount * price < 0)
                 product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
@@ -366,7 +380,7 @@ public class StoreController : MonoBehaviour
     {
         float price_delta =
             GameObject.Find("SimulationController").GetComponent<StockManager>().GetMaxPrice(product.name)
-            * (sp.PRICE_DELTA_BASE + Random.Range(sp.PRICE_DELTA_LOWER_BOUND, sp.PRICE_DELTA_UPPER_BOUND)); // see in MarketParams for further info
+            * (StoreParams.PRICE_DELTA_BASE + Random.Range(StoreParams.PRICE_DELTA_LOWER_BOUND, StoreParams.PRICE_DELTA_UPPER_BOUND)); // see in MarketParams for further info
 
         if (products.TryGetValue(product.name, out Product existingProd) && existingProd.amount > 0)
         {
@@ -395,7 +409,7 @@ public class StoreController : MonoBehaviour
             {
                 // Store changes
                 float bankruptPanic = Mathf.Clamp(existingProd.Price / (balance - GetTotalTax() > 0 ? balance : 1),
-                    sp.BANKRUPT_LOWER_BOUND, sp.BANKRUPT_UPPER_BOUND * existingProd.Price); // see MarketParams for further info
+                    StoreParams.BANKRUPT_LOWER_BOUND, StoreParams.BANKRUPT_UPPER_BOUND * existingProd.Price); // see MarketParams for further info
                 existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (20% to epsilon)
 
                 // Customer changes
@@ -414,9 +428,9 @@ public class StoreController : MonoBehaviour
         }
     }
 
-    public List<float> GetSoldProducts()
+    public List<int> GetSoldProducts()
     {
-        List<float> sold = soldProducts.Values.Select(val => (float)val).ToList();
+        List<int> sold = soldProducts.Values.Select(val => val).ToList();
         //soldProducts.Clear();
         return sold;
     }

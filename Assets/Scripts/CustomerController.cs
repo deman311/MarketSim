@@ -13,7 +13,6 @@ public class CustomerController : MonoBehaviour
     [SerializeField] RawImage mood;
 
     private const int HAPPY = 1, SAD = 2;
-    readonly CustomerParams cp = new CustomerParams();
 
     List<GameObject> storePath = new List<GameObject>();
     List<Product> shoppingList = new List<Product>();
@@ -33,7 +32,7 @@ public class CustomerController : MonoBehaviour
         gameObject.GetComponentsInChildren<Renderer>()[1].material.color = new Color(Random.value, Random.value, Random.value); // set random shirt color
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
-        InitShoppingList(cp.ALPHA);
+        InitShoppingList(CustomerParams.ALPHA);
 
         if (cm == null) // mlagents scenario
             return;
@@ -62,7 +61,7 @@ public class CustomerController : MonoBehaviour
 
         HandleCanvas();
 
-        if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
+        if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < CustomerParams.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
         {
             if (isVisiting)
             {
@@ -84,13 +83,13 @@ public class CustomerController : MonoBehaviour
             isDone = true;
             GoToEnd();
         }
-        else if (isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY)
+        else if (isDone && agent.remainingDistance < CustomerParams.CUSTOMER_SHOP_PROXIMITY)
         {
             isIdle = true;
             //CustomerManager.KillMe(this);
         }
 
-        if (storeStack.Count == cp.VISIT_COUNT || (storePath.Count == 0 && storeStack.Count > 0))
+        if (storeStack.Count == CustomerParams.VISIT_COUNT || (storePath.Count == 0 && storeStack.Count > 0))
         {
             CompareStores();
         }
@@ -238,7 +237,7 @@ public class CustomerController : MonoBehaviour
                 if (avg == 0)
                     avg = sm.GetAveragePrice(prodName);
 
-                int amount = Random.Range(cp.SHOPPING_LIST_PRODUCT_AMOUNT_MIN, cp.SHOPPING_LIST_PRODUCT_AMOUNT_MAX + 1);
+                int amount = Random.Range(CustomerParams.SHOPPING_LIST_PRODUCT_AMOUNT_MIN, CustomerParams.SHOPPING_LIST_PRODUCT_AMOUNT_MAX + 1);
                 float cpp = avg + sm.GetMaxPrice(prodName) * Random.Range(-alpha, alpha) / 100;
                 shoppingList.Add(new Product(prodName, amount, cpp));
             }
@@ -246,7 +245,7 @@ public class CustomerController : MonoBehaviour
 
         // if empty, add a random product
         if (shoppingList.Count == 0)
-            shoppingList.Add(new Product(buylist[Random.Range(0, buylist.Count)], Random.Range(cp.SHOPPING_LIST_PRODUCT_AMOUNT_MIN, cp.SHOPPING_LIST_PRODUCT_AMOUNT_MAX + 1)));
+            shoppingList.Add(new Product(buylist[Random.Range(0, buylist.Count)], Random.Range(CustomerParams.SHOPPING_LIST_PRODUCT_AMOUNT_MIN, CustomerParams.SHOPPING_LIST_PRODUCT_AMOUNT_MAX + 1)));
     }
 
     public ref List<Product> GetProducts()

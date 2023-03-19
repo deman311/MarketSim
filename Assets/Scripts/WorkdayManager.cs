@@ -10,7 +10,7 @@ public class WorkdayManager : MonoBehaviour
 
     void Awake()
     {
-        sp = new StoreParams();    
+
     }
 
     void Update()
@@ -43,7 +43,7 @@ public class WorkdayManager : MonoBehaviour
             if (store.GetLevel() == 0) // don't update bankrupt stores.
                 continue;
 
-            store.Tax(sp.BASE_TAX);
+            store.Tax(StoreParams.BASE_TAX);
             // check-decide if to upgrade
             if (store.GetLevel() == 1 && store.GetBalance() > 2000 && Random.Range(0, 2) == 0)
                 store.SetLevel(2);

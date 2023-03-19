@@ -9,7 +9,6 @@ public class StoreManager : MonoBehaviour
 {
     [SerializeField] GameObject markersFolder;
     [SerializeField] GameObject storeFolder;
-    readonly StoreParams sp = new StoreParams();
 
     private int currentStoreCount = 0;
 
@@ -37,7 +36,7 @@ public class StoreManager : MonoBehaviour
         GameObject storeFolder = GameObject.Find("Stores");
         List<Transform> markers = markersFolder.GetComponentsInChildren<Transform>().ToList();
         int rand;
-        for (int i = 0; i < sp.MAX_STORE_COUNT; i++)
+        for (int i = 0; i < StoreParams.MAX_STORE_COUNT; i++)
         {
             rand = Random.Range(1, markers.Count);
 
