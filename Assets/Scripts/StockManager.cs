@@ -58,6 +58,14 @@ public class StockManager : MonoBehaviour
         return productToScarsity[prodName];
     }
 
+    public List<float> GetAllAvgPrices()
+    {
+        List<float> avgs = new List<float>();
+        foreach (string prodName in prodNames)
+            avgs.Add(GetAveragePrice(prodName));
+        return avgs;
+    }
+
     public float GetAveragePrice(string prodName)
     {
         float avg = 0;
@@ -69,6 +77,9 @@ public class StockManager : MonoBehaviour
                 avg += value;
                 amount++;
             }
+
+        if (amount == 0) // prevent NaN
+            return 0;
         return avg / amount;
     }
 

@@ -30,12 +30,15 @@ public class CustomerController : MonoBehaviour
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        gameObject.GetComponentsInChildren<Renderer>()[1].material.color = new Color(Random.value, Random.value, Random.value); // set random shirt color
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
         InitShoppingList(cp.ALPHA);
-        gameObject.GetComponentsInChildren<Renderer>()[1].material.color = new Color(Random.value, Random.value, Random.value); // set random shirt color
 
+        if (cm == null) // mlagents scenario
+            return;
+
+        CreateNavMesh(); // create navmesh dynamically to avoid error will only create if not Training Mode
         storePath = GameObject.Find("SimulationController").GetComponent<PathfindingManager>().GetPathList(transform.position);
         if (storePath.Count > 0)
             agent.SetDestination(storePath[0].transform.position);
@@ -43,8 +46,20 @@ public class CustomerController : MonoBehaviour
         //PrintList();
     }
 
+    private void CreateNavMesh()
+    {
+        gameObject.AddComponent(typeof(NavMeshAgent));
+        agent.speed = 1000;
+        agent.angularSpeed = 1000;
+        agent.acceleration = 3000;
+        agent = GetComponent<NavMeshAgent>();
+    }
+
     void Update()
     {
+        if (cm == null) // mlagents scenario
+            return;
+
         HandleCanvas();
 
         if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < cp.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
@@ -217,7 +232,9 @@ public class CustomerController : MonoBehaviour
             if (Random.Range(0, 100) < sm.GetScarsityOfProduct(prodName)) // Precentage for each product to spawn, +1 because exclusive
             {
                 // try to get the avg from Customers, if no customers exists then get avg from stores.
-                float avg = cm.GetAveragePrice(prodName);
+                float avg = 0;
+                if (cm != null) // check null for mlagents fictional customer scenario
+                    cm.GetAveragePrice(prodName);
                 if (avg == 0)
                     avg = sm.GetAveragePrice(prodName);
 
