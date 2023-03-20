@@ -60,7 +60,7 @@ public class StockManager : MonoBehaviour
         var ptp = productToProduction.Values.ToList();
         var pth = productToTax.Values.ToList();
         for (int i = 0; i < sold.Count; i++)
-            rewards.Add(sold[i] * ptp[i] - held[i] * pth[i]);
+            rewards.Add((sold[i] * ptp[i] - held[i] * pth[i]) / 10f);
         return rewards;
     }
 

@@ -59,8 +59,7 @@ public class StoreController : MonoBehaviour
 
     private void InitUiTMPs()
     {
-        gameObject.SetActiveRecursively(true);
-        var uiAmounts = GetComponentsInChildren<TextMeshProUGUI>();
+        var uiAmounts = GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
         apple = uiAmounts[0];
         shirt = uiAmounts[1];
         phone = uiAmounts[2];
@@ -262,8 +261,11 @@ public class StoreController : MonoBehaviour
             if (level == 1)
             {
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
-                if (GameObject.Find("SimulationController").GetComponent<PathfindingManager>() != null) // race condition in Destroy on training loop
-                    GameObject.Find("SimulationController").GetComponent<PathfindingManager>().SafeRemove(gameObject);
+                var pfm = GameObject.Find("SimulationController").GetComponent<PathfindingManager>();
+                if (!isAI) // MLAgents race condition check
+                    pfm.SafeRemove(gameObject);
+                else
+                    SetLevel(0);
             }
             else if (level == 2)
             {
@@ -332,6 +334,9 @@ public class StoreController : MonoBehaviour
 
     void InitPricesAndIT()
     {
+        //clear products
+        products.Clear();
+
         foreach (string prodName in sm.GetBuyList(level))
             BuyProduct(new Product(prodName, GetRestockAmount(prodName)));
     }
@@ -460,7 +465,7 @@ public class StoreController : MonoBehaviour
             p.Invest_tend += (int)deltas[i + 5];
         }
         float prob = deltas[10];
-        if (prob > 0.5 && level < 3)
+        if (prob > 0.5 && level < 3 && balance > 0)
         {
             SetLevel(++level, true);
         }

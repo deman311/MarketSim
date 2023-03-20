@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -12,6 +14,7 @@ public class AIStoreController : Agent
     StoreController store;
     Teacher teacher;
     StockManager sm;
+    [SerializeField] TextMeshProUGUI pricesUI;
 
     bool isBankrupt = false;
 
@@ -26,6 +29,10 @@ public class AIStoreController : Agent
 
     void Update()
     {
+        string pricesText = "";
+        store.GetProductPrices().Select(kvp => kvp.Key + " " + kvp.Value + "\n").ToList().ForEach(t => pricesText += t);
+        pricesUI.text = pricesText;
+
         store.Update();
         if (store.step != 0 && store.step % MLParams.TRANSACTION_DELTA == 0 && !store.isSelling)
         {
@@ -39,35 +46,25 @@ public class AIStoreController : Agent
     private void EndEpoch()
     {
         // tax
-        float taxReward = (store.GetBalance() - store.GetTotalTax()) / (100 * Mathf.Pow(store.GetLevel(), 3));
+        float taxReward = (store.GetBalance() - store.GetTotalTax()) / (100 * MathF.Pow(store.GetLevel(), 3));
         store.Tax(StoreParams.BASE_TAX);
         AddReward(taxReward);
 
         // finish episode
-        store.step = 0;
         EndEpisode();
+        store.step = 0;
 
         if (isBankrupt)
-            Initialize();
-    }
-
-    public override void Initialize()
-    {
-        if (!isBankrupt)
-            return;
-
-        base.Initialize();
-        DestroyImmediate(store);
-        store = gameObject.AddComponent(typeof(StoreController)) as StoreController;
-        store.isAI = true;
-        isBankrupt = false;
+        {
+            isBankrupt = false;
+            store.Awake(); // resets the store
+        }
     }
 
     public override void OnEpisodeBegin()
     {
-        base.OnEpisodeBegin();
-
         // restock
+        store.Restock();
         if (store.GetBalance() < 0)
         {
             AddReward(-20);
@@ -84,8 +81,7 @@ public class AIStoreController : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        base.CollectObservations(sensor);
-        Debug.Log("Collecting observations on step " + store.step);
+        //Debug.Log("Collecting observations on step " + store.step);
 
         List<int> sold = new List<int> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
@@ -95,9 +91,15 @@ public class AIStoreController : Agent
         List<int> held = new List<int> { 0, 0, 0, 0, 0 };
         var prods = store.GetProducts().Select(p => p.Value.amount).ToList();
         for (int i = 0; i < prods.Count; i++)
-            held.Add(prods[i]);
+            held[i] = prods[i];
         var rewards = sm.GetRewardsPerProduct(sold, held);
-        rewards.ForEach(reward => AddReward(reward));
+        rewards.ForEach(reward =>
+        {
+            if (reward > 0)
+                AddReward(1f);
+            else
+                AddReward(-1f);
+        });
         store.ClearSoldProducts();
 
         // collect the total inputs from the store, 13 in total.
@@ -112,8 +114,6 @@ public class AIStoreController : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        base.OnActionReceived(actions);
-
         // get the 11 outputs from the model
         var outputs = actions.ContinuousActions.ToList();
         var dPrices = outputs.GetRange(0, 5);
