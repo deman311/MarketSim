@@ -16,7 +16,7 @@ public class AIStoreController : Agent
     StockManager sm;
     [SerializeField] TextMeshProUGUI pricesUI;
 
-    bool isBankrupt = false;
+    bool isBankrupt = false, awaitingDecision = false;
 
     private void Awake()
     {
@@ -34,12 +34,10 @@ public class AIStoreController : Agent
         pricesUI.text = pricesText;
 
         store.Update();
-        if (store.step != 0 && store.step % MLParams.TRANSACTION_DELTA == 0 && !store.isSelling)
+        if (store.step != 0 && store.step % MLParams.TRANSACTION_DELTA == 0 && !store.isSelling && !awaitingDecision)
         {
+            awaitingDecision = true;
             RequestDecision();
-            if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * 5) == 0)
-                EndEpoch();
-            store.isSelling = true;
         }
     }
 
@@ -81,7 +79,7 @@ public class AIStoreController : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        //Debug.Log("Collecting observations on step " + store.step);
+        Debug.Log("Collecting observations on step " + store.step);
 
         List<int> sold = new List<int> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
@@ -121,6 +119,11 @@ public class AIStoreController : Agent
         var upgradeProb = outputs[10];
 
         store.UpdateFromModelOutput(outputs); // take decisions based on model output
+
+        if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * 5) == 0)
+            EndEpoch();
+        store.isSelling = true;
+        awaitingDecision = false;
     }
 
     /*async public bool checkIsQueueEmpty(StoreController store)
