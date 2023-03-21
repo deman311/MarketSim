@@ -41,6 +41,7 @@ public class StoreController : MonoBehaviour
 
     public void Awake()
     {
+        level = 1;
         InitUiTMPs();
         uiBalance = GetComponentInChildren<Canvas>();
         UpdateModel();
@@ -265,19 +266,19 @@ public class StoreController : MonoBehaviour
                 if (!isAI) // MLAgents race condition check
                     pfm.SafeRemove(gameObject);
                 else
-                    SetLevel(0);
+                    SetLevel(0, false);
             }
             else if (level == 2)
             {
                 balance += StoreParams.UPGRADE_LEVEL_TWO_PRICE / 2f;
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
-                SetLevel(--level);
+                SetLevel(--level, false);
             }
             else if (level == 3)
             {
                 balance += StoreParams.UPGRADE_LEVEL_THREE_PRICE / 2f;
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
-                SetLevel(--level);
+                SetLevel(--level, false);
             }
             currentStock = 0;
         }
@@ -442,7 +443,7 @@ public class StoreController : MonoBehaviour
 
     public void ClearSoldProducts()
     {
-        soldProducts.Values.Select(val => val = 0);
+        soldProducts.Keys.ToList().ForEach(p => soldProducts[p] = 0);
     }
 
     public int GetQueueSize()

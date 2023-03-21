@@ -17,6 +17,8 @@ public class AIStoreController : Agent
     [SerializeField] TextMeshProUGUI pricesUI;
 
     bool isBankrupt = false, awaitingDecision = false;
+    int epoch = 0;
+    float accumelativeReward = 0;
 
     private void Awake()
     {
@@ -47,11 +49,23 @@ public class AIStoreController : Agent
         float taxReward = (store.GetBalance() - store.GetTotalTax()) / (100 * MathF.Pow(store.GetLevel(), 3));
         store.Tax(StoreParams.BASE_TAX);
         AddReward(taxReward);
+        accumelativeReward += taxReward;
+
+        if (store.GetBalance() < 0)
+        {
+            AddReward(-50);
+            accumelativeReward -= 50;
+            isBankrupt = true;
+        }
 
         // finish episode
-        EndEpisode();
-        store.step = 0;
 
+        EndEpisode();
+        Debug.Log("Reward " + accumelativeReward + " epoch: " + epoch);
+
+        epoch++;
+        store.step = 0;
+        accumelativeReward = 0;
         if (isBankrupt)
         {
             isBankrupt = false;
@@ -66,13 +80,17 @@ public class AIStoreController : Agent
         if (store.GetBalance() < 0)
         {
             AddReward(-20);
+            accumelativeReward -= 20;
             isBankrupt = true;
         }
         else
+        {
             AddReward(5);
+            accumelativeReward += 5;
+        }
 
         store.isSelling = true;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < MLParams.TRANSACTION_CYCLES; i++)
             for (int j = 0; j < MLParams.TRANSACTION_DELTA; j++)
                 store.SafeEnqueue(teacher.GetACustomer());
     }
@@ -93,11 +111,10 @@ public class AIStoreController : Agent
         var rewards = sm.GetRewardsPerProduct(sold, held);
         rewards.ForEach(reward =>
         {
-            if (reward > 0)
-                AddReward(1f);
-            else
-                AddReward(-1f);
+            AddReward(reward);
+            accumelativeReward += reward;
         });
+
         store.ClearSoldProducts();
 
         // collect the total inputs from the store, 13 in total.
@@ -120,7 +137,7 @@ public class AIStoreController : Agent
 
         store.UpdateFromModelOutput(outputs); // take decisions based on model output
 
-        if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * 5) == 0)
+        if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)
             EndEpoch();
         store.isSelling = true;
         awaitingDecision = false;

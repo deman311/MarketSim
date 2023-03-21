@@ -47,4 +47,5 @@ public abstract class MarketParams
 public abstract class MLParams
 {
     public static int TRANSACTION_DELTA = 3;
+    public static int TRANSACTION_CYCLES = 2;
 }

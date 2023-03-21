@@ -1,29 +1,7 @@
 {
-    "StoreAI": {
-        "checkpoints": [
-            {
-                "steps": 21719,
-                "file_path": "results\\StoreAI\\StoreAI\\StoreAI-21719.onnx",
-                "reward": -59.18460337320963,
-                "creation_time": 1679347968.362961,
-                "auxillary_file_paths": [
-                    "results\\StoreAI\\StoreAI\\StoreAI-21719.pt"
-                ]
-            }
-        ],
-        "final_checkpoint": {
-            "steps": 21719,
-            "file_path": "results\\StoreAI\\StoreAI.onnx",
-            "reward": -59.18460337320963,
-            "creation_time": 1679347968.362961,
-            "auxillary_file_paths": [
-                "results\\StoreAI\\StoreAI\\StoreAI-21719.pt"
-            ]
-        }
-    },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "0.30.0",
-        "torch_version": "1.10.1+cu113"
+        "torch_version": "1.7.1+cu110"
     }
 }
