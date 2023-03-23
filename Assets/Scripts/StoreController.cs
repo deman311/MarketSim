@@ -13,7 +13,7 @@ public class StoreController : MonoBehaviour
     Canvas uiBalance;
     StockManager sm;
 
-    int level = 1;
+    [SerializeField] int level = 1;
     float balance;
     int maxStock;
     int currentStock = 0;
@@ -41,7 +41,8 @@ public class StoreController : MonoBehaviour
 
     public void Awake()
     {
-        level = 1;
+        if(isAI)
+            level = 1;
         InitUiTMPs();
         uiBalance = GetComponentInChildren<Canvas>();
         UpdateModel();

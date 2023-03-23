@@ -53,7 +53,7 @@ public class AIStoreController : Agent
 
         if (store.GetBalance() < 0)
         {
-            AddReward(-50);
+            AddReward(-20);
             accumelativeReward -= 50;
             isBankrupt = true;
         }
@@ -61,7 +61,7 @@ public class AIStoreController : Agent
         // finish episode
 
         EndEpisode();
-        Debug.Log("Reward " + accumelativeReward + " epoch: " + epoch);
+        //Debug.Log("Reward " + accumelativeReward + " epoch: " + epoch);
 
         epoch++;
         store.step = 0;
@@ -79,8 +79,8 @@ public class AIStoreController : Agent
         store.Restock();
         if (store.GetBalance() < 0)
         {
-            AddReward(-20);
-            accumelativeReward -= 20;
+            AddReward(-5);
+            accumelativeReward -= 5;
             isBankrupt = true;
         }
         else
@@ -99,7 +99,7 @@ public class AIStoreController : Agent
     {
         Debug.Log("Collecting observations on step " + store.step);
 
-        List<int> sold = new List<int> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
+         List<int> sold = new List<int> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
             sold[i] = store.GetSoldProducts()[i];
 
