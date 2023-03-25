@@ -17,8 +17,6 @@ public class AIStoreController : Agent
     [SerializeField] TextMeshProUGUI pricesUI;
 
     bool isBankrupt = false, awaitingDecision = false;
-    int epoch = 0;
-    float accumelativeReward = 0;
 
     private void Awake()
     {
@@ -39,6 +37,9 @@ public class AIStoreController : Agent
         if (store.step != 0 && store.step % MLParams.TRANSACTION_DELTA == 0 && !store.isSelling && !awaitingDecision)
         {
             awaitingDecision = true;
+            /*            if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)
+                            EndEpoch();
+                        else*/
             RequestDecision();
         }
     }
@@ -49,23 +50,17 @@ public class AIStoreController : Agent
         float taxReward = (store.GetBalance() - store.GetTotalTax()) / (100 * MathF.Pow(store.GetLevel(), 3));
         store.Tax(StoreParams.BASE_TAX);
         AddReward(taxReward);
-        accumelativeReward += taxReward;
 
         if (store.GetBalance() < 0)
         {
-            AddReward(-50);
-            accumelativeReward -= 50;
+            AddReward(-20);
             isBankrupt = true;
         }
 
         // finish episode
-
         EndEpisode();
-        Debug.Log("Reward " + accumelativeReward + " epoch: " + epoch);
 
-        epoch++;
         store.step = 0;
-        accumelativeReward = 0;
         if (isBankrupt)
         {
             isBankrupt = false;
@@ -79,14 +74,8 @@ public class AIStoreController : Agent
         store.Restock();
         if (store.GetBalance() < 0)
         {
-            AddReward(-20);
-            accumelativeReward -= 20;
+            AddReward(-5);
             isBankrupt = true;
-        }
-        else
-        {
-            AddReward(5);
-            accumelativeReward += 5;
         }
 
         store.isSelling = true;
@@ -95,6 +84,7 @@ public class AIStoreController : Agent
                 store.SafeEnqueue(teacher.GetACustomer());
     }
 
+    bool isLast = false;
     public override void CollectObservations(VectorSensor sensor)
     {
         Debug.Log("Collecting observations on step " + store.step);
@@ -112,10 +102,14 @@ public class AIStoreController : Agent
         rewards.ForEach(reward =>
         {
             AddReward(reward);
-            accumelativeReward += reward;
         });
 
-        store.ClearSoldProducts();
+        // Because EndEpisode() calls CollectObservations again for some reason,
+        // I don't want to lose the find observation before passing to the model
+        if (store.step == MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES)
+            isLast = !isLast;
+        if (isLast)
+            store.ClearSoldProducts();
 
         // collect the total inputs from the store, 13 in total.
         sensor.AddObservation(sold.Select(s => (float)s).ToList()); // 5
@@ -139,13 +133,14 @@ public class AIStoreController : Agent
 
         if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)
             EndEpoch();
+
         store.isSelling = true;
         awaitingDecision = false;
     }
 
     /*async public bool checkIsQueueEmpty(StoreController store)
     {
-        return true;
+    return true;
     }*/
 }
 
