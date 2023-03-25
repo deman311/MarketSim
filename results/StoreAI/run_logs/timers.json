@@ -1,0 +1,47 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1679406237",
+        "python_version": "3.9.0 (tags/v3.9.0:9cf6752, Oct  5 2020, 15:34:40) [MSC v.1927 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\timor\\AppData\\Local\\Programs\\Python\\Python39\\Scripts\\mlagents-learn .\\config\\StoreAI01.yaml",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "1.7.1+cu110",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1679406241"
+    },
+    "total": 3.4239097999999997,
+    "count": 1,
+    "self": 0.00541239999999954,
+    "children": {
+        "run_training.setup": {
+            "total": 0.09725640000000002,
+            "count": 1,
+            "self": 0.09725640000000002
+        },
+        "TrainerController.start_learning": {
+            "total": 3.321241,
+            "count": 1,
+            "self": 0.0003165000000002749,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 3.3209161000000003,
+                    "count": 1,
+                    "self": 3.3209161000000003
+                },
+                "trainer_threads": {
+                    "total": 7.000000001866624e-07,
+                    "count": 1,
+                    "self": 7.000000001866624e-07
+                },
+                "TrainerController._save_models": {
+                    "total": 7.699999999388751e-06,
+                    "count": 1,
+                    "self": 7.699999999388751e-06
+                }
+            }
+        }
+    }
+}
