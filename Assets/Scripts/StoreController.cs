@@ -362,7 +362,6 @@ public class StoreController : MonoBehaviour
                 product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
             balance -= product.amount * price;
             existingProd.amount += product.amount;
-
         }
         else
         {
@@ -467,9 +466,11 @@ public class StoreController : MonoBehaviour
             p.Invest_tend += (int)deltas[i + 5];
         }
         float prob = deltas[10];
-        if (prob > 0.5 && level < 3 && balance > 0)
-        {
-            SetLevel(++level, true);
-        }
+
+        // ignore upgrading for now
+        /*        if (prob > 0.5 && level < 3 && balance > 0)
+                {
+                    SetLevel(++level, true);
+                }*/
     }
 }

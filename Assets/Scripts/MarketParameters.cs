@@ -21,8 +21,8 @@ public abstract class CustomerParams
 public abstract class StoreParams
 {
     public static int MAX_STORE_COUNT = 8;
-    public static int STORE_STARTING_BALANCE = 250;
-    public static int BASE_TAX = 150;
+    public static int STORE_STARTING_BALANCE = 300;
+    public static int BASE_TAX = 50;
     public static int STOCK_LEVEL_ONE = 20;
     public static int STOCK_LEVEL_TWO = 35;
     public static int STOCK_LEVEL_THREE = 50;

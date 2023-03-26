@@ -37,9 +37,6 @@ public class AIStoreController : Agent
         if (store.step != 0 && store.step % MLParams.TRANSACTION_DELTA == 0 && !store.isSelling && !awaitingDecision)
         {
             awaitingDecision = true;
-            /*            if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)
-                            EndEpoch();
-                        else*/
             RequestDecision();
         }
     }
@@ -70,7 +67,6 @@ public class AIStoreController : Agent
 
     public override void OnEpisodeBegin()
     {
-        // restock
         store.Restock();
         if (store.GetBalance() < 0)
         {
