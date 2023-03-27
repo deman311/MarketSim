@@ -467,10 +467,9 @@ public class StoreController : MonoBehaviour
         }
         float prob = deltas[10];
 
-        // ignore upgrading for now
-        /*        if (prob > 0.5 && level < 3 && balance > 0)
-                {
-                    SetLevel(++level, true);
-                }*/
+        if (prob > 0.5 && level < 3 && balance > 0)
+        {
+            SetLevel(++level, true);
+        }
     }
 }

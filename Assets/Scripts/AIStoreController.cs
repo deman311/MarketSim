@@ -58,7 +58,7 @@ public class AIStoreController : Agent
         EndEpisode();
 
         store.step = 0;
-        if (isBankrupt)
+        if (isBankrupt && store.GetLevel() == 0)
         {
             isBankrupt = false;
             store.Awake(); // resets the store
@@ -126,6 +126,15 @@ public class AIStoreController : Agent
         var upgradeProb = outputs[10];
 
         store.UpdateFromModelOutput(outputs); // take decisions based on model output
+
+        // reward function for an upgrade, if upgraded on this action
+        if (upgradeProb > 0.5)
+        {
+            if (store.GetBalance() > 0)
+                AddReward(10 * store.GetLevel());
+            else
+                AddReward(-10 * store.GetLevel());
+        }
 
         if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)
             EndEpoch();

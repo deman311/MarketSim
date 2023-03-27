@@ -1,0 +1,40 @@
+behaviors:
+  StoreAI:
+    trainer_type: sac
+
+    hyperparameters:
+      # Hyperparameters common to PPO and SAC
+      batch_size: 256
+      buffer_size: 2560
+      learning_rate: 3.0e-4
+      learning_rate_schedule: linear
+
+# PPO-specific hyperparameters
+# Replaces the "PPO-specific hyperparameters" section above
+#beta: 5.0e-3
+#epsilon: 0.2
+#lambd: 0.95
+#num_epoch: 3
+
+    # SAC-specific hyperparameters
+      tau: 0.01
+
+    # Configuration of the neural network (common to PPO/SAC)
+    network_settings:
+      vis_encoder_type: simple
+      normalize: false
+      hidden_units: 128
+      num_layers: 2
+      # memory
+      memory:
+        sequence_length: 64
+        memory_size: 128
+
+    # Trainer configurations common to all trainers
+    max_steps: 5.0e7
+    time_horizon: 128
+    summary_freq: 5000
+    keep_checkpoints: 5
+    checkpoint_interval: 20000
+    threaded: true
+    init_path: null
