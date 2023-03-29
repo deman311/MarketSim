@@ -283,6 +283,24 @@ public class StoreController : MonoBehaviour
             }
             currentStock = 0;
         }
+
+        // Because taxations only happens at the end of a workday we can normalize IT here
+        NormalizeIT();
+    }
+
+    private void NormalizeIT()
+    {
+        int totalIT = 0;
+        products.ToList().ForEach(kvp => totalIT += kvp.Value.Invest_tend);
+
+        // validate non-zero
+        if (totalIT == 0)
+            return;
+
+        foreach (var kvp in products)
+        {
+            products[kvp.Key].Invest_tend = Mathf.RoundToInt(products[kvp.Key].Invest_tend / totalIT * MLParams.IT_NORMALIZATION_VALUE);
+        }
     }
 
     public float GetTotalTax()

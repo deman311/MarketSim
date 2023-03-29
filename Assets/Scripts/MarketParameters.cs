@@ -48,4 +48,5 @@ public abstract class MLParams
 {
     public static int TRANSACTION_DELTA = 5;
     public static int TRANSACTION_CYCLES = 3;
+    public static int IT_NORMALIZATION_VALUE = 50;
 }
