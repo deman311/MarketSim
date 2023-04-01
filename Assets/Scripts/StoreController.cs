@@ -299,7 +299,7 @@ public class StoreController : MonoBehaviour
 
         foreach (var kvp in products)
         {
-            products[kvp.Key].Invest_tend = Mathf.RoundToInt(products[kvp.Key].Invest_tend / totalIT * MLParams.IT_NORMALIZATION_VALUE);
+            products[kvp.Key].Invest_tend = Mathf.RoundToInt(products[kvp.Key].Invest_tend / totalIT * maxStock);
         }
     }
 

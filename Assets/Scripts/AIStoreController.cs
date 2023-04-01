@@ -6,6 +6,7 @@ using TMPro;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using UnityEditor.UIElements;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -128,12 +129,19 @@ public class AIStoreController : Agent
         store.UpdateFromModelOutput(outputs); // take decisions based on model output
 
         // reward function for an upgrade, if upgraded on this action
-        if (upgradeProb > 0.5)
+        if (upgradeProb > 0.5 && store.GetLevel() < 3)
         {
             if (store.GetBalance() > 0)
                 AddReward(10 * store.GetLevel());
             else
                 AddReward(-10 * store.GetLevel());
+        }
+        else if (store.GetLevel() < 3 &&
+                ((store.GetLevel() == 1 && store.GetBalance() >= StoreParams.UPGRADE_LEVEL_TWO_PRICE + 300)
+                    || ((store.GetLevel() == 2 && store.GetBalance() >= StoreParams.UPGRADE_LEVEL_THREE_PRICE + 2000))))
+        {
+            float deltaPrice = store.GetBalance() / store.GetLevel() == 1 ? StoreParams.UPGRADE_LEVEL_TWO_PRICE : StoreParams.UPGRADE_LEVEL_THREE_PRICE;
+            AddReward(-1 * deltaPrice * store.GetLevel() * 10);
         }
 
         if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)
