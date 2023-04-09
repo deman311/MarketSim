@@ -356,7 +356,7 @@ public class StoreController : MonoBehaviour
 
     public void InitialRandomOffsetPrice(Product product, int alpha)
     {
-        float price = sm.GetMaxPrice(product.name) * (1f / 4); // lower quarter
+        float price = sm.GetMaxPrice(product.name) * (StoreParams.INITIAL_PRECENTILE); // lower quarter
         float offset = sm.GetMaxPrice(product.name) * Random.Range(0, alpha) / 100f;
         product.Price = price + offset;
     }

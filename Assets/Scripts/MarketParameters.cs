@@ -21,7 +21,7 @@ public abstract class CustomerParams
 public abstract class StoreParams
 {
     public static int MAX_STORE_COUNT = 8;
-    public static int STORE_STARTING_BALANCE = 2000;
+    public static int STORE_STARTING_BALANCE = 500;
     public static int BASE_TAX = 50;
     public static int STOCK_LEVEL_ONE = 20;
     public static int STOCK_LEVEL_TWO = 35;
@@ -34,7 +34,7 @@ public abstract class StoreParams
     public static float PRICE_DELTA_LOWER_BOUND = -0.03f;
     public static float BANKRUPT_UPPER_BOUND = 0.02f;
     public static float BANKRUPT_LOWER_BOUND = 0f;
-
+    public static float INITIAL_PRECENTILE = 1f / 2;
 }
 
 /*Market Params*/

@@ -92,8 +92,7 @@ public class AIStoreController : Agent
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
             sold[i] = store.GetSoldProducts()[i];
 
-        // profit reward
-        float profit = store.GetBalance() - lastBalance;
+        // a reward based on the total profit up to this point.
         if (!isLast)
             AddReward(store.GetBalance() - store.GetTotalTax());
         lastBalance = store.GetBalance();
@@ -109,6 +108,7 @@ public class AIStoreController : Agent
                     AddReward(reward);
                 });
         */
+
         // Because EndEpisode() calls CollectObservations again for some reason,
         // I don't want to lose the find observation before passing to the model
         if (store.step == MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES)
