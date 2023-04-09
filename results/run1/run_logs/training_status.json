@@ -2,58 +2,22 @@
     "StoreAI": {
         "checkpoints": [
             {
-                "steps": 234998,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-234998.onnx",
+                "steps": 648,
+                "file_path": "results\\run1\\StoreAI\\StoreAI-648.onnx",
                 "reward": null,
-                "creation_time": 1681066554.2674649,
+                "creation_time": 1681069129.2477067,
                 "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-234998.pt"
-                ]
-            },
-            {
-                "steps": 239999,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-239999.onnx",
-                "reward": 1172.4961809430804,
-                "creation_time": 1681066752.777762,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-239999.pt"
-                ]
-            },
-            {
-                "steps": 240518,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-240518.onnx",
-                "reward": null,
-                "creation_time": 1681066781.7405028,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-240518.pt"
-                ]
-            },
-            {
-                "steps": 244997,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-244997.onnx",
-                "reward": -38391.51028645833,
-                "creation_time": 1681066971.1531048,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-244997.pt"
-                ]
-            },
-            {
-                "steps": 249998,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-249998.onnx",
-                "reward": -7613.28076171875,
-                "creation_time": 1681067176.4002929,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-249998.pt"
+                    "results\\run1\\StoreAI\\StoreAI-648.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 240518,
+            "steps": 648,
             "file_path": "results\\run1\\StoreAI.onnx",
             "reward": null,
-            "creation_time": 1681066781.7405028,
+            "creation_time": 1681069129.2477067,
             "auxillary_file_paths": [
-                "results\\run1\\StoreAI\\StoreAI-240518.pt"
+                "results\\run1\\StoreAI\\StoreAI-648.pt"
             ]
         }
     },

@@ -47,16 +47,30 @@ public class StoreController : MonoBehaviour
         uiBalance = GetComponentInChildren<Canvas>();
         UpdateModel();
         balance = StoreParams.STORE_STARTING_BALANCE;
-        maxStock = StoreParams.STOCK_LEVEL_ONE;
-        currentStock = 0;
+        InitStock();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         InitPricesAndIT();
         UpdateUIPrices(); // inital price set
-        phone.transform.parent.gameObject.SetActive(false);
-        gpu.transform.parent.gameObject.SetActive(false);
-        rolex.transform.parent.gameObject.SetActive(false);
+        if (level < 2)
+        {
+            phone.transform.parent.gameObject.SetActive(false);
+            gpu.transform.parent.gameObject.SetActive(false);
+        }
+        if (level < 3)
+            rolex.transform.parent.gameObject.SetActive(false);
 
         //PrintShop();
+    }
+
+    private void InitStock()
+    {
+        switch (level)
+        {
+            case 1: maxStock = StoreParams.STOCK_LEVEL_ONE; break;
+            case 2: maxStock = StoreParams.STOCK_LEVEL_TWO; break;
+            case 3: maxStock = StoreParams.STOCK_LEVEL_THREE; break;
+        }
+        currentStock = 0;
     }
 
     private void InitUiTMPs()
@@ -342,7 +356,7 @@ public class StoreController : MonoBehaviour
 
     public void InitialRandomOffsetPrice(Product product, int alpha)
     {
-        float price = (sm.GetMaxPrice(product.name) - sm.GetProductionPrice(product.name)) * (1 / 4); // lower quarter
+        float price = sm.GetMaxPrice(product.name) * (1f / 4); // lower quarter
         float offset = sm.GetMaxPrice(product.name) * Random.Range(0, alpha) / 100f;
         product.Price = price + offset;
     }
@@ -378,7 +392,6 @@ public class StoreController : MonoBehaviour
         float price = sm.GetProductionPrice(product.name);
         if (products.TryGetValue(product.name, out Product existingProd))
         {
-            //product.amount = existingProd.Invest_tend;
             if (balance - product.amount * price < 0)
                 product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
             balance -= product.amount * price;
@@ -387,7 +400,6 @@ public class StoreController : MonoBehaviour
         else
         {
             InitialRandomOffsetPrice(product, StoreParams.PRICE_OFFSET);
-            //product.amount = product.Invest_tend;
             if (balance - product.amount * price < 0)
                 product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
             balance -= product.amount * price;
