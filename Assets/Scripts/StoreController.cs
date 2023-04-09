@@ -236,13 +236,15 @@ public class StoreController : MonoBehaviour
         products.Values.ToList().ForEach(p => total_IT += p.Invest_tend);
 
         if (total_IT == 0)
-            total_IT = maxStock;
+            if (products.Count > 0)
+                return (int)((maxStock - currentStock) / products.Count); // even amount of products
+            else
+                total_IT = maxStock;
 
         if (products.TryGetValue(prodName, out Product p))
             return (int)Mathf.Round((float)p.Invest_tend / total_IT * (maxStock - currentStock));
 
-
-        return (int)Mathf.Round((float)Random.Range(1, 11) / total_IT * (maxStock - currentStock));
+        return (int)Mathf.Round((float)Random.Range(1, 11) / total_IT * (maxStock - currentStock)); // buy a random amount
     }
 
 
@@ -326,12 +328,13 @@ public class StoreController : MonoBehaviour
         }
 
         // interate over all the products that were overlooked and exist in the shop and decrease IT.
-        foreach (KeyValuePair<string, bool> kvp in hasLooked.Where(kvp => !kvp.Value))
-            if (products.TryGetValue(kvp.Key, out Product p))
-            {
-                p.Invest_tend -= prodToITbeta[p.name];
-                prodToITbeta[p.name]++;
-            }
+        if (!isAI)
+            foreach (KeyValuePair<string, bool> kvp in hasLooked.Where(kvp => !kvp.Value))
+                if (products.TryGetValue(kvp.Key, out Product p))
+                {
+                    p.Invest_tend -= prodToITbeta[p.name];
+                    prodToITbeta[p.name]++;
+                }
 
         if (GameObject.Find("SimulationController").GetComponent<CustomerManager>() != null)
             cc.CompleteTransaction(hasBoughtSomething);
@@ -402,6 +405,28 @@ public class StoreController : MonoBehaviour
     /// </summary>
     public void SellProduct(Product product, CustomerController cc, ref bool hasBoughtSomething)
     {
+        // AIStore Selling Logic
+        if (isAI)
+        {
+            if (products.TryGetValue(product.name, out Product existingProdAI) && existingProdAI.amount > 0)
+            {
+                int sold = 0;
+                if (existingProdAI.amount < product.amount)
+                    sold = existingProdAI.amount;
+                else
+                    sold = product.amount;
+
+                if (existingProdAI.Price <= product.Price)
+                {
+                    balance += sold * existingProdAI.Price;
+                    currentStock -= sold;
+                    existingProdAI.amount -= sold;
+                }
+            }
+            return; // finish here for AIStore
+        }
+
+        // Regular store logic
         float price_delta =
             GameObject.Find("SimulationController").GetComponent<StockManager>().GetMaxPrice(product.name)
             * (StoreParams.PRICE_DELTA_BASE + Random.Range(StoreParams.PRICE_DELTA_LOWER_BOUND, StoreParams.PRICE_DELTA_UPPER_BOUND)); // see in MarketParams for further info
@@ -426,8 +451,6 @@ public class StoreController : MonoBehaviour
 
                 if (!hasBoughtSomething && sold != 0)
                     hasBoughtSomething = true;
-
-
             }
             else // price too high
             {

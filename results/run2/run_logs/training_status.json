@@ -1,0 +1,38 @@
+{
+    "StoreAI": {
+        "checkpoints": [
+            {
+                "steps": 4998,
+                "file_path": "results\\run2\\StoreAI\\StoreAI-4998.onnx",
+                "reward": -967.5962338447571,
+                "creation_time": 1681065375.6036422,
+                "auxillary_file_paths": [
+                    "results\\run2\\StoreAI\\StoreAI-4998.pt"
+                ]
+            },
+            {
+                "steps": 7254,
+                "file_path": "results\\run2\\StoreAI\\StoreAI-7254.onnx",
+                "reward": null,
+                "creation_time": 1681065465.1152618,
+                "auxillary_file_paths": [
+                    "results\\run2\\StoreAI\\StoreAI-7254.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 7254,
+            "file_path": "results\\run2\\StoreAI.onnx",
+            "reward": null,
+            "creation_time": 1681065465.1152618,
+            "auxillary_file_paths": [
+                "results\\run2\\StoreAI\\StoreAI-7254.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.10.1+cu113"
+    }
+}

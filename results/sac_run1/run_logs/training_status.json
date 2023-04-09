@@ -1,0 +1,65 @@
+{
+    "StoreAI": {
+        "checkpoints": [
+            {
+                "steps": 2274999,
+                "file_path": "results\\sac_run1\\StoreAI\\StoreAI-2274999.onnx",
+                "reward": 10.378986358642578,
+                "creation_time": 1680448782.0546904,
+                "auxillary_file_paths": [
+                    "results\\sac_run1\\StoreAI\\StoreAI-2274999.pt"
+                ]
+            },
+            {
+                "steps": 2279997,
+                "file_path": "results\\sac_run1\\StoreAI\\StoreAI-2279997.onnx",
+                "reward": 15.580297927771296,
+                "creation_time": 1680448995.635029,
+                "auxillary_file_paths": [
+                    "results\\sac_run1\\StoreAI\\StoreAI-2279997.pt"
+                ]
+            },
+            {
+                "steps": 2284998,
+                "file_path": "results\\sac_run1\\StoreAI\\StoreAI-2284998.onnx",
+                "reward": 9.626983421189445,
+                "creation_time": 1680449208.8485665,
+                "auxillary_file_paths": [
+                    "results\\sac_run1\\StoreAI\\StoreAI-2284998.pt"
+                ]
+            },
+            {
+                "steps": 2289999,
+                "file_path": "results\\sac_run1\\StoreAI\\StoreAI-2289999.onnx",
+                "reward": -20.809057235717773,
+                "creation_time": 1680449424.7024374,
+                "auxillary_file_paths": [
+                    "results\\sac_run1\\StoreAI\\StoreAI-2289999.pt"
+                ]
+            },
+            {
+                "steps": 2293812,
+                "file_path": "results\\sac_run1\\StoreAI\\StoreAI-2293812.onnx",
+                "reward": null,
+                "creation_time": 1680449710.4852555,
+                "auxillary_file_paths": [
+                    "results\\sac_run1\\StoreAI\\StoreAI-2293812.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2293812,
+            "file_path": "results\\sac_run1\\StoreAI.onnx",
+            "reward": null,
+            "creation_time": 1680449710.4852555,
+            "auxillary_file_paths": [
+                "results\\sac_run1\\StoreAI\\StoreAI-2293812.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.10.1+cu113"
+    }
+}

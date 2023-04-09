@@ -68,6 +68,7 @@ public class AIStoreController : Agent
 
     public override void OnEpisodeBegin()
     {
+        lastBalance = store.GetBalance();
         store.Restock();
         if (store.GetBalance() < 0)
         {
@@ -82,6 +83,7 @@ public class AIStoreController : Agent
     }
 
     bool isLast = false;
+    float lastBalance = 0;
     public override void CollectObservations(VectorSensor sensor)
     {
         Debug.Log("Collecting observations on step " + store.step);
@@ -90,23 +92,32 @@ public class AIStoreController : Agent
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
             sold[i] = store.GetSoldProducts()[i];
 
-        // delta sold reward function
-        List<int> held = new List<int> { 0, 0, 0, 0, 0 };
-        var prods = store.GetProducts().Select(p => p.Value.amount).ToList();
-        for (int i = 0; i < prods.Count; i++)
-            held[i] = prods[i];
-        var rewards = sm.GetRewardsPerProduct(sold, held);
-        rewards.ForEach(reward =>
-        {
-            AddReward(reward);
-        });
+        // profit reward
+        float profit = store.GetBalance() - lastBalance;
+        if (!isLast)
+            AddReward(store.GetBalance() - store.GetTotalTax());
+        lastBalance = store.GetBalance();
 
+        /*        // delta sold reward function
+                List<int> held = new List<int> { 0, 0, 0, 0, 0 };
+                var prods = store.GetProducts().Select(p => p.Value.amount).ToList();
+                for (int i = 0; i < prods.Count; i++)
+                    held[i] = prods[i];
+                var rewards = sm.GetRewardsPerProduct(sold, held);
+                rewards.ForEach(reward =>
+                {
+                    AddReward(reward);
+                });
+        */
         // Because EndEpisode() calls CollectObservations again for some reason,
         // I don't want to lose the find observation before passing to the model
         if (store.step == MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES)
-            isLast = !isLast;
+            isLast = true;
         if (isLast)
+        {
             store.ClearSoldProducts();
+            isLast = false;
+        }
 
         // collect the total inputs from the store, 13 in total.
         sensor.AddObservation(sold.Select(s => (float)s).ToList()); // 5

@@ -22,7 +22,7 @@ public abstract class StoreParams
 {
     public static int MAX_STORE_COUNT = 8;
     public static int STORE_STARTING_BALANCE = 300;
-    public static int BASE_TAX = 100;
+    public static int BASE_TAX = 50;
     public static int STOCK_LEVEL_ONE = 20;
     public static int STOCK_LEVEL_TWO = 35;
     public static int STOCK_LEVEL_THREE = 50;
@@ -46,6 +46,6 @@ public abstract class MarketParams
 /* MLAgents Params */
 public abstract class MLParams
 {
-    public static int TRANSACTION_DELTA = 3;
+    public static int TRANSACTION_DELTA = 5;
     public static int TRANSACTION_CYCLES = 3;
 }
