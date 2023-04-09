@@ -2,58 +2,58 @@
     "StoreAI": {
         "checkpoints": [
             {
-                "steps": 214997,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-214997.onnx",
-                "reward": 391.4792681607333,
-                "creation_time": 1681065526.434669,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-214997.pt"
-                ]
-            },
-            {
-                "steps": 219998,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-219998.onnx",
-                "reward": -53.223768658108185,
-                "creation_time": 1681065723.4558375,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-219998.pt"
-                ]
-            },
-            {
-                "steps": 224999,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-224999.onnx",
-                "reward": 313.7208709716797,
-                "creation_time": 1681065920.627303,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-224999.pt"
-                ]
-            },
-            {
-                "steps": 229997,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-229997.onnx",
-                "reward": 434.8023607080633,
-                "creation_time": 1681066118.0282156,
-                "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-229997.pt"
-                ]
-            },
-            {
-                "steps": 232904,
-                "file_path": "results\\run1\\StoreAI\\StoreAI-232904.onnx",
+                "steps": 234998,
+                "file_path": "results\\run1\\StoreAI\\StoreAI-234998.onnx",
                 "reward": null,
-                "creation_time": 1681066231.8764174,
+                "creation_time": 1681066554.2674649,
                 "auxillary_file_paths": [
-                    "results\\run1\\StoreAI\\StoreAI-232904.pt"
+                    "results\\run1\\StoreAI\\StoreAI-234998.pt"
+                ]
+            },
+            {
+                "steps": 239999,
+                "file_path": "results\\run1\\StoreAI\\StoreAI-239999.onnx",
+                "reward": 1172.4961809430804,
+                "creation_time": 1681066752.777762,
+                "auxillary_file_paths": [
+                    "results\\run1\\StoreAI\\StoreAI-239999.pt"
+                ]
+            },
+            {
+                "steps": 240518,
+                "file_path": "results\\run1\\StoreAI\\StoreAI-240518.onnx",
+                "reward": null,
+                "creation_time": 1681066781.7405028,
+                "auxillary_file_paths": [
+                    "results\\run1\\StoreAI\\StoreAI-240518.pt"
+                ]
+            },
+            {
+                "steps": 244997,
+                "file_path": "results\\run1\\StoreAI\\StoreAI-244997.onnx",
+                "reward": -38391.51028645833,
+                "creation_time": 1681066971.1531048,
+                "auxillary_file_paths": [
+                    "results\\run1\\StoreAI\\StoreAI-244997.pt"
+                ]
+            },
+            {
+                "steps": 249998,
+                "file_path": "results\\run1\\StoreAI\\StoreAI-249998.onnx",
+                "reward": -7613.28076171875,
+                "creation_time": 1681067176.4002929,
+                "auxillary_file_paths": [
+                    "results\\run1\\StoreAI\\StoreAI-249998.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 232904,
+            "steps": 240518,
             "file_path": "results\\run1\\StoreAI.onnx",
             "reward": null,
-            "creation_time": 1681066231.8764174,
+            "creation_time": 1681066781.7405028,
             "auxillary_file_paths": [
-                "results\\run1\\StoreAI\\StoreAI-232904.pt"
+                "results\\run1\\StoreAI\\StoreAI-240518.pt"
             ]
         }
     },

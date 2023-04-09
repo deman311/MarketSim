@@ -48,10 +48,10 @@ public class CustomerController : MonoBehaviour
     private void CreateNavMesh()
     {
         gameObject.AddComponent(typeof(NavMeshAgent));
+        agent = GetComponent<NavMeshAgent>();
         agent.speed = 1000;
         agent.angularSpeed = 1000;
         agent.acceleration = 3000;
-        agent = GetComponent<NavMeshAgent>();
     }
 
     void Update()

@@ -340,9 +340,9 @@ public class StoreController : MonoBehaviour
             cc.CompleteTransaction(hasBoughtSomething);
     }
 
-    public void RandomOffsetPrice(Product product, int alpha)
+    public void InitialRandomOffsetPrice(Product product, int alpha)
     {
-        float price = sm.GetProductionPrice(product.name);
+        float price = (sm.GetMaxPrice(product.name) - sm.GetProductionPrice(product.name)) * (1 / 4); // lower quarter
         float offset = sm.GetMaxPrice(product.name) * Random.Range(0, alpha) / 100f;
         product.Price = price + offset;
     }
@@ -386,7 +386,7 @@ public class StoreController : MonoBehaviour
         }
         else
         {
-            RandomOffsetPrice(product, StoreParams.PRICE_OFFSET);
+            InitialRandomOffsetPrice(product, StoreParams.PRICE_OFFSET);
             //product.amount = product.Invest_tend;
             if (balance - product.amount * price < 0)
                 product.amount = Mathf.FloorToInt((balance > 0 ? balance : 1) / price);
