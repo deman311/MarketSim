@@ -44,13 +44,10 @@ public class AIStoreController : Agent
 
     private void EndEpoch()
     {
-        // tax
-        float taxReward = (store.GetBalance() - store.GetTotalTax()) / (100 * MathF.Pow(store.GetLevel(), 3));
         store.Tax(StoreParams.BASE_TAX);
-        AddReward(taxReward);
-
         if (store.GetBalance() < 0)
         {
+
             AddReward(-20);
             isBankrupt = true;
         }
@@ -68,7 +65,6 @@ public class AIStoreController : Agent
 
     public override void OnEpisodeBegin()
     {
-        lastBalance = store.GetBalance();
         store.Restock();
         if (store.GetBalance() < 0)
         {
@@ -83,7 +79,6 @@ public class AIStoreController : Agent
     }
 
     bool isLast = false;
-    float lastBalance = 0;
     public override void CollectObservations(VectorSensor sensor)
     {
         Debug.Log("Collecting observations on step " + store.step);
@@ -91,11 +86,6 @@ public class AIStoreController : Agent
         List<int> sold = new List<int> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
             sold[i] = store.GetSoldProducts()[i];
-
-        // a reward based on the total profit up to this point.
-        if (!isLast)
-            AddReward(store.GetBalance() - store.GetTotalTax());
-        lastBalance = store.GetBalance();
 
         /*        // delta sold reward function
                 List<int> held = new List<int> { 0, 0, 0, 0, 0 };
@@ -109,22 +99,43 @@ public class AIStoreController : Agent
                 });
         */
 
-        // Because EndEpisode() calls CollectObservations again for some reason,
-        // I don't want to lose the find observation before passing to the model
-        if (store.step == MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES)
-            isLast = true;
-        if (isLast)
-        {
-            store.ClearSoldProducts();
-            isLast = false;
-        }
-
         // collect the total inputs from the store, 13 in total.
         sensor.AddObservation(sold.Select(s => (float)s).ToList()); // 5
         sensor.AddObservation(sm.GetAllAvgPrices()); // 5
         sensor.AddObservation(store.GetBalance());
         sensor.AddObservation(store.GetTotalTax());
         sensor.AddObservation(store.GetLevel());
+
+
+        if (isLast)
+        {
+            // print for debugging
+            List<string> variables = new List<string>();
+            variables.AddRange(sold.Select(s => s.ToString())); // 5
+            variables.AddRange(sm.GetAllAvgPrices().Select(p => p.ToString())); // 5
+            variables.Add(store.GetBalance().ToString());
+            variables.Add(store.GetTotalTax().ToString());
+            variables.Add(store.GetLevel().ToString());
+
+            Debug.Log("Observations: " + string.Join(", ", variables));
+        }
+
+        // Because EndEpisode() calls CollectObservations again for some reason,
+        // I don't want to lose the find observation before passing to the model
+        if (isLast)
+        {
+            store.ClearSoldProducts();
+            isLast = false;
+        }
+        else if (store.step == MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES)
+        {
+            isLast = true;
+
+            float balanceReward = store.GetBalance() - store.GetTotalTax();
+            if (balanceReward < -1000) // clamp negative loss
+                balanceReward = -1000;
+            AddReward(balanceReward);
+        }
 
         //Debug.Log("SIZE: " + sensor.ObservationSize());
     }
@@ -151,8 +162,7 @@ public class AIStoreController : Agent
                 ((store.GetLevel() == 1 && store.GetBalance() >= StoreParams.UPGRADE_LEVEL_TWO_PRICE + 300)
                     || ((store.GetLevel() == 2 && store.GetBalance() >= StoreParams.UPGRADE_LEVEL_THREE_PRICE + 2000))))
         {
-            float deltaPrice = store.GetBalance() / store.GetLevel() == 1 ? StoreParams.UPGRADE_LEVEL_TWO_PRICE : StoreParams.UPGRADE_LEVEL_THREE_PRICE;
-            AddReward(-1 * deltaPrice * store.GetLevel() * 10);
+            AddReward(-1 * store.GetLevel() * 10);
         }
 
         if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)

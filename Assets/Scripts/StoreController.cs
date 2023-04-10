@@ -434,6 +434,8 @@ public class StoreController : MonoBehaviour
                     currentStock -= sold;
                     existingProdAI.amount -= sold;
                 }
+                if (!soldProducts.TryAdd(product.name, sold))
+                    soldProducts[product.name] += sold;
             }
             return; // finish here for AIStore
         }
@@ -475,8 +477,6 @@ public class StoreController : MonoBehaviour
                 product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
             }
             existingProd.Invest_tend += product.amount / 2 + 1;
-            if (!soldProducts.TryAdd(product.name, sold))
-                soldProducts[product.name] += sold;
 
         }
         else // product does not exist in store
