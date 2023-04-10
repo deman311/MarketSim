@@ -83,7 +83,11 @@ public class AIStoreController : Agent
     {
         Debug.Log("Collecting observations on step " + store.step);
 
-        List<int> sold = new List<int> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
+
+        List<float> pprices = new List<float> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
+        for (int i = 0; i < store.GetProductPrices().Count; i++)
+            pprices[i] = store.GetProductPrices().Values.ToList()[i];
+        List<int> sold = new List<int> { 0, 0, 0, 0, 0 };
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
             sold[i] = store.GetSoldProducts()[i];
 
@@ -100,6 +104,7 @@ public class AIStoreController : Agent
         */
 
         // collect the total inputs from the store, 13 in total.
+        sensor.AddObservation(pprices); // 5
         sensor.AddObservation(sold.Select(s => (float)s).ToList()); // 5
         sensor.AddObservation(sm.GetAllAvgPrices()); // 5
         sensor.AddObservation(store.GetBalance());
@@ -107,10 +112,11 @@ public class AIStoreController : Agent
         sensor.AddObservation(store.GetLevel());
 
 
+        // print for debugging
         if (isLast)
         {
-            // print for debugging
             List<string> variables = new List<string>();
+            variables.AddRange(pprices.Select(s => s.ToString())); // 5
             variables.AddRange(sold.Select(s => s.ToString())); // 5
             variables.AddRange(sm.GetAllAvgPrices().Select(p => p.ToString())); // 5
             variables.Add(store.GetBalance().ToString());
