@@ -18,14 +18,20 @@ public class AIStoreController : Agent
     [SerializeField] TextMeshProUGUI pricesUI;
     [SerializeField] int Phase;
 
-    bool isBankrupt = false, awaitingDecision = false;
+    bool isBankrupt = false, awaitingDecision = false, isLast = false, readyForReset = false;
+    float R1 = 0;
 
-    private void Awake()
+    public void Awake()
     {
+        // validate after reset
+        isBankrupt = false; awaitingDecision = false; isLast = false; readyForReset = false;
+        R1 = 0;
+
         store = GetComponent<StoreController>();
         teacher = GameObject.Find("Academy").GetComponent<Teacher>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         store.isAI = true;
+        store.phase = Phase;
         store.Awake();
     }
 
@@ -36,31 +42,46 @@ public class AIStoreController : Agent
         pricesUI.text = pricesText;
 
         store.Update();
-        if (store.step != 0 && store.step % MLParams.TRANSACTION_DELTA == 0 && !store.isSelling && !awaitingDecision)
+        if (store.step != 0 && store.step % MLParams.Transaction_Delta == 0 && !store.isSelling && !awaitingDecision)
         {
             awaitingDecision = true;
             RequestDecision();
         }
     }
 
-    private void EndEpoch()
+    public void EndEpoch(int phase)
     {
-        store.Tax(StoreParams.BASE_TAX);
-        if (store.GetBalance() < 0)
+        switch (phase) // decide by phase
         {
+            case 1:
+                store.Tax(StoreParams.BASE_TAX);
+                if (store.GetBalance() < 0)
+                {
+                    AddReward(-20);
+                    isBankrupt = true;
+                }
 
-            AddReward(-20);
-            isBankrupt = true;
-        }
+                // finish episode
+                EndEpisode();
 
-        // finish episode
-        EndEpisode();
-
-        store.step = 0;
-        if (isBankrupt && store.GetLevel() == 0)
-        {
-            isBankrupt = false;
-            store.Awake(); // resets the store
+                store.step = 0;
+                if (isBankrupt && store.GetLevel() == 0)
+                {
+                    isBankrupt = false;
+                    store.Awake(); // resets the store
+                }
+                break;
+            case 2:
+                // calculate R2, R1 and scoreboard
+                float R2 = GetCumulativeReward();
+                if (R2 == 0)
+                    R2 = 0.001f;
+                var scoreboard = teacher.GetScoreboard();
+                int pos = scoreboard[store];
+                SetReward((R2 - R1) / R2 + 10 * scoreboard.Count / pos);
+                R1 = R2;
+                EndEpisode();
+                break;
         }
     }
 
@@ -74,17 +95,15 @@ public class AIStoreController : Agent
         }
 
         store.isSelling = true;
-        if (Phase != 2)
-        for (int i = 0; i < MLParams.TRANSACTION_CYCLES; i++)
-            for (int j = 0; j < MLParams.TRANSACTION_DELTA; j++)
-                store.SafeEnqueue(teacher.GetACustomer());
+        if (Phase == 1)
+            for (int i = 0; i < MLParams.Workdays; i++)
+                for (int j = 0; j < MLParams.Transaction_Delta; j++)
+                    store.SafeEnqueue(teacher.GetACustomer());
     }
 
-    bool isLast = false;
     public override void CollectObservations(VectorSensor sensor)
     {
         Debug.Log("Collecting observations on step " + store.step);
-
 
         List<float> pprices = new List<float> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
         for (int i = 0; i < store.GetProductPrices().Count; i++)
@@ -93,18 +112,6 @@ public class AIStoreController : Agent
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
             sold[i] = store.GetSoldProducts()[i];
 
-        /*        // delta sold reward function
-                List<int> held = new List<int> { 0, 0, 0, 0, 0 };
-                var prods = store.GetProducts().Select(p => p.Value.amount).ToList();
-                for (int i = 0; i < prods.Count; i++)
-                    held[i] = prods[i];
-                var rewards = sm.GetRewardsPerProduct(sold, held);
-                rewards.ForEach(reward =>
-                {
-                    AddReward(reward);
-                });
-        */
-
         // collect the total inputs from the store, 13 in total.
         sensor.AddObservation(pprices); // 5
         sensor.AddObservation(sold.Select(s => (float)s).ToList()); // 5
@@ -112,7 +119,6 @@ public class AIStoreController : Agent
         sensor.AddObservation(store.GetBalance());
         sensor.AddObservation(store.GetTotalTax());
         sensor.AddObservation(store.GetLevel());
-
 
         // print for debugging
         if (isLast)
@@ -134,18 +140,16 @@ public class AIStoreController : Agent
         {
             store.ClearSoldProducts();
             isLast = false;
+            readyForReset = true;
         }
-        else if (store.step == MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES)
+        else if (store.step == MLParams.Transaction_Delta * MLParams.Workdays)
         {
             isLast = true;
-
             float balanceReward = store.GetBalance() - store.GetTotalTax();
-            if (balanceReward < -1000) // clamp negative loss
-                balanceReward = -1000;
+            /*            if (balanceReward < -1000) // clamp negative loss
+                            balanceReward = -1000;*/
             AddReward(balanceReward);
         }
-
-        //Debug.Log("SIZE: " + sensor.ObservationSize());
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -173,22 +177,15 @@ public class AIStoreController : Agent
             AddReward(-1 * store.GetLevel() * 10);
         }
 
-        if (store.step != 0 && store.step % (MLParams.TRANSACTION_DELTA * MLParams.TRANSACTION_CYCLES) == 0)
-            EndEpoch();
+        if (Phase == 1 && store.step != 0 && store.step % (MLParams.Transaction_Delta * MLParams.Workdays) == 0)
+            EndEpoch(1);
 
         store.isSelling = true;
         awaitingDecision = false;
     }
 
-    /*async public bool checkIsQueueEmpty(StoreController store)
+    public bool IsReadyForReset()
     {
-    return true;
-    }*/
+        return readyForReset;
+    }
 }
-
-/*
-    Transaction = Step
-    9 Transactions = episode
-    3 Steps = Action
-
-*/

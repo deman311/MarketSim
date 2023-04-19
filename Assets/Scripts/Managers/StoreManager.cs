@@ -30,6 +30,11 @@ public class StoreManager : MonoBehaviour
         }
     }
 
+    public List<StoreController> GetAllStores()
+    {
+        return storeFolder.GetComponentsInChildren<StoreController>().ToList();
+    }
+
     private void SpawnStores()
     {
         GameObject storeFolder = GameObject.Find("Stores");
@@ -38,23 +43,24 @@ public class StoreManager : MonoBehaviour
         for (int i = 0; i < StoreParams.MAX_STORE_COUNT; i++)
         {
             rand = Random.Range(1, markers.Count);
-
             Instantiate(Resources.Load<GameObject>("Store"),
                markers[rand].transform.position, markers[rand].transform.rotation, storeFolder.transform);
             markers.RemoveAt(rand);
         }
         if (isAI)
-            for (int i = 0; i < markers.Count; i++)
+        {
+            int toSpawn = markers.Count - 1;
+            for (int i = 0; i < toSpawn; i++)
             {
                 rand = Random.Range(1, markers.Count);
-
                 Instantiate(Resources.Load<GameObject>("AIStore"),
                    markers[rand].transform.position, markers[rand].transform.rotation, storeFolder.transform);
                 markers.RemoveAt(rand);
             }
+        }
         markersFolder.SetActive(false);
 
         // send the stores to the PathfindingManager script
-        GetComponent<PathfindingManager>().SetStores(storeFolder.GetComponentsInChildren<StoreController>().ToList().Select(script => script.gameObject).ToList());
+        GetComponent<PathfindingManager>().SetStores(GetAllStores().Select(script => script.gameObject).ToList());
     }
 }

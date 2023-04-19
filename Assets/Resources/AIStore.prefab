@@ -1205,7 +1205,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 13
+    VectorObservationSize: 18
     NumStackedVectorObservations: 3
     m_ActionSpec:
       m_NumContinuousActions: 11
@@ -1236,7 +1236,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 1
   step: 0
-  isAI: 0
+  phase: 2
+  isAI: 1
   isSelling: 1
 --- !u!1 &4793256669719427210
 GameObject:

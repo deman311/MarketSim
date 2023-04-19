@@ -12,7 +12,7 @@ public abstract class CustomerParams
     public static int SHOPPING_LIST_PRODUCT_AMOUNT_MAX = 7;
     public static int SHOPPING_LIST_PRODUCT_AMOUNT_MIN = 1;
     public static int TTL = 3;
-    public static int VISIT_COUNT = 2;
+    public static int VISIT_COUNT = 3;
     public static int ALPHA = 15;
     public static float CUSTOMER_SHOP_PROXIMITY = 0.02f;
 }
@@ -20,7 +20,7 @@ public abstract class CustomerParams
 /*Store Params*/
 public abstract class StoreParams
 {
-    public static int MAX_STORE_COUNT = 8;
+    public static int MAX_STORE_COUNT = 7;
     public static int STORE_STARTING_BALANCE = 500;
     public static int BASE_TAX = 50;
     public static int STOCK_LEVEL_ONE = 20;
@@ -46,6 +46,7 @@ public abstract class MarketParams
 /* MLAgents Params */
 public abstract class MLParams
 {
-    public static int TRANSACTION_DELTA = 5;
-    public static int TRANSACTION_CYCLES = 3;
+    public static int Transaction_Delta = 5;
+    public static int Workdays = 3;
+    public static int Phase = 45;
 }

@@ -49,17 +49,14 @@ public class CustomerController : MonoBehaviour
     {
         gameObject.AddComponent(typeof(NavMeshAgent));
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = 1000;
-        agent.angularSpeed = 1000;
-        agent.acceleration = 3000;
-        agent.radius = 0.5f;
+        agent.speed = 50;
+        agent.angularSpeed = 100;
+        agent.acceleration = 100;
+        agent.radius = 0.1f;
     }
 
     void Update()
     {
-        if (cm == null) // mlagents scenario
-            return;
-
         HandleCanvas();
 
         if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < CustomerParams.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay

@@ -9,6 +9,7 @@ public class StatisticsController : MonoBehaviour
     TextMeshProUGUI mainText;
     private float timer = 0f;
     public static int daysPassed = 0;
+
     void Start()
     {
         mainText = GetComponent<TextMeshProUGUI>();
@@ -27,7 +28,7 @@ public class StatisticsController : MonoBehaviour
         }
     }
 
-    private string GetAveragePrices()
+    public string GetAveragePrices()
     {
         PathfindingManager pm =
             GameObject.Find("SimulationController").GetComponent<PathfindingManager>();

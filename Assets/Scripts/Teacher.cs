@@ -8,29 +8,37 @@ using UnityEngine;
 public class Teacher : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI avgPricesUI;
-    StockManager sm;
+    StoreManager storeManager;
 
     // Start is called before the first frame update
     void Awake()
     {
-        sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
+        storeManager = GameObject.Find("SimulationController").GetComponent<StoreManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        List<float> prices = sm.GetAllAvgPrices();
-        avgPricesUI.text = "Average Prices:\n";
-        avgPricesUI.text += "Apples: " + prices[0] + "\n";
-        avgPricesUI.text += "Shirts: " + prices[1] + "\n";
-        avgPricesUI.text += "Phones: " + prices[2] + "\n";
-        avgPricesUI.text += "GPUs: " + prices[3] + "\n";
-        avgPricesUI.text += "Rolexes: " + prices[4] + "\n";
+
     }
 
     public CustomerController GetACustomer()
     {
         var customer = Instantiate(Resources.Load("Customer"), transform.position, Quaternion.identity) as GameObject;
         return customer.GetComponent<CustomerController>();
+    }
+
+    /// <summary>
+    /// Store to it's position in the Scoreboard
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<StoreController, int> GetScoreboard()
+    {
+        var scoreboard = storeManager.GetAllStores();
+        scoreboard.Sort((s1, s2) => s1.GetBalance().CompareTo(s2.GetBalance()));
+        Dictionary<StoreController, int> dict = new Dictionary<StoreController, int>();
+        for (int i = 0; i < scoreboard.Count; i++)
+            dict.Add(scoreboard[i], i + 1);
+        return dict;
     }
 }

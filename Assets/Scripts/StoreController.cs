@@ -17,7 +17,7 @@ public class StoreController : MonoBehaviour
     float balance;
     int maxStock;
     int currentStock = 0;
-    public int step;
+    public int step, phase;
     float timer = 0f;
     public bool isAI = false;
     public bool isSelling = true;
@@ -41,6 +41,14 @@ public class StoreController : MonoBehaviour
 
     public void Awake()
     {
+        // validate init after reset
+        step = 0;
+        currentStock = 0;
+        queue.Clear();
+        products.Clear();
+        prodToITbeta.Keys.ToList().ForEach(key => prodToITbeta[key] = 1);
+        soldProducts.Keys.ToList().ForEach(key => soldProducts[key] = 0);
+
         if (isAI)
             level = 1;
         InitUiTMPs();
@@ -105,12 +113,11 @@ public class StoreController : MonoBehaviour
             Transaction(cc);
             if (isAI)
             {
-                Destroy(cc.gameObject);
+                if (phase == 1)
+                    Destroy(cc.gameObject);
                 step++;
-                if (step % MLParams.TRANSACTION_DELTA == 0)
+                if (step % MLParams.Transaction_Delta == 0)
                     isSelling = false;
-                //Academy.Instance.EnvironmentStep();
-                //Debug.Log("current step " + ++step);
             }
         }
     }

@@ -1,24 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WorkdayManager : MonoBehaviour
 {
     [SerializeField] GameObject customersFolder;
     [SerializeField] GameObject storesFolder;
-    StoreParams sp;
+    bool readyForReset = false;
 
     void Awake()
     {
-
+        readyForReset = false;
     }
 
     void Update()
     {
-        if (CheckIfAllDone())
+        if (!readyForReset && CheckIfAllDone())
         {
             FinishWorkDay();
             StartWorkDay();
+        }
+
+        if (readyForReset && storesFolder.GetComponentsInChildren<AIStoreController>().ToList().All(x => x.IsReadyForReset()))
+        {
+            ResetMarket();
         }
     }
 
@@ -44,11 +51,19 @@ public class WorkdayManager : MonoBehaviour
                 continue;
 
             store.Tax(StoreParams.BASE_TAX);
-            // check-decide if to upgrade
-            if (store.GetLevel() == 1 && store.GetBalance() > 2000 && Random.Range(0, 2) == 0)
-                store.SetLevel(2);
-            else if (store.GetLevel() == 2 && store.GetBalance() > 10000 && Random.Range(0, 2) == 0)
-                store.SetLevel(3);
+            if (!store.isAI)
+            {
+                // check-decide if to upgrade
+                if (store.GetLevel() == 1 && store.GetBalance() > 2000 && Random.Range(0, 2) == 0)
+                    store.SetLevel(2);
+                else if (store.GetLevel() == 2 && store.GetBalance() > 10000 && Random.Range(0, 2) == 0)
+                    store.SetLevel(3);
+            }
+            else if (StatisticsController.daysPassed == MLParams.Phase)
+            {
+                store.GetComponent<AIStoreController>().EndEpoch(2);
+                readyForReset = true;
+            }
         }
         foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
         {
@@ -58,6 +73,15 @@ public class WorkdayManager : MonoBehaviour
         GameObject.Find("SimulationController").GetComponent<CustomerManager>().CheckSpawn();
         GameObject.Find("SimulationController").GetComponent<StoreManager>().CheckSpawn();
         StatisticsController.daysPassed++;
+    }
+
+    public void ResetMarket()
+    {
+        foreach (var store in storesFolder.GetComponentsInChildren<StoreController>())
+            store.Awake();
+        foreach (var aiStore in storesFolder.GetComponentsInChildren<AIStoreController>())
+            aiStore.Awake();
+        readyForReset = false;
     }
 
     void StartWorkDay()
