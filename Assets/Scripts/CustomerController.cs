@@ -52,6 +52,7 @@ public class CustomerController : MonoBehaviour
         agent.speed = 1000;
         agent.angularSpeed = 1000;
         agent.acceleration = 3000;
+        agent.radius = 0.5f;
     }
 
     void Update()

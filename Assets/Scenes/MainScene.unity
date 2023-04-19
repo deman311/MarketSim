@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18332127, g: 0.22894508, b: 0.30623555, a: 1}
+  m_IndirectSpecularColor: {r: 0.18332061, g: 0.22894396, b: 0.3062337, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -288,6 +288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   markersFolder: {fileID: 835649247}
   storeFolder: {fileID: 1518328903}
+  isAI: 0
 --- !u!114 &377717677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1099,7 +1100,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!65 &1672090642
 BoxCollider:

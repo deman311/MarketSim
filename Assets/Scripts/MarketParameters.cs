@@ -9,7 +9,7 @@ using UnityEngine;
 public abstract class CustomerParams
 {
     public static int CUSTOMER_COUNT = 50;
-    public static int SHOPPING_LIST_PRODUCT_AMOUNT_MAX = 8;
+    public static int SHOPPING_LIST_PRODUCT_AMOUNT_MAX = 7;
     public static int SHOPPING_LIST_PRODUCT_AMOUNT_MIN = 1;
     public static int TTL = 3;
     public static int VISIT_COUNT = 2;

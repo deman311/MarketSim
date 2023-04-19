@@ -9,8 +9,7 @@ public class StoreManager : MonoBehaviour
 {
     [SerializeField] GameObject markersFolder;
     [SerializeField] GameObject storeFolder;
-
-    private int currentStoreCount = 0;
+    [SerializeField] bool isAI;
 
     void Awake()
     {
@@ -40,11 +39,19 @@ public class StoreManager : MonoBehaviour
         {
             rand = Random.Range(1, markers.Count);
 
-            GameObject store = Instantiate<GameObject>(Resources.Load<GameObject>("Store"),
+            Instantiate(Resources.Load<GameObject>("Store"),
                markers[rand].transform.position, markers[rand].transform.rotation, storeFolder.transform);
             markers.RemoveAt(rand);
-            currentStoreCount++;
         }
+        if (isAI)
+            for (int i = 0; i < markers.Count; i++)
+            {
+                rand = Random.Range(1, markers.Count);
+
+                Instantiate(Resources.Load<GameObject>("AIStore"),
+                   markers[rand].transform.position, markers[rand].transform.rotation, storeFolder.transform);
+                markers.RemoveAt(rand);
+            }
         markersFolder.SetActive(false);
 
         // send the stores to the PathfindingManager script

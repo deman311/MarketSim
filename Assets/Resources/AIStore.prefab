@@ -1102,7 +1102,7 @@ GameObject:
   - component: {fileID: 2111136982053275084}
   - component: {fileID: 1181202980}
   m_Layer: 0
-  m_Name: AI Store
+  m_Name: AIStore
   m_TagString: Store
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1191,6 +1191,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   pricesUI: {fileID: 2023456581185675982}
+  Phase: 2
 --- !u!114 &2111136982053275084
 MonoBehaviour:
   m_ObjectHideFlags: 0

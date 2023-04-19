@@ -74,7 +74,7 @@ public class CustomerManager : MonoBehaviour
     {
         return new Vector3(
                     Random.Range(bounds.min.x, bounds.max.x),
-                    0,
+                    spawnArea.GetComponent<Renderer>().bounds.max.y,
                     Random.Range(bounds.min.z, bounds.max.z)
                     );
     }

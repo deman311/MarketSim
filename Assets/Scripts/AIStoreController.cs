@@ -16,6 +16,7 @@ public class AIStoreController : Agent
     Teacher teacher;
     StockManager sm;
     [SerializeField] TextMeshProUGUI pricesUI;
+    [SerializeField] int Phase;
 
     bool isBankrupt = false, awaitingDecision = false;
 
@@ -73,6 +74,7 @@ public class AIStoreController : Agent
         }
 
         store.isSelling = true;
+        if (Phase != 2)
         for (int i = 0; i < MLParams.TRANSACTION_CYCLES; i++)
             for (int j = 0; j < MLParams.TRANSACTION_DELTA; j++)
                 store.SafeEnqueue(teacher.GetACustomer());
