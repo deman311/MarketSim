@@ -15,8 +15,11 @@ public class CamController : MonoBehaviour
 
     void Start()
     {
+        if (spawnArea == null)
+            return;
+
         // Store the initial position of the camera in the initialPosition Vector3
-        initialPosition = new Vector3(spawnArea.GetComponent<Renderer>().bounds.max.x, 25, 0);
+        initialPosition = new Vector3(spawnArea.GetComponent<Renderer>().bounds.max.x + 20, 20  , 0);
         isFollowing = false;
         ResetCamera();
     }

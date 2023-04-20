@@ -24,9 +24,7 @@ public class WorkdayManager : MonoBehaviour
         }
 
         if (readyForReset && storesFolder.GetComponentsInChildren<AIStoreController>().ToList().All(x => x.IsReadyForReset()))
-        {
             ResetMarket();
-        }
     }
 
     bool CheckIfAllDone()
@@ -59,10 +57,12 @@ public class WorkdayManager : MonoBehaviour
                 else if (store.GetLevel() == 2 && store.GetBalance() > 10000 && Random.Range(0, 2) == 0)
                     store.SetLevel(3);
             }
-            else if (StatisticsController.daysPassed == MLParams.Phase)
+            else if (store.phase != 0 && StatisticsController.daysPassed != 0 && StatisticsController.daysPassed % MLParams.Workdays == 0)
             {
                 store.GetComponent<AIStoreController>().EndEpoch(2);
-                readyForReset = true;
+
+                if (StatisticsController.daysPassed % MLParams.Phase == 0)
+                    readyForReset = true;
             }
         }
         foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())

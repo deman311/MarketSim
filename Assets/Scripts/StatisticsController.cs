@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -26,6 +27,19 @@ public class StatisticsController : MonoBehaviour
             timer = 0;
             mainText.text = GetAveragePrices();
         }
+    }
+
+    /// <summary>
+    /// return the relative store balance in precentage from the total balances in the market.
+    /// if the balance is negative or zero - return zero.
+    /// </summary>
+    public static float GetMarketShare(StoreController store)
+    {
+        if (store.GetBalance() <= 0)
+            return 0;
+        var allStores = GameObject.Find("Stores").GetComponentsInChildren<StoreController>();
+        float totalShares = allStores.Sum(x => x.GetBalance());
+        return store.GetBalance() / totalShares * 100;
     }
 
     public string GetAveragePrices()

@@ -51,15 +51,17 @@ public class CustomerController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.speed = 50;
         agent.angularSpeed = 100;
-        agent.acceleration = 100;
+        agent.acceleration = 150;
         agent.radius = 0.1f;
     }
 
     void Update()
     {
+        if (cm == null) return; // true for MLTraining
+
         HandleCanvas();
 
-        if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < CustomerParams.CUSTOMER_SHOP_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
+        if (storePath.Count > 0 && !isSelling && !isDone && agent.remainingDistance < CustomerParams.CUSTOMER_WAYPOINT_PROXIMITY) // hasPath is for a bug when just spawning and AIlib delay
         {
             if (isVisiting)
             {
@@ -81,7 +83,7 @@ public class CustomerController : MonoBehaviour
             isDone = true;
             GoToEnd();
         }
-        else if (isDone && agent.remainingDistance < CustomerParams.CUSTOMER_SHOP_PROXIMITY)
+        else if (isDone && agent.remainingDistance < CustomerParams.CUSTOMER_WAYPOINT_PROXIMITY)
         {
             isIdle = true;
             //CustomerManager.KillMe(this);
@@ -98,6 +100,9 @@ public class CustomerController : MonoBehaviour
         Dictionary<StoreController, long> storeToScore = new Dictionary<StoreController, long>();
         foreach (StoreController store in storeStack)
         {
+            if (storeToScore.ContainsKey(store))
+                continue;
+
             var storeProducts = store.GetProducts();
             int score = 0;
             foreach (Product cp in shoppingList)

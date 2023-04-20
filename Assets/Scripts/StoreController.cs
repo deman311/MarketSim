@@ -42,15 +42,17 @@ public class StoreController : MonoBehaviour
     public void Awake()
     {
         // validate init after reset
-        step = 0;
-        currentStock = 0;
-        queue.Clear();
-        products.Clear();
-        prodToITbeta.Keys.ToList().ForEach(key => prodToITbeta[key] = 1);
-        soldProducts.Keys.ToList().ForEach(key => soldProducts[key] = 0);
+        if (phase == 2)
+        {
+            step = 0;
+            currentStock = 0;
+            queue.Clear();
+            products.Clear();
+            prodToITbeta.Keys.ToList().ForEach(key => prodToITbeta[key] = 1);
+            soldProducts.Keys.ToList().ForEach(key => soldProducts[key] = 0);
+        }
 
-        if (isAI)
-            level = 1;
+        level = 1;
         InitUiTMPs();
         uiBalance = GetComponentInChildren<Canvas>();
         UpdateModel();
@@ -116,7 +118,7 @@ public class StoreController : MonoBehaviour
                 if (phase == 1)
                     Destroy(cc.gameObject);
                 step++;
-                if (step % MLParams.Transaction_Delta == 0)
+                if (step != 0 && step % MLParams.Transaction_Delta == 0)
                     isSelling = false;
             }
         }
@@ -287,7 +289,7 @@ public class StoreController : MonoBehaviour
             {
                 products.ToList().ForEach(kvp => kvp.Value.amount = 0);
                 var pfm = GameObject.Find("SimulationController").GetComponent<PathfindingManager>();
-                if (!isAI) // MLAgents race condition check
+                if (phase != 1) // phase 1 doesn't use this script
                     pfm.SafeRemove(gameObject);
                 else
                     SetLevel(0, false);

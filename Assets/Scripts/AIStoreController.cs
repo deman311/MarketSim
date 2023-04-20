@@ -24,11 +24,15 @@ public class AIStoreController : Agent
     public void Awake()
     {
         // validate after reset
-        isBankrupt = false; awaitingDecision = false; isLast = false; readyForReset = false;
-        R1 = 0;
+        if (Phase == 2)
+        {
+            isBankrupt = false; awaitingDecision = false; isLast = false; readyForReset = false;
+            R1 = 0;
+        }
 
         store = GetComponent<StoreController>();
-        teacher = GameObject.Find("Academy").GetComponent<Teacher>();
+        if (Phase != 0)
+            teacher = GameObject.Find("Academy").GetComponent<Teacher>();
         sm = GameObject.Find("SimulationController").GetComponent<StockManager>();
         store.isAI = true;
         store.phase = Phase;
@@ -78,7 +82,8 @@ public class AIStoreController : Agent
                     R2 = 0.001f;
                 var scoreboard = teacher.GetScoreboard();
                 int pos = scoreboard[store];
-                SetReward((R2 - R1) / R2 + 10 * scoreboard.Count / pos);
+                //SetReward((R2 - R1) / R2 + 10 * scoreboard.Count / pos + 20 * StatisticsController.GetMarketShare(store));
+                SetReward(R2 + 10 * scoreboard.Count / pos + 20 * StatisticsController.GetMarketShare(store));
                 R1 = R2;
                 EndEpisode();
                 break;
@@ -142,7 +147,7 @@ public class AIStoreController : Agent
             isLast = false;
             readyForReset = true;
         }
-        else if (store.step == MLParams.Transaction_Delta * MLParams.Workdays)
+        else if (store.step != 0 && store.step % (MLParams.Transaction_Delta * MLParams.Workdays) == 0)
         {
             isLast = true;
             float balanceReward = store.GetBalance() - store.GetTotalTax();
@@ -170,7 +175,7 @@ public class AIStoreController : Agent
             else
                 AddReward(-10 * store.GetLevel());
         }
-        else if (store.GetLevel() < 3 &&
+        else if (Phase == 1 && store.GetLevel() < 3 &&
                 ((store.GetLevel() == 1 && store.GetBalance() >= StoreParams.UPGRADE_LEVEL_TWO_PRICE + 300)
                     || ((store.GetLevel() == 2 && store.GetBalance() >= StoreParams.UPGRADE_LEVEL_THREE_PRICE + 2000))))
         {

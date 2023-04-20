@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1148787846}
   - component: {fileID: 1148787848}
   - component: {fileID: 1148787847}
+  - component: {fileID: 8995966468328375764}
   m_Layer: 5
   m_Name: AI
   m_TagString: Untagged
@@ -35,8 +36,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 1, y: 1}
-  m_SizeDelta: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 1, y: 2}
+  m_SizeDelta: {x: 2, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1148787848
 CanvasRenderer:
@@ -73,6 +74,26 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!95 &8995966468328375764
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1148787845}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d664984973df5b74090ca669bc58221f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &91561860207038237
 GameObject:
   m_ObjectHideFlags: 0
@@ -1214,9 +1235,9 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 6386ff77b77bdab4bb40ff8e7a72fd45, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: ddd820e8c2a0b2d468deb67d33f324c0, type: 3}
   m_InferenceDevice: 1
-  m_BehaviorType: 0
+  m_BehaviorType: 2
   m_BehaviorName: StoreAI
   TeamId: 0
   m_UseChildSensors: 1
