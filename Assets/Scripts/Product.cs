@@ -12,8 +12,11 @@ public class Product
 		set
 		{
 			float pPrice = GameObject.Find("SimulationController").GetComponent<StockManager>().GetProductionPrice(name);
+			float mPrice = GameObject.Find("SimulationController").GetComponent<StockManager>().GetMaxPrice(name);
 			if (value < pPrice)
 				value = pPrice;
+			if (value > mPrice)
+				value = mPrice;
 			price = value;
 		}
 	}

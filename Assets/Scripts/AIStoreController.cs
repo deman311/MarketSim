@@ -77,14 +77,30 @@ public class AIStoreController : Agent
                 break;
             case 2:
                 // calculate R2, R1 and scoreboard
-                float R2 = GetCumulativeReward();
-                if (R2 == 0)
-                    R2 = 0.001f;
-                var scoreboard = teacher.GetScoreboard();
-                int pos = scoreboard[store];
-                //SetReward((R2 - R1) / R2 + 10 * scoreboard.Count / pos + 20 * StatisticsController.GetMarketShare(store));
-                SetReward(R2 + 10 * scoreboard.Count / pos + 20 * StatisticsController.GetMarketShare(store));
-                R1 = R2;
+                /*                float R2 = GetCumulativeReward();
+                                if (R2 == 0)
+                                    R2 = 0.001f;
+                                var scoreboard = teacher.GetScoreboard();
+                                int pos = scoreboard[store];
+                                float marketshare = StatisticsController.GetMarketShare(store) / 100;
+                                //SetReward(R2 + 1000 * scoreboard.Count / pos + 20 * StatisticsController.GetMarketShare(store));
+                                float delta_improvment = (R2 - R1) / R2;
+                                *//*                if (delta_improvment < 0)
+                                                    delta_improvment = 0;*//*
+                                //SetReward(20 * scoreboard.Count / pos + StatisticsController.GetMarketShare(store));
+                                //SetReward(delta_improvment + 100 * scoreboard.Count / pos);
+                                SetReward(store.GetBalance());
+                                R1 = R2;*/
+                float reward = store.GetBalance() * store.GetLevel();
+                if (StatisticsController.GetMarketShare(store) > 20)
+                    reward *= 100;
+                SetReward(reward);
+                if (reward < 0)
+                    if (store.GetLevel() > 1)
+                        SetReward(-10);
+                    else
+                        SetReward(store.GetBalance());
+
                 EndEpisode();
                 break;
         }
@@ -150,10 +166,27 @@ public class AIStoreController : Agent
         else if (store.step != 0 && store.step % (MLParams.Transaction_Delta * MLParams.Workdays) == 0)
         {
             isLast = true;
-            float balanceReward = store.GetBalance() - store.GetTotalTax();
-            /*            if (balanceReward < -1000) // clamp negative loss
-                            balanceReward = -1000;*/
+            float R2 = store.GetBalance() - store.GetTotalTax();
+            if (R2 == 0)
+                R2 = 0.001f;
+            float balanceReward = (R2 - R1) / R2;
             AddReward(balanceReward);
+            /*            float balanceReward = store.GetBalance() - store.GetTotalTax();
+                        *//*            switch (store.GetLevel()) // clip 1-2 levels reward to incentivise the model to upgrade to level 3.
+                                    {
+                                        case 1:
+                                            if (balanceReward > StoreParams.UPGRADE_LEVEL_TWO_PRICE * 2)
+                                                balanceReward = StoreParams.UPGRADE_LEVEL_TWO_PRICE * 2;
+                                            break;
+                                        case 2:
+                                            AddReward(StoreParams.UPGRADE_LEVEL_TWO_PRICE);
+                                            if (balanceReward > StoreParams.UPGRADE_LEVEL_THREE_PRICE * 2)
+                                                balanceReward = StoreParams.UPGRADE_LEVEL_THREE_PRICE * 2;
+                                            break;
+                                        case 3: AddReward(StoreParams.UPGRADE_LEVEL_THREE_PRICE); break;
+                                    }*//*
+                        if (Phase == 1)
+                            AddReward(balanceReward);*/
         }
     }
 

@@ -39,6 +39,7 @@ public class StatisticsController : MonoBehaviour
             return 0;
         var allStores = GameObject.Find("Stores").GetComponentsInChildren<StoreController>();
         float totalShares = allStores.Sum(x => x.GetBalance());
+        if (totalShares <= 0) totalShares = 1; // bad market
         return store.GetBalance() / totalShares * 100;
     }
 

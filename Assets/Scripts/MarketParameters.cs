@@ -8,7 +8,7 @@ using UnityEngine;
 /*Customer Params*/
 public abstract class CustomerParams
 {
-    public static int CUSTOMER_COUNT = 50;
+    public static int CUSTOMER_COUNT = 70;
     public static int SHOPPING_LIST_PRODUCT_AMOUNT_MAX = 7;
     public static int SHOPPING_LIST_PRODUCT_AMOUNT_MIN = 1;
     public static int TTL = 3;
@@ -48,5 +48,5 @@ public abstract class MLParams
 {
     public static int Transaction_Delta = 3;
     public static int Workdays = 3;
-    public static int Phase = 45;
+    public static int Phase = 36;
 }

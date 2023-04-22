@@ -44,6 +44,7 @@ public class StoreController : MonoBehaviour
         // validate init after reset
         if (phase == 2)
         {
+            level = 1;
             step = 0;
             currentStock = 0;
             queue.Clear();
@@ -52,7 +53,9 @@ public class StoreController : MonoBehaviour
             soldProducts.Keys.ToList().ForEach(key => soldProducts[key] = 0);
         }
 
-        level = 1;
+        if (phase == 0 || (phase == 1 && isAI))
+            level = 1;
+
         InitUiTMPs();
         uiBalance = GetComponentInChildren<Canvas>();
         UpdateModel();
@@ -483,14 +486,20 @@ public class StoreController : MonoBehaviour
                 existingProd.Price -= price_delta + bankruptPanic; // 10% + delta + (20% to epsilon)
 
                 // Customer changes
-                product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
+                int ttl = cc.ttl; // this is used for a race condition
+                if (ttl == 0)
+                    ttl = 1;
+                product.Price += price_delta * (CustomerManager.GetMaxTTL() / ttl);
             }
             existingProd.Invest_tend += product.amount / 2 + 1;
 
         }
         else // product does not exist in store
         {
-            product.Price += price_delta * (CustomerManager.GetMaxTTL() / cc.ttl);
+            int ttl = cc.ttl; // this is used for a race condition
+            if (ttl == 0)
+                ttl = 1;
+            product.Price += price_delta * (CustomerManager.GetMaxTTL() / ttl);
             if (existingProd != null)
                 existingProd.Invest_tend += product.amount / 2; // buy half of wanted
         }

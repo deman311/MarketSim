@@ -129,6 +129,8 @@ public class CustomerController : MonoBehaviour
 
     private void SetMood(int moodID)
     {
+        if (this.IsDestroyed()) return; // race during training ML
+
         Dictionary<int, Texture> moodTextures = new Dictionary<int, Texture>
         {
             { HAPPY, Resources.Load("Icons/happy") as Texture },
@@ -269,7 +271,7 @@ public class CustomerController : MonoBehaviour
             isKillable = true;
         }
 
-        if (hasBoughtSomething)
+        if (hasBoughtSomething && !this.IsDestroyed())
             Instantiate(Resources.Load("CashThrow") as GameObject, transform);
     }
 
