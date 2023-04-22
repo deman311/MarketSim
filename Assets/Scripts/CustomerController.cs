@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using Unity.VisualScripting;
@@ -97,28 +98,28 @@ public class CustomerController : MonoBehaviour
 
     private void CompareStores()
     {
-        Dictionary<StoreController, long> storeToScore = new Dictionary<StoreController, long>();
+        Dictionary<StoreController, float> storeToScore = new Dictionary<StoreController, float>();
         foreach (StoreController store in storeStack)
         {
             if (storeToScore.ContainsKey(store))
                 continue;
 
             var storeProducts = store.GetProducts();
-            int score = 0;
+            float score = 0;
             foreach (Product cp in shoppingList)
             {
                 if (storeProducts.TryGetValue(cp.name, out var sp))
                 {
-                    if (sp.Price <= cp.Price && sp.amount > 0)
-                        score += 1;
+                    if (sp.Price <= cp.Price)
+                        score += (cp.Price - sp.Price) * sp.amount + 1;
                     else
-                        score -= 1;
+                        score -= sp.amount > 0 ? sp.amount : 1;
                 }
             }
             storeToScore.Add(store, score);
         }
-        var sorted = storeToScore.ToListPooled();
-        sorted.Sort((a, b) => a.Value.CompareTo(b.Value));
+        var sorted = storeToScore.ToList();
+        sorted.Sort((a, b) => b.Value.CompareTo(a.Value));
         if (storePath.Count > 0)
             storePath.Insert(0, sorted[0].Key.gameObject);
         else

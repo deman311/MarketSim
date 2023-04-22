@@ -8,7 +8,7 @@ using UnityEngine;
 /*Customer Params*/
 public abstract class CustomerParams
 {
-    public static int CUSTOMER_COUNT = 70;
+    public static int CUSTOMER_COUNT = 50;
     public static int SHOPPING_LIST_PRODUCT_AMOUNT_MAX = 7;
     public static int SHOPPING_LIST_PRODUCT_AMOUNT_MIN = 1;
     public static int TTL = 3;
@@ -20,7 +20,7 @@ public abstract class CustomerParams
 /*Store Params*/
 public abstract class StoreParams
 {
-    public static int MAX_STORE_COUNT = 8;
+    public static int MAX_STORE_COUNT = 7;
     public static int STORE_STARTING_BALANCE = 500;
     public static int BASE_TAX = 50;
     public static int STOCK_LEVEL_ONE = 20;
