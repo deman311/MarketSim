@@ -471,6 +471,7 @@ GameObject:
   - component: {fileID: -2355674702516822024}
   - component: {fileID: 2659031059199591623}
   - component: {fileID: 2659031059199591617}
+  - component: {fileID: 5088407719164285935}
   m_Layer: 0
   m_Name: Store
   m_TagString: Store
@@ -556,13 +557,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50d01136db80c4b7e97cb8c5e63b4f4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiBalance: {fileID: 1830070418}
-  cash: {fileID: 7494732606536384693}
-  apple: {fileID: 3984309840732085703}
-  shirt: {fileID: 2434433200247838535}
-  phone: {fileID: 5724572261548471474}
-  gpu: {fileID: 2268835406508651242}
-  rolex: {fileID: 7416030842342632706}
+  level: 1
+  step: 0
+  phase: 0
+  isAI: 0
+  isSelling: 1
+--- !u!95 &5088407719164285935
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2659031059199591616}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: af92f90fea79de140938dc285831754f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3433516354527545559
 GameObject:
   m_ObjectHideFlags: 0

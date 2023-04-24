@@ -52,8 +52,8 @@ public class CustomerController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.speed = 50;
         agent.angularSpeed = 100;
-        agent.acceleration = 150;
-        agent.radius = 0.1f;
+        agent.acceleration = 500;
+        agent.radius = 0.2f;
     }
 
     void Update()

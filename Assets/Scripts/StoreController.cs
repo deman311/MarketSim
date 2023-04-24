@@ -5,6 +5,7 @@ using System.Text;
 using TMPro;
 using Unity.MLAgents;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -129,6 +130,8 @@ public class StoreController : MonoBehaviour
 
     private void UpdateModel()
     {
+        GetComponent<Animator>().Play("StorePop", 0);
+
         //delete old model
         foreach (var g in GetComponentsInChildren<Transform>())
             if (g.tag == "StoreModel")
@@ -156,8 +159,7 @@ public class StoreController : MonoBehaviour
                 break;
         }
 
-        GetComponentInChildren<Canvas>().gameObject.transform.localPosition = Vector3.up * level * level *
-            (level < 3 ? 2 : 1);
+        GetComponentInChildren<Canvas>().transform.localPosition = new Vector3(0, GetComponent<Renderer>().bounds.max.y + 2, 0);
     }
 
     private void UpdateUIPrices()

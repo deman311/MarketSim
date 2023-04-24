@@ -52,7 +52,7 @@ public class StoreManager : MonoBehaviour
             int toSpawn = markers.Count - 1;
             for (int i = 0; i < toSpawn; i++)
             {
-                rand = Random.Range(1, markers.Count);
+                rand = Random.Range(1, markers.Count);  
                 Instantiate(Resources.Load<GameObject>("AIStore"),
                    markers[rand].transform.position, markers[rand].transform.rotation, storeFolder.transform);
                 markers.RemoveAt(rand);

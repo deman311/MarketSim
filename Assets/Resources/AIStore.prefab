@@ -1122,6 +1122,7 @@ GameObject:
   - component: {fileID: 2111136982053275075}
   - component: {fileID: 2111136982053275084}
   - component: {fileID: 1181202980}
+  - component: {fileID: -1424367951501974136}
   m_Layer: 0
   m_Name: AIStore
   m_TagString: Store
@@ -1260,6 +1261,26 @@ MonoBehaviour:
   phase: 2
   isAI: 1
   isSelling: 1
+--- !u!95 &-1424367951501974136
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4155280182661253861}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: af92f90fea79de140938dc285831754f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4793256669719427210
 GameObject:
   m_ObjectHideFlags: 0
