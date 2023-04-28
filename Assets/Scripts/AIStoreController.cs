@@ -20,6 +20,7 @@ public class AIStoreController : Agent
 
     bool isBankrupt = false, awaitingDecision = false, isLast = false, readyForReset = false;
     float R1 = 0;
+    int bankruptCount = 0;
 
     public void Awake()
     {
@@ -92,9 +93,10 @@ public class AIStoreController : Agent
                                 SetReward(store.GetBalance());
                                 R1 = R2;*/
                 float reward = store.GetBalance() * store.GetLevel();
-                if (StatisticsController.GetMarketShare(store) > 20)
-                    reward *= 100;
-                SetReward(reward);
+                var marketshare = StatisticsController.GetMarketShare(store);
+                if (marketshare > 20)
+                    reward *= marketshare;
+                SetReward(reward - bankruptCount * reward / 5); // off 20% for every bankrupcy
                 if (reward < 0)
                     if (store.GetLevel() > 1)
                         SetReward(-10);
@@ -108,6 +110,7 @@ public class AIStoreController : Agent
 
     public override void OnEpisodeBegin()
     {
+        bankruptCount = 0;
         store.Restock();
         if (store.GetBalance() < 0)
         {
@@ -165,6 +168,9 @@ public class AIStoreController : Agent
         }
         else if (store.step != 0 && store.step % (MLParams.Transaction_Delta * MLParams.Workdays) == 0)
         {
+            if (store.GetBalance() < 0)
+                bankruptCount++;
+
             isLast = true;
             float R2 = store.GetBalance() - store.GetTotalTax();
             if (R2 == 0)
