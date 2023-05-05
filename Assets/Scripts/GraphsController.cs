@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
 public class GraphsController : MonoBehaviour
 {
@@ -15,6 +16,16 @@ public class GraphsController : MonoBehaviour
     private RectTransform dashTemplateX;
     private RectTransform dashTemplateY;
     private List<GameObject> gameObjectsList;
+    private List<IGraphVisualObject> graphVisualObjects;
+    private List<RectTransform> yLabelsList;
+
+    private interface IGraphVisualObject
+    {
+        void SetLineGraphVisualObject(Vector2 graphPosition);
+        void CleanUp();
+    }
+
+  
     
 
     void Awake()
@@ -25,6 +36,7 @@ public class GraphsController : MonoBehaviour
         dashTemplateX = graphContainer.Find("dashTemplateX").GetComponent<RectTransform>();
         dashTemplateY = graphContainer.Find("dashTemplateY").GetComponent<RectTransform>();
         gameObjectsList = new List<GameObject>();
+        graphVisualObjects = new List<IGraphVisualObject>();
 
         List<int> points = new List<int> {0, 5, 98, 49, 33, 17, 16, 15, 20, 30, 40, 35, 60, 80 };
         //CreateCircle(new Vector2(20, 20));
@@ -51,32 +63,13 @@ public class GraphsController : MonoBehaviour
             Destroy(gameObject);
         }
         gameObjectsList.Clear();
+        //yLabelsList.Clear();
 
         float graphHeight = graphContainer.sizeDelta.y;
         float graphWidth = graphContainer.sizeDelta.x;
 
-        float yMax = values[0];
-        float yMin = values[0];
-
-        for(int i = Math.Max(values.Count - maxVisibleValues, 0); i < values.Count; i++)
-        {
-            int value = values[i];
-            if(value > yMax)
-            {
-                yMax = value;
-            }
-            if(value < yMin)
-            {
-                yMin = value;
-            }
-        }
-        float yDelta = yMax - yMin;
-        if(yDelta < 0)
-        {
-            yDelta = 5f;
-        }
-        yMax = yMax + (yDelta*0.2f); //make a some space between the top of the graph and the max value
-        yMin = yMin - (yDelta*0.2f); 
+        float yMin, yMax;
+        CalculateYScale(out yMin, out yMax, values, maxVisibleValues);
 
         float xStep = graphWidth / (maxVisibleValues+1);
 
@@ -87,13 +80,13 @@ public class GraphsController : MonoBehaviour
         {
             float x = 5 + xIndex * xStep;
             float y = ((values[i] - yMin) / (yMax-yMin)) * graphHeight;
-            gameObjectsList.AddRange(lineGraph.AddDot(new Vector2(x, y)));
+            graphVisualObjects.Add(lineGraph.AddDot(new Vector2(x, y)));
 
             RectTransform xLabel = Instantiate(labelTemplateX);
             xLabel.SetParent(graphContainer, false);
             xLabel.gameObject.SetActive(true);
             xLabel.anchoredPosition = new Vector2(x, 0);
-            xLabel.GetComponent<Text>().text = "D"+(i+1).ToString();
+            xLabel.GetComponent<Text>().text = (i+1).ToString();
             gameObjectsList.Add(xLabel.gameObject);
 
             RectTransform xDash = Instantiate(dashTemplateX);
@@ -113,6 +106,7 @@ public class GraphsController : MonoBehaviour
             float normalizedY = i * 1f / yAxisSeperatorsCount;
             yLabel.anchoredPosition = new Vector2(5f, normalizedY * graphHeight);
             yLabel.GetComponent<Text>().text = Mathf.RoundToInt(yMin + (normalizedY * (yMax-yMin))).ToString()+"$";
+            //yLabelsList.Add(yLabel);
             gameObjectsList.Add(yLabel.gameObject);
 
 
@@ -126,6 +120,32 @@ public class GraphsController : MonoBehaviour
 
     }
 
+    private void CalculateYScale(out float yMin, out float yMax, List<int> values, int maxVisibleValues)
+    {
+        yMax = values[0];
+        yMin = values[0];
+
+        for (int i = Math.Max(values.Count - maxVisibleValues, 0); i < values.Count; i++)
+        {
+            int value = values[i];
+            if (value > yMax)
+            {
+                yMax = value;
+            }
+            if (value < yMin)
+            {
+                yMin = value;
+            }
+        }
+        float yDelta = yMax - yMin;
+        if (yDelta < 0)
+        {
+            yDelta = 5f;
+        }
+        yMax = yMax + (yDelta * 0.2f); //make a some space between the top of the graph and the max value
+        yMin = yMin - (yDelta * 0.2f);
+    }
+
 
 
     private class LineGraph
@@ -135,7 +155,7 @@ public class GraphsController : MonoBehaviour
         /// </summary>
         private RectTransform graphContainer;
         private Sprite dotSprite;
-        private GameObject previousDot;
+        private LineGraphVisualObject previousLineGraphVisualObject;
         private Color dotColor;
         private Color dotConnectionColor;
 
@@ -145,7 +165,7 @@ public class GraphsController : MonoBehaviour
             this.dotSprite = dotSprite;
             this.dotColor = dotColor;
             this.dotConnectionColor = dotConnectionColor;
-            previousDot = null;
+            previousLineGraphVisualObject = null;
         }
 
         /// <summary>
@@ -154,19 +174,24 @@ public class GraphsController : MonoBehaviour
         /// </summary>
         /// <param name="graphPosition">The position in the graph where the dot is to be added.</param>
         /// <returns>A list of GameObjects representing the dot and the dot connection, if any.</returns>
-        public List<GameObject> AddDot(Vector2 graphPosition)
+        public IGraphVisualObject AddDot(Vector2 graphPosition)
         {
             List<GameObject> gameObjectsList = new List<GameObject>();
             GameObject dotGameObject = CreateDot(graphPosition);
             gameObjectsList.Add(dotGameObject);
-            if (previousDot != null)
+            GameObject dotConnectionGameObject = null;
+            if (previousLineGraphVisualObject != null)
             {
-                GameObject dotConnectionGameObjec = CreateDotConnection(previousDot.GetComponent<RectTransform>().anchoredPosition,
+                dotConnectionGameObject = CreateDotConnection(previousLineGraphVisualObject.GetGraphPosition(),
                     dotGameObject.GetComponent<RectTransform>().anchoredPosition);
-                gameObjectsList.Add(dotConnectionGameObjec);
+                gameObjectsList.Add(dotConnectionGameObject);
             }
-            previousDot = dotGameObject;
-            return gameObjectsList;
+
+            LineGraphVisualObject lineGraphVisualObject = new LineGraphVisualObject(dotGameObject, dotConnectionGameObject, previousLineGraphVisualObject);
+            lineGraphVisualObject.SetLineGraphVisualObject(graphPosition);
+            previousLineGraphVisualObject = lineGraphVisualObject;
+
+            return lineGraphVisualObject;
         }
 
         /// <summary>
@@ -210,6 +235,65 @@ public class GraphsController : MonoBehaviour
             rectTransform.anchoredPosition = anchoredPosition1 + direction * distance * 0.5f;
             rectTransform.localEulerAngles = new Vector3(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
             return gameObject;
+        }
+
+        public class LineGraphVisualObject : IGraphVisualObject
+        {
+            public event EventHandler OnChangedGraphVisualObject;
+            private GameObject dotGameObject;
+            private GameObject dotConnectionGameObject;
+            private LineGraphVisualObject previousLineGraphVisualObject;
+            public LineGraphVisualObject(GameObject dotGameObject, GameObject dotConnectionGameObject, LineGraphVisualObject previousLineGraphVisualObject)
+            {
+                this.dotGameObject = dotGameObject;
+                this.dotConnectionGameObject = dotConnectionGameObject;
+                this.previousLineGraphVisualObject = previousLineGraphVisualObject;
+
+                if(previousLineGraphVisualObject!= null)
+                {
+                    previousLineGraphVisualObject.OnChangedGraphVisualObject += PreviousLineGraphVisualObject_OnChangedGraphVisualObject;
+                }
+            }
+
+            private void PreviousLineGraphVisualObject_OnChangedGraphVisualObject(object sender, EventArgs e)
+            {
+                UpdateDotConnection();
+            }
+
+            public void SetLineGraphVisualObject(Vector2 graphPosition)
+            {
+                RectTransform rectTransform = dotGameObject.GetComponent<RectTransform>();
+                rectTransform.anchoredPosition = graphPosition;
+
+                UpdateDotConnection();
+
+                if (OnChangedGraphVisualObject != null) { OnChangedGraphVisualObject(this, EventArgs.Empty); }
+            }
+            public void CleanUp()
+            {
+                Destroy(dotGameObject);
+                Destroy(dotConnectionGameObject);
+            }
+
+            public Vector2 GetGraphPosition()
+            {
+                RectTransform rectTransform = dotGameObject.GetComponent<RectTransform>();
+                return rectTransform.anchoredPosition;
+            }
+
+            private void UpdateDotConnection()
+            {
+                if (dotConnectionGameObject != null)
+                {
+                    RectTransform dotConnectionRectTransform = dotConnectionGameObject.GetComponent<RectTransform>();
+                    Vector2 direction = (previousLineGraphVisualObject.GetGraphPosition() - GetGraphPosition()).normalized;
+                    float distance = Vector2.Distance(GetGraphPosition(), previousLineGraphVisualObject.GetGraphPosition());
+                    dotConnectionRectTransform.sizeDelta = new Vector2(distance, 3f);
+                    dotConnectionRectTransform.anchoredPosition = GetGraphPosition() + direction * distance * 0.5f;
+                    dotConnectionRectTransform.localEulerAngles = new Vector3(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+                }
+            }
+
         }
     }
 }
