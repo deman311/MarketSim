@@ -159,7 +159,7 @@ public class StoreController : MonoBehaviour
                 break;
         }
 
-        GetComponentInChildren<Canvas>().transform.localPosition = new Vector3(0, GetComponent<Renderer>().bounds.max.y * level * 3, 0);
+        GetComponentInChildren<Canvas>().transform.localPosition = new Vector3(0, GetComponentInChildren<Renderer>().bounds.max.y * level * 3, 0);
     }
 
     private void UpdateUIPrices()
