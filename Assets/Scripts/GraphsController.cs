@@ -16,9 +16,9 @@ public class GraphsController : MonoBehaviour
     private RectTransform dashTemplateX;
     private RectTransform dashTemplateY;
     private List<GameObject> gameObjectsList;
-    private List<IGraphVisualObject> graphVisualObjects;
+    private List<IGraphVisualObject> graphVisualObjectList;
     private List<RectTransform> yLabelsList;
-
+    private List<float> values;
     private interface IGraphVisualObject
     {
         void SetLineGraphVisualObject(Vector2 graphPosition);
@@ -26,7 +26,11 @@ public class GraphsController : MonoBehaviour
     }
 
   
-    
+    public void UpdateGraph(float value)
+    {
+        values.Add(value);
+        ShowGraph(values, -1);
+    }
 
     void Awake()
     {
@@ -36,9 +40,9 @@ public class GraphsController : MonoBehaviour
         dashTemplateX = graphContainer.Find("dashTemplateX").GetComponent<RectTransform>();
         dashTemplateY = graphContainer.Find("dashTemplateY").GetComponent<RectTransform>();
         gameObjectsList = new List<GameObject>();
-        graphVisualObjects = new List<IGraphVisualObject>();
+        graphVisualObjectList = new List<IGraphVisualObject>();
 
-        List<int> points = new List<int> {0, 5, 98, 49, 33, 17, 16, 15, 20, 30, 40, 35, 60, 80 };
+        List<float> points = new List<float> {0, 5, 98, 49, 33, 17, 16, 15, 20, 30, 40, 35, 60, 80 };
         //CreateCircle(new Vector2(20, 20));
         ShowGraph(points, -1);
 
@@ -51,7 +55,7 @@ public class GraphsController : MonoBehaviour
     }
 
 
-    private void ShowGraph(List<int> values, int maxVisibleValues = -1 )
+    private void ShowGraph(List<float> values, int maxVisibleValues = -1 )
     {
         if(maxVisibleValues <= 0)
         {
@@ -63,6 +67,12 @@ public class GraphsController : MonoBehaviour
             Destroy(gameObject);
         }
         gameObjectsList.Clear();
+
+        foreach(IGraphVisualObject graphVisualObject in graphVisualObjectList)
+        {
+            graphVisualObject.CleanUp();
+        }
+        graphVisualObjectList.Clear();
         //yLabelsList.Clear();
 
         float graphHeight = graphContainer.sizeDelta.y;
@@ -80,7 +90,7 @@ public class GraphsController : MonoBehaviour
         {
             float x = 5 + xIndex * xStep;
             float y = ((values[i] - yMin) / (yMax-yMin)) * graphHeight;
-            graphVisualObjects.Add(lineGraph.AddDot(new Vector2(x, y)));
+            graphVisualObjectList.Add(lineGraph.AddDot(new Vector2(x, y)));
 
             RectTransform xLabel = Instantiate(labelTemplateX);
             xLabel.SetParent(graphContainer, false);
@@ -176,15 +186,15 @@ public class GraphsController : MonoBehaviour
         /// <returns>A list of GameObjects representing the dot and the dot connection, if any.</returns>
         public IGraphVisualObject AddDot(Vector2 graphPosition)
         {
-            List<GameObject> gameObjectsList = new List<GameObject>();
+            //List<GameObject> gameObjectsList = new List<GameObject>();
             GameObject dotGameObject = CreateDot(graphPosition);
-            gameObjectsList.Add(dotGameObject);
+            //gameObjectsList.Add(dotGameObject);
             GameObject dotConnectionGameObject = null;
             if (previousLineGraphVisualObject != null)
             {
                 dotConnectionGameObject = CreateDotConnection(previousLineGraphVisualObject.GetGraphPosition(),
                     dotGameObject.GetComponent<RectTransform>().anchoredPosition);
-                gameObjectsList.Add(dotConnectionGameObject);
+                //gameObjectsList.Add(dotConnectionGameObject);
             }
 
             LineGraphVisualObject lineGraphVisualObject = new LineGraphVisualObject(dotGameObject, dotConnectionGameObject, previousLineGraphVisualObject);
@@ -231,7 +241,7 @@ public class GraphsController : MonoBehaviour
             float distance = Vector2.Distance(anchoredPosition1, anchoredPosition2);
             rectTransform.anchorMin = new Vector2(0, 0);
             rectTransform.anchorMax = new Vector2(0, 0);
-            rectTransform.sizeDelta = new Vector2(distance, 3f);
+            rectTransform.sizeDelta = new Vector2(distance, 1f);
             rectTransform.anchoredPosition = anchoredPosition1 + direction * distance * 0.5f;
             rectTransform.localEulerAngles = new Vector3(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
             return gameObject;
@@ -288,7 +298,7 @@ public class GraphsController : MonoBehaviour
                     RectTransform dotConnectionRectTransform = dotConnectionGameObject.GetComponent<RectTransform>();
                     Vector2 direction = (previousLineGraphVisualObject.GetGraphPosition() - GetGraphPosition()).normalized;
                     float distance = Vector2.Distance(GetGraphPosition(), previousLineGraphVisualObject.GetGraphPosition());
-                    dotConnectionRectTransform.sizeDelta = new Vector2(distance, 3f);
+                    dotConnectionRectTransform.sizeDelta = new Vector2(distance, 1f);
                     dotConnectionRectTransform.anchoredPosition = GetGraphPosition() + direction * distance * 0.5f;
                     dotConnectionRectTransform.localEulerAngles = new Vector3(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
                 }

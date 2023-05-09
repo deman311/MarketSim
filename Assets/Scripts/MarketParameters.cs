@@ -14,7 +14,7 @@ public abstract class CustomerParams
     public static int TTL = 3;
     public static int VISIT_COUNT = 3;
     public static int ALPHA = 15;
-    public static float CUSTOMER_WAYPOINT_PROXIMITY = 100f;
+    public static float CUSTOMER_WAYPOINT_PROXIMITY = 0.02f;
 }
 
 /*Store Params*/
