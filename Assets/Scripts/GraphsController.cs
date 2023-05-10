@@ -42,9 +42,9 @@ public class GraphsController : MonoBehaviour
         gameObjectsList = new List<GameObject>();
         graphVisualObjectList = new List<IGraphVisualObject>();
 
-        List<float> points = new List<float> {0, 5, 98, 49, 33, 17, 16, 15, 20, 30, 40, 35, 60, 80 };
+        //List<float> points = new List<float> {0, 5, 98, 49, 33, 17, 16, 15, 20, 30, 40, 35, 60, 80 };
         //CreateCircle(new Vector2(20, 20));
-        ShowGraph(points, -1);
+        //ShowGraph(points, -1);
 
     }
 
@@ -130,14 +130,14 @@ public class GraphsController : MonoBehaviour
 
     }
 
-    private void CalculateYScale(out float yMin, out float yMax, List<int> values, int maxVisibleValues)
+    private void CalculateYScale(out float yMin, out float yMax, List<float> values, int maxVisibleValues)
     {
         yMax = values[0];
         yMin = values[0];
 
         for (int i = Math.Max(values.Count - maxVisibleValues, 0); i < values.Count; i++)
         {
-            int value = values[i];
+            float value = values[i];
             if (value > yMax)
             {
                 yMax = value;

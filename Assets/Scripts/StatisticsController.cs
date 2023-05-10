@@ -3,16 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class StatisticsController : MonoBehaviour
 {
+    [SerializeField] GraphManager graphManager;
     TextMeshProUGUI mainText;
     private float timer = 0f;
     public static int daysPassed = 0;
-
+    bool updateGraphs = false;
+    Dictionary<string, List<float>> productAvgPrice = new Dictionary<string, List<float>>() {
+        {"apple", new List<float>() {0, 0} },
+        {"shirt", new List<float>() {0, 0} },
+        {"phone", new List<float>() {0, 0} },
+        {"gpu", new List<float>() {0, 0} },
+        {"rolex", new List<float>() {0, 0} }
+    };
+    Dictionary<string, float> marketShareData = new Dictionary<string, float>()
+    {
+        {"stores", 0 },
+        {"ai", 0 }
+    };
     void Start()
     {
+        graphManager = GetComponent<GraphManager>();
         mainText = GetComponent<TextMeshProUGUI>();
         mainText.text = GetAveragePrices();
     }
@@ -26,6 +41,12 @@ public class StatisticsController : MonoBehaviour
         {
             timer = 0;
             mainText.text = GetAveragePrices();
+        }
+        if (updateGraphs)
+        {
+            GetTotalMarketShareData();
+            GetAveragePrices();
+            graphManager.UpdateGraphs(productAvgPrice, marketShareData);
         }
     }
 
@@ -43,14 +64,50 @@ public class StatisticsController : MonoBehaviour
         return store.GetBalance() / totalShares * 100;
     }
 
+    public void GetTotalMarketShareData()
+    {
+        marketShareData["stores"] = 0;
+        marketShareData["ai"] = 0;
+
+        PathfindingManager pm =
+            GameObject.Find("SimulationController").GetComponent<PathfindingManager>();
+        List<GameObject> stores = pm.GetAllStores();
+        float storeBalance = 0;
+        float aiBalance = 0;
+        foreach (GameObject store in stores)
+        {
+            StoreController sc = store.GetComponent<StoreController>();
+            if(sc != null && !sc.isAI) {
+                if(storeBalance > 0)
+                {
+                    storeBalance += sc.GetBalance();
+                }
+            }
+            else if(sc != null && sc.isAI){
+                if(storeBalance > 0)
+                {
+                    aiBalance = sc.GetBalance();
+                }
+            }
+        }
+        marketShareData["stores"] = storeBalance / storeBalance + aiBalance;
+        marketShareData["ai"] = aiBalance / storeBalance + aiBalance;
+    }
+
     public string GetAveragePrices()
     {
+        foreach(List<float> values in productAvgPrice.Values)
+        {
+            values[0] = 0;
+            values[1] = 0;
+        }
+
         PathfindingManager pm =
             GameObject.Find("SimulationController").GetComponent<PathfindingManager>();
         List<GameObject> stores = pm.GetAllStores();
 
         StringBuilder sb = new StringBuilder();
-        sb.Append("Average Prices:\n");
+        sb.Append("Average Prices:\n"); //Delete this
         Dictionary<string, float> productToSum = new Dictionary<string, float>();
 
         foreach (GameObject store in stores)
@@ -59,18 +116,19 @@ public class StatisticsController : MonoBehaviour
             foreach (KeyValuePair<string, float> kvp in sc.GetProductPrices())
                 if (!productToSum.TryAdd(kvp.Key, kvp.Value))
                 {
-                    productToSum[kvp.Key] += kvp.Value;
+                    productToSum[kvp.Key.ToLower()] += kvp.Value;
                 }
         }
 
         foreach (KeyValuePair<string, float> kvp in productToSum)
         {
-            sb.Append(kvp.Key + ": " + (kvp.Value / stores.Count) + "\n");
+            sb.Append(kvp.Key + ": " + (kvp.Value / stores.Count) + "\n"); //Delete this
+            productAvgPrice[kvp.Key] = kvp.Value/stores.Count;
         }
 
-        var cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>();
-        sb.Append("Customer Count: " + cm.GetCustomerCount());
-        sb.Append("\nDays passed: " + daysPassed);
-        return sb.ToString();
+        var cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>(); //Delete this
+        sb.Append("Customer Count: " + cm.GetCustomerCount()); //Delete this
+        sb.Append("\nDays passed: " + daysPassed); //Delete this
+        return sb.ToString(); //Delete this
     }
 }
