@@ -130,14 +130,14 @@ public class GraphsController : MonoBehaviour
 
     }
 
-    private void CalculateYScale(out float yMin, out float yMax, List<int> values, int maxVisibleValues)
+    private void CalculateYScale(out float yMin, out float yMax, List<float> values, int maxVisibleValues)
     {
         yMax = values[0];
         yMin = values[0];
 
         for (int i = Math.Max(values.Count - maxVisibleValues, 0); i < values.Count; i++)
         {
-            int value = values[i];
+            float value = values[i];
             if (value > yMax)
             {
                 yMax = value;
