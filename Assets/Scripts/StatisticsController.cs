@@ -136,8 +136,8 @@ public class StatisticsController : MonoBehaviour
             storeProductAvgPrice[kvp.Key.ToLower()] = kvp.Value/stores.Count - 1; //without the ai store
         }
 
-        sb.Append("\nDays passed: " + daysPassed); //Delete this
-        return sb.ToString(); //Delete this
+        sb.Append("\nDays passed: " + daysPassed);
+        return sb.ToString();
     }
 }
 
