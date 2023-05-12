@@ -73,6 +73,8 @@ public class WorkdayManager : MonoBehaviour
         GameObject.Find("SimulationController").GetComponent<CustomerManager>().CheckSpawn();
         GameObject.Find("SimulationController").GetComponent<StoreManager>().CheckSpawn();
         StatisticsController.daysPassed++;
+        StatisticsController.updateGraphs = true;
+        
     }
 
     public void ResetMarket()

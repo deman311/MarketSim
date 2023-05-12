@@ -8,17 +8,24 @@ using UnityEngine;
 
 public class StatisticsController : MonoBehaviour
 {
-    [SerializeField] GraphManager graphManager;
+    public GraphManager graphManager;
     TextMeshProUGUI mainText;
     private float timer = 0f;
     public static int daysPassed = 0;
-    bool updateGraphs = false;
-    Dictionary<string, List<float>> productAvgPrice = new Dictionary<string, List<float>>() {
-        {"apple", new List<float>() {0, 0} },
-        {"shirt", new List<float>() {0, 0} },
-        {"phone", new List<float>() {0, 0} },
-        {"gpu", new List<float>() {0, 0} },
-        {"rolex", new List<float>() {0, 0} }
+    public static bool updateGraphs = false;
+    Dictionary<string, float> storeProductAvgPrice = new Dictionary<string, float>() {
+        {"apple", 0 },
+        {"shirt", 0 },
+        {"phone", 0 },
+        {"gpu", 0 },
+        {"rolex", 0 }
+    };
+    Dictionary<string, float> aiProductAvgPrice = new Dictionary<string, float>() {
+        {"apple", 0 },
+        {"shirt", 0 },
+        {"phone", 0 },
+        {"gpu", 0 },
+        {"rolex", 0 }
     };
     Dictionary<string, float> marketShareData = new Dictionary<string, float>()
     {
@@ -27,7 +34,7 @@ public class StatisticsController : MonoBehaviour
     };
     void Start()
     {
-        graphManager = GetComponent<GraphManager>();
+        //graphManager = GetComponent<GraphManager>();
         mainText = GetComponent<TextMeshProUGUI>();
         mainText.text = GetAveragePrices();
     }
@@ -44,9 +51,10 @@ public class StatisticsController : MonoBehaviour
         }
         if (updateGraphs)
         {
+            updateGraphs= false;
             GetTotalMarketShareData();
             GetAveragePrices();
-            graphManager.UpdateGraphs(productAvgPrice, marketShareData);
+            graphManager.UpdateGraphs(storeProductAvgPrice, aiProductAvgPrice, marketShareData);
         }
     }
 
@@ -74,19 +82,21 @@ public class StatisticsController : MonoBehaviour
         List<GameObject> stores = pm.GetAllStores();
         float storeBalance = 0;
         float aiBalance = 0;
+        float balance = 0;
         foreach (GameObject store in stores)
         {
             StoreController sc = store.GetComponent<StoreController>();
             if(sc != null && !sc.isAI) {
-                if(storeBalance > 0)
+                balance = sc.GetBalance();
+                if (balance > 0)
                 {
-                    storeBalance += sc.GetBalance();
+                    storeBalance += balance;
                 }
             }
             else if(sc != null && sc.isAI){
-                if(storeBalance > 0)
+                if(balance > 0)
                 {
-                    aiBalance = sc.GetBalance();
+                    aiBalance = balance;
                 }
             }
         }
@@ -96,12 +106,6 @@ public class StatisticsController : MonoBehaviour
 
     public string GetAveragePrices()
     {
-        foreach(List<float> values in productAvgPrice.Values)
-        {
-            values[0] = 0;
-            values[1] = 0;
-        }
-
         PathfindingManager pm =
             GameObject.Find("SimulationController").GetComponent<PathfindingManager>();
         List<GameObject> stores = pm.GetAllStores();
@@ -114,16 +118,24 @@ public class StatisticsController : MonoBehaviour
         {
             StoreController sc = store.GetComponent<StoreController>();
             foreach (KeyValuePair<string, float> kvp in sc.GetProductPrices())
-                if (!productToSum.TryAdd(kvp.Key, kvp.Value))
+                if (sc.isAI)
                 {
-                    productToSum[kvp.Key.ToLower()] += kvp.Value;
+                    aiProductAvgPrice[kvp.Key.ToLower()] = kvp.Value;
                 }
+                else
+                {
+                    if (!productToSum.TryAdd(kvp.Key, kvp.Value))
+                    {
+                        productToSum[kvp.Key] += kvp.Value;
+                    }
+                }
+                
         }
 
         foreach (KeyValuePair<string, float> kvp in productToSum)
         {
             sb.Append(kvp.Key + ": " + (kvp.Value / stores.Count) + "\n"); //Delete this
-            productAvgPrice[kvp.Key] = kvp.Value/stores.Count;
+            storeProductAvgPrice[kvp.Key.ToLower()] = kvp.Value/stores.Count - 1; //without the ai store
         }
 
         var cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>(); //Delete this
@@ -132,3 +144,4 @@ public class StatisticsController : MonoBehaviour
         return sb.ToString(); //Delete this
     }
 }
+
