@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Phase2 Learning.unity
     guid: 294bdf968c93a3642a20ed1f264cd174
+  - enabled: 1
+    path: Assets/Scenes/DisplayScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}

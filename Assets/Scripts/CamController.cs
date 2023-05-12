@@ -6,12 +6,13 @@ public class CamController : MonoBehaviour
 {
     [SerializeField] GameObject spawnArea;
     [SerializeField] int SPEED = 100;
+    [SerializeField] int DISPLAY_CAM_SPEED = 20;
 
     // Define a Vector3 to store the initial position of the camera
     Vector3 initialPosition, targetPosition;
     GameObject target;
 
-    bool isFollowing;
+    bool isFollowing, isDisplayCam = false;
 
     void Start()
     {
@@ -19,7 +20,7 @@ public class CamController : MonoBehaviour
             return;
 
         // Store the initial position of the camera in the initialPosition Vector3
-        initialPosition = new Vector3(spawnArea.GetComponent<Renderer>().bounds.max.x + 20, 20  , 0);
+        initialPosition = new Vector3(spawnArea.GetComponent<Renderer>().bounds.max.x + 20, 20, 0);
         isFollowing = false;
         ResetCamera();
     }
@@ -40,6 +41,14 @@ public class CamController : MonoBehaviour
             }
             else
                 ResetCamera();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            isFollowing = !isFollowing;
+        }
+        if (isFollowing)
+        {
+            Camera.main.transform.RotateAround(targetPosition, Vector3.up, Time.deltaTime * DISPLAY_CAM_SPEED);
         }
 
         // Rotate the camera around the target position
