@@ -111,7 +111,6 @@ public class StatisticsController : MonoBehaviour
         List<GameObject> stores = pm.GetAllStores();
 
         StringBuilder sb = new StringBuilder();
-        sb.Append("Average Prices:\n"); //Delete this
         Dictionary<string, float> productToSum = new Dictionary<string, float>();
 
         foreach (GameObject store in stores)
@@ -134,12 +133,9 @@ public class StatisticsController : MonoBehaviour
 
         foreach (KeyValuePair<string, float> kvp in productToSum)
         {
-            sb.Append(kvp.Key + ": " + (kvp.Value / stores.Count) + "\n"); //Delete this
             storeProductAvgPrice[kvp.Key.ToLower()] = kvp.Value/stores.Count - 1; //without the ai store
         }
 
-        var cm = GameObject.Find("SimulationController").GetComponent<CustomerManager>(); //Delete this
-        sb.Append("Customer Count: " + cm.GetCustomerCount()); //Delete this
         sb.Append("\nDays passed: " + daysPassed); //Delete this
         return sb.ToString(); //Delete this
     }
