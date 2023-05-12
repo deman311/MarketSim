@@ -12,6 +12,7 @@ public class CustomerController : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI TMP_ttl;
     [SerializeField] RawImage mood;
+    [SerializeField] float customerSpeed = 20f;
 
     private const int HAPPY = 1, SAD = 2;
 
@@ -50,7 +51,7 @@ public class CustomerController : MonoBehaviour
     {
         gameObject.AddComponent(typeof(NavMeshAgent));
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = 50;
+        agent.speed = customerSpeed;
         agent.angularSpeed = 100;
         agent.acceleration = 500;
         agent.radius = 0.2f;
@@ -59,6 +60,8 @@ public class CustomerController : MonoBehaviour
     void Update()
     {
         if (cm == null) return; // true for MLTraining
+        if (agent.speed != customerSpeed) // check update speed change
+            agent.speed = customerSpeed;
 
         HandleCanvas();
 

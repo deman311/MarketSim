@@ -8,11 +8,18 @@ public class CamController : MonoBehaviour
     [SerializeField] int SPEED = 100;
     [SerializeField] int DISPLAY_CAM_SPEED = 20;
 
+    float defaultProximity;
+
     // Define a Vector3 to store the initial position of the camera
     Vector3 initialPosition, targetPosition;
     GameObject target;
 
-    bool isFollowing, isDisplayCam = false;
+    bool isFollowing, isDisplayCam = true;
+
+    public void Awake()
+    {
+        defaultProximity = CustomerParams.CUSTOMER_WAYPOINT_PROXIMITY;
+    }
 
     void Start()
     {
@@ -44,11 +51,19 @@ public class CamController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            isFollowing = !isFollowing;
+            isDisplayCam = !isDisplayCam;
         }
-        if (isFollowing)
+        if (isDisplayCam)
         {
             Camera.main.transform.RotateAround(targetPosition, Vector3.up, Time.deltaTime * DISPLAY_CAM_SPEED);
+        }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            const float maxDist = 100f;
+            if (CustomerParams.CUSTOMER_WAYPOINT_PROXIMITY == defaultProximity)
+                CustomerParams.CUSTOMER_WAYPOINT_PROXIMITY = maxDist;
+            else
+                CustomerParams.CUSTOMER_WAYPOINT_PROXIMITY = defaultProximity;
         }
 
         // Rotate the camera around the target position
