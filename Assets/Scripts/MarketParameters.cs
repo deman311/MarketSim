@@ -14,13 +14,13 @@ public abstract class CustomerParams
     public static int TTL = 3;
     public static int VISIT_COUNT = 3;
     public static int ALPHA = 15;
-    public static float CUSTOMER_WAYPOINT_PROXIMITY = 0.02f;
+    public static float CUSTOMER_WAYPOINT_PROXIMITY = 0.03f;
 }
 
 /*Store Params*/
 public abstract class StoreParams
 {
-    public static int MAX_STORE_COUNT = 8;
+    public static int MAX_STORE_COUNT = 9;
     public static int STORE_STARTING_BALANCE = 500;
     public static int BASE_TAX = 50;
     public static int STOCK_LEVEL_ONE = 20;
