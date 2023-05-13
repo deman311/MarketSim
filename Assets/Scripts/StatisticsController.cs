@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class StatisticsController : MonoBehaviour
 {
-    public GraphManager graphManager;
+    [SerializeField] GraphManager graphManager;
     TextMeshProUGUI mainText;
     private float timer = 0f;
     public static int daysPassed = 0;
@@ -49,12 +49,12 @@ public class StatisticsController : MonoBehaviour
             timer = 0;
             mainText.text = GetAveragePrices();
         }
-        if (updateGraphs)
+        if (updateGraphs && graphManager != null)
         {
             updateGraphs= false;
             GetTotalMarketShareData();
             GetAveragePrices();
-            graphManager.UpdateGraphs(storeProductAvgPrice, aiProductAvgPrice, marketShareData);
+            graphManager.UpdateGraphs(storeProductAvgPrice, aiProductAvgPrice, marketShareData);    
         }
     }
 
