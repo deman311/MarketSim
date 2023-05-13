@@ -86,22 +86,22 @@ public class StatisticsController : MonoBehaviour
         foreach (GameObject store in stores)
         {
             StoreController sc = store.GetComponent<StoreController>();
-            if(sc != null && !sc.isAI) {
-                balance = sc.GetBalance();
+            balance = sc.GetBalance();
+            if (!sc.isAI) {
                 if (balance > 0)
                 {
                     storeBalance += balance;
                 }
             }
-            else if(sc != null && sc.isAI){
+            else{
                 if(balance > 0)
                 {
                     aiBalance = balance;
                 }
             }
         }
-        marketShareData["stores"] = storeBalance / storeBalance + aiBalance;
-        marketShareData["ai"] = aiBalance / storeBalance + aiBalance;
+        marketShareData["stores"] = storeBalance / stores.Count-1;// / storeBalance + aiBalance;
+        marketShareData["ai"] = aiBalance;// / storeBalance + aiBalance;
     }
 
     public string GetAveragePrices()

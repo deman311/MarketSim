@@ -94,15 +94,15 @@ public class GraphsController : MonoBehaviour
 
         int xIndex = 0;
 
-        LineGraph lineGraph = new LineGraph(graphContainer, dotSprite, new Color(0.5f, 0.5f, 1, 0), Color.green);
-        LineGraph lineGraph2 = new LineGraph(graphContainer, dotSprite, new Color(0.5f, 0.5f, 1, 0), Color.red);
+        LineGraph storeLineGraph = new LineGraph(graphContainer, dotSprite, new Color(0.5f, 0.5f, 1, 0), Color.green);
+        LineGraph aiLineGraph = new LineGraph(graphContainer, dotSprite, new Color(0.5f, 0.5f, 1, 0), Color.blue);
         for (int i = Math.Max(storeValues.Count - maxVisibleValues, 0); i < storeValues.Count; i++)
         {
             float x = 5 + xIndex * xStep;
             float y = ((storeValues[i] - yMin) / (yMax-yMin)) * graphHeight;
             float y2 = ((aiValues[i] - yMin) / (yMax-yMin)) * graphHeight;
-            graphVisualObjectList.Add(lineGraph.AddDot(new Vector2(x, y)));
-            graphVisualObjectList.Add(lineGraph2.AddDot(new Vector2(x, y2)));
+            graphVisualObjectList.Add(storeLineGraph.AddDot(new Vector2(x, y)));
+            graphVisualObjectList.Add(aiLineGraph.AddDot(new Vector2(x, y2)));
 
             /*RectTransform xLabel = Instantiate(labelTemplateX);
             xLabel.SetParent(graphContainer, false);
