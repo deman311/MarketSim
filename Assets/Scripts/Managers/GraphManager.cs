@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class GraphManager : MonoBehaviour
 {
-    [SerializeField] GraphsController aiMarketShareGraph;
+    [SerializeField] PieChartController aiMarketShareGraph;
     [SerializeField] GraphsController appleAvgPriceGraph;
     [SerializeField] GraphsController shirtAvgPriceGraph;
     [SerializeField] GraphsController phoneAvgPriceGraph;
@@ -27,12 +27,12 @@ public class GraphManager : MonoBehaviour
 
     public void UpdateGraphs(Dictionary<string,float> storeProductAvgPrice, Dictionary<string, float> aiProductAvgPrice, Dictionary<string, float> marketShareData)
     {
-        aiMarketShareGraph.UpdateGraph(marketShareData["stores"], marketShareData["ai"]);
-        appleAvgPriceGraph.UpdateGraph(storeProductAvgPrice["apple"], aiProductAvgPrice["apple"]);
-        shirtAvgPriceGraph.UpdateGraph(storeProductAvgPrice["shirt"], aiProductAvgPrice["shirt"]);
-        phoneAvgPriceGraph.UpdateGraph(storeProductAvgPrice["phone"], aiProductAvgPrice["phone"]);
-        gpuAvgPriceGraph.UpdateGraph(storeProductAvgPrice["gpu"], aiProductAvgPrice["gpu"]);
-        rolexAvgPriceGraph.UpdateGraph(storeProductAvgPrice["rolex"], aiProductAvgPrice["rolex"]);
+        aiMarketShareGraph.ShowPieGraph(marketShareData["stores"], marketShareData["ai"]);
+        appleAvgPriceGraph.UpdateLineGraph(storeProductAvgPrice["apple"], aiProductAvgPrice["apple"]);
+        shirtAvgPriceGraph.UpdateLineGraph(storeProductAvgPrice["shirt"], aiProductAvgPrice["shirt"]);
+        phoneAvgPriceGraph.UpdateLineGraph(storeProductAvgPrice["phone"], aiProductAvgPrice["phone"]);
+        gpuAvgPriceGraph.UpdateLineGraph(storeProductAvgPrice["gpu"], aiProductAvgPrice["gpu"]);
+        rolexAvgPriceGraph.UpdateLineGraph(storeProductAvgPrice["rolex"], aiProductAvgPrice["rolex"]);
     }
 
 }

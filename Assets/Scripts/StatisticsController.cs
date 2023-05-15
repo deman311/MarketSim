@@ -100,7 +100,7 @@ public class StatisticsController : MonoBehaviour
                 }
             }
         }
-        marketShareData["stores"] = storeBalance / stores.Count-1;// / storeBalance + aiBalance;
+        marketShareData["stores"] = storeBalance; // stores.Count-1;// / storeBalance + aiBalance;
         marketShareData["ai"] = aiBalance;// / storeBalance + aiBalance;
     }
 

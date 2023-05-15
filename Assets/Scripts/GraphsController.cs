@@ -21,6 +21,8 @@ public class GraphsController : MonoBehaviour
     private List<RectTransform> yLabelsList;
     private List<float> storeValues;
     private List<float> aiValues;
+
+
     private interface IGraphVisualObject
     {
         void SetLineGraphVisualObject(Vector2 graphPosition);
@@ -28,13 +30,15 @@ public class GraphsController : MonoBehaviour
     }
 
   
-    public void UpdateGraph(float storeValue, float aiValue)
+    public void UpdateLineGraph(float storeValue, float aiValue)
     {
-        if(storeValue != null && aiValue != null)
-        storeValues.Add(storeValue);
-        aiValues.Add(aiValue);
-        Debug.Log(storeValue + "-" + aiValue);
-        ShowGraph(storeValues, aiValues, - 1);
+        if (storeValue != null && aiValue != null)
+        {
+            storeValues.Add(storeValue);
+            aiValues.Add(aiValue);
+            Debug.Log(storeValue + "-" + aiValue);
+            ShowGraph(storeValues, aiValues, -1);
+        }
     }
 
     void Awake()
