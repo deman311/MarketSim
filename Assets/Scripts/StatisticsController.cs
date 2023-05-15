@@ -43,6 +43,16 @@ public class StatisticsController : MonoBehaviour
     {
         timer += Time.deltaTime;
 
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            Canvas canvas = GameObject.Find("GraphsCanvas").GetComponent<Canvas>();
+
+            if (canvas != null)
+            {
+                canvas.enabled = !canvas.enabled;
+            }
+        }
+
         // update the statistics once every 1 second to not overwhelm cpu.
         if (timer >= 1)
         {
