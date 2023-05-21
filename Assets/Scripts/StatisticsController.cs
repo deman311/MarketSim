@@ -11,7 +11,7 @@ public class StatisticsController : MonoBehaviour
     [SerializeField] GraphManager graphManager;
     TextMeshProUGUI mainText;
     private float timer = 0f;
-    public static int daysPassed = 0;
+    public static int daysPassed;
     public static bool updateGraphs = false;
     Dictionary<string, float> storeProductAvgPrice = new Dictionary<string, float>() {
         {"apple", 0 },
@@ -34,6 +34,7 @@ public class StatisticsController : MonoBehaviour
     };
     void Start()
     {
+        daysPassed = 0;
         //graphManager = GetComponent<GraphManager>();
         mainText = GetComponent<TextMeshProUGUI>();
         mainText.text = GetAveragePrices();

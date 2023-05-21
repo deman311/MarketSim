@@ -136,6 +136,8 @@ public class AIStoreController : Agent
         for (int i = 0; i < store.GetSoldProducts().Count; i++)
             sold[i] = store.GetSoldProducts()[i];
 
+        if (!this.isActiveAndEnabled) return;
+
         // collect the total inputs from the store, 13 in total.
         sensor.AddObservation(pprices); // 5
         sensor.AddObservation(sold.Select(s => (float)s).ToList()); // 5

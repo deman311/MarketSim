@@ -7,7 +7,7 @@ public class CustomerManager : MonoBehaviour
     [SerializeField] GameObject customerFolder;
     [SerializeField] GameObject spawnArea;
 
-    static int currentCount = 0;
+    public static int currentCount;
     static int maxTTL;
 
     static readonly object _lock = new object();
@@ -16,6 +16,7 @@ public class CustomerManager : MonoBehaviour
 
     void Start()
     {
+        currentCount = 0;
         maxTTL = CustomerParams.TTL;
         bounds = spawnArea.GetComponent<Renderer>().bounds;
         CheckSpawn(firstDay: true);

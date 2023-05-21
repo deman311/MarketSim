@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CamController : MonoBehaviour
 {
@@ -34,6 +35,19 @@ public class CamController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            // Get the current active scene's build index
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+            // Load the scene by build index
+            SceneManager.LoadScene(currentSceneIndex);
+
+            // Spawn customers
+            CustomerManager.currentCount = 0;
+            GameObject.Find("SimulationController").GetComponent<CustomerManager>().CheckSpawn();
+        }
+
         // If the user presses the X key, pick a random game object from the children of the "Customers" game object
         // and set it as the new target position for the camera
         if (Input.GetKeyDown(KeyCode.X))
