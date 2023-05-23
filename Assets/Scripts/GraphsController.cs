@@ -1,12 +1,8 @@
-using Newtonsoft.Json.Bson;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 
 public class GraphsController : MonoBehaviour
 {
@@ -59,10 +55,7 @@ public class GraphsController : MonoBehaviour
         storeValues = new List<float>();
         aiValues = new List<float>();
 
-        //List<float> points = new List<float> {0, 5, 98, 49, 33, 17, 16, 15, 20, 30, 40, 35, 60, 80 };
-        //List<float> points2 = new List<float> {20,7, 60, 70, 81, 92,100, 15, 20, 30, 28, 26, 24, 25 };
-        //CreateCircle(new Vector2(20, 20));
-        //ShowGraph(points, points2, - 1);
+
 
     }
 
@@ -113,14 +106,6 @@ public class GraphsController : MonoBehaviour
             graphVisualObjectList.Add(storeLineGraph.AddDot(new Vector2(x, y)));
             graphVisualObjectList.Add(aiLineGraph.AddDot(new Vector2(x, y2)));
 
-            /*RectTransform xLabel = Instantiate(labelTemplateX);
-            xLabel.SetParent(graphContainer, false);
-            xLabel.gameObject.SetActive(true);
-            xLabel.anchoredPosition = new Vector2(x, 0);
-            xLabel.GetComponent<Text>().text = (i+1).ToString();
-            gameObjectsList.Add(xLabel.gameObject);
-            */
-
             RectTransform xDash = Instantiate(dashTemplateX);
             xDash.SetParent(graphContainer, false);
             xDash.gameObject.SetActive(true);
@@ -137,8 +122,8 @@ public class GraphsController : MonoBehaviour
             yLabel.gameObject.SetActive(true);
             float normalizedY = i * 1f / yAxisSeperatorsCount;
             yLabel.anchoredPosition = new Vector2(5f, normalizedY * graphHeight);
-            int label = Mathf.RoundToInt(yMin + (normalizedY * (yMax - yMin)));
-            yLabel.GetComponent<Text>().text = (label > 1000) ? (label % 1000).ToString() + "K$" : label.ToString() + "$";
+            //int label = Mathf.RoundToInt(yMin + (normalizedY * (yMax - yMin)));
+            yLabel.GetComponent<Text>().text = Mathf.RoundToInt(yMin + (normalizedY * (yMax - yMin))).ToString() + "$";
             yLabelsList.Add(yLabel);
             gameObjectsList.Add(yLabel.gameObject);
 
@@ -152,32 +137,6 @@ public class GraphsController : MonoBehaviour
 
 
     }
-
-    /* private void CalculateYScale(out float yMin, out float yMax, List<float> values, int maxVisibleValues)
-     {
-         yMax = values[0];
-         yMin = values[0];
-
-         for (int i = Math.Max(values.Count - maxVisibleValues, 0); i < values.Count; i++)
-         {
-             float value = values[i];
-             if (value > yMax)
-             {
-                 yMax = value;
-             }
-             if (value < yMin)
-             {
-                 yMin = value;
-             }
-         }
-         float yDelta = yMax - yMin;
-         if (yDelta < 0)
-         {
-             yDelta = 5f;
-         }
-         yMax = yMax + (yDelta * 0.2f); //make a some space between the top of the graph and the max value
-         yMin = yMin - (yDelta * 0.2f);
-     }*/
 
     private void CalculateYScale(out float yMin, out float yMax, List<float> storeValues, List<float> aiValues, int maxVisibleValues)
     {
