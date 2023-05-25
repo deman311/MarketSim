@@ -77,6 +77,15 @@ public class AIStoreController : Agent
                 }
                 break;
             case 2:
+                float reward = store.GetBalance() + GetCumulativeReward();
+                if (store.GetLevel() != 0)
+                    reward *= store.GetLevel();
+                else
+                if (store.GetLevel() == 0)
+                {
+                    SetReward(reward);
+                    EndEpisode();
+                }
                 // calculate R2, R1 and scoreboard
                 /*                float R2 = GetCumulativeReward();
                                 if (R2 == 0)
@@ -92,17 +101,16 @@ public class AIStoreController : Agent
                                 //SetReward(delta_improvment + 100 * scoreboard.Count / pos);
                                 SetReward(store.GetBalance());
                                 R1 = R2;*/
-                float reward = store.GetBalance() * store.GetLevel();
-                var marketshare = StatisticsController.GetMarketShare(store);
-                if (marketshare > 20)
-                    reward *= marketshare;
-                SetReward(reward - bankruptCount * reward / 5); // off 20% for every bankrupcy
-                if (reward < 0)
-                    if (store.GetLevel() > 1)
-                        SetReward(-10);
-                    else
-                        SetReward(store.GetBalance());
 
+                var marketshare = StatisticsController.GetMarketShare(store);
+/*                if (marketshare > 20)
+                    reward *= marketshare;*/
+                if (reward > 0)
+                    SetReward(reward - bankruptCount * reward / 5); // off 20% for every bankrupcy
+                else
+                    SetReward(reward);
+
+                Debug.Log(GetCumulativeReward());
                 EndEpisode();
                 break;
         }
@@ -125,9 +133,15 @@ public class AIStoreController : Agent
                     store.SafeEnqueue(teacher.GetACustomer());
     }
 
+    public void checkBankrupt()
+    {
+        if (store.GetBalance() < 0 && !isLast)
+            bankruptCount++;
+    }
+
     public override void CollectObservations(VectorSensor sensor)
     {
-        Debug.Log("Collecting observations on step " + store.step);
+        //Debug.Log("Collecting observations on step " + store.step);
 
         List<float> pprices = new List<float> { 0, 0, 0, 0, 0 };   // validate to always contain 5 values
         for (int i = 0; i < store.GetProductPrices().Count; i++)
@@ -157,7 +171,7 @@ public class AIStoreController : Agent
             variables.Add(store.GetTotalTax().ToString());
             variables.Add(store.GetLevel().ToString());
 
-            Debug.Log("Observations: " + string.Join(", ", variables));
+            //Debug.Log("Observations: " + string.Join(", ", variables));
         }
 
         // Because EndEpisode() calls CollectObservations again for some reason,
@@ -170,9 +184,6 @@ public class AIStoreController : Agent
         }
         else if (store.step != 0 && store.step % (MLParams.Transaction_Delta * MLParams.Workdays) == 0)
         {
-            if (store.GetBalance() < 0)
-                bankruptCount++;
-
             isLast = true;
             float R2 = store.GetBalance() - store.GetTotalTax();
             if (R2 == 0)

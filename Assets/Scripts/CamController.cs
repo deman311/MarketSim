@@ -9,7 +9,7 @@ public class CamController : MonoBehaviour
     [SerializeField] int SPEED = 100;
     [SerializeField] int DISPLAY_CAM_SPEED = 20;
 
-    float defaultProximity;
+    float defaultProximity = 0.03f;
 
     // Define a Vector3 to store the initial position of the camera
     Vector3 initialPosition, targetPosition;

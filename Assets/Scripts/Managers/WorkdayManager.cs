@@ -59,10 +59,13 @@ public class WorkdayManager : MonoBehaviour
             }
             else if (store.phase != 0 && StatisticsController.daysPassed != 0 && StatisticsController.daysPassed % MLParams.Workdays == 0)
             {
-                store.GetComponent<AIStoreController>().EndEpoch(2);
+                store.GetComponent<AIStoreController>().checkBankrupt();
 
                 if (StatisticsController.daysPassed % MLParams.Phase == 0)
+                {
+                    store.GetComponent<AIStoreController>().EndEpoch(2);
                     readyForReset = true;
+                }
             }
         }
         foreach (CustomerController c in customersFolder.GetComponentsInChildren<CustomerController>())
@@ -74,7 +77,7 @@ public class WorkdayManager : MonoBehaviour
         GameObject.Find("SimulationController").GetComponent<StoreManager>().CheckSpawn();
         StatisticsController.daysPassed++;
         StatisticsController.updateGraphs = true;
-        
+
     }
 
     public void ResetMarket()
