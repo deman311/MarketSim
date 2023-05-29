@@ -77,39 +77,43 @@ public class AIStoreController : Agent
                 }
                 break;
             case 2:
-                float reward = store.GetBalance() + GetCumulativeReward();
-                if (store.GetLevel() != 0)
-                    reward *= store.GetLevel();
-                else
-                if (store.GetLevel() == 0)
-                {
-                    SetReward(reward);
-                    EndEpisode();
-                }
-                // calculate R2, R1 and scoreboard
-                /*                float R2 = GetCumulativeReward();
-                                if (R2 == 0)
-                                    R2 = 0.001f;
-                                var scoreboard = teacher.GetScoreboard();
-                                int pos = scoreboard[store];
-                                float marketshare = StatisticsController.GetMarketShare(store) / 100;
-                                //SetReward(R2 + 1000 * scoreboard.Count / pos + 20 * StatisticsController.GetMarketShare(store));
-                                float delta_improvment = (R2 - R1) / R2;
-                                *//*                if (delta_improvment < 0)
-                                                    delta_improvment = 0;*//*
-                                //SetReward(20 * scoreboard.Count / pos + StatisticsController.GetMarketShare(store));
-                                //SetReward(delta_improvment + 100 * scoreboard.Count / pos);
-                                SetReward(store.GetBalance());
-                                R1 = R2;*/
+                /*                if (store.GetLevel() == 0)
+                                {
+                                    SetReward(bankruptCount * -100f);
+                                    Debug.Log(GetCumulativeReward());
+                                    EndEpisode();
+                                    return;
+                                }
+                                // calculate R2, R1 and scoreboard
+                                *//*                float R2 = GetCumulativeReward();
+                                                if (R2 == 0)
+                                                    R2 = 0.001f;
+                                                var scoreboard = teacher.GetScoreboard();
+                                                int pos = scoreboard[store];
+                                                float marketshare = StatisticsController.GetMarketShare(store) / 100;
+                                                //SetReward(R2 + 1000 * scoreboard.Count / pos + 20 * StatisticsController.GetMarketShare(store));
+                                                float delta_improvment = (R2 - R1) / R2;
+                                                *//*                if (delta_improvment < 0)
+                                                                    delta_improvment = 0;*//*
+                                                //SetReward(20 * scoreboard.Count / pos + StatisticsController.GetMarketShare(store));
+                                                //SetReward(delta_improvment + 100 * scoreboard.Count / pos);
+                                                SetReward(store.GetBalance());
+                                                R1 = R2;*//*
 
+                                float reward = store.GetBalance() * store.GetLevel() + GetCumulativeReward();
+                                if (reward - bankruptCount * reward / 2f > 0)
+                                    SetReward(reward - bankruptCount * reward / 2f);
+                                else
+                                    SetReward(bankruptCount * -100f);
+                                */
                 var marketshare = StatisticsController.GetMarketShare(store);
-/*                if (marketshare > 20)
-                    reward *= marketshare;*/
-                if (reward > 0)
-                    SetReward(reward - bankruptCount * reward / 5); // off 20% for every bankrupcy
-                else
-                    SetReward(reward);
+                /*                if (marketshare > 20)
+                                    reward *= marketshare */
 
+                if (store.GetBalance() < 0)
+                    SetReward(store.GetBalance());
+                else
+                    SetReward(store.GetBalance() / (1 + bankruptCount));
                 Debug.Log(GetCumulativeReward());
                 EndEpisode();
                 break;

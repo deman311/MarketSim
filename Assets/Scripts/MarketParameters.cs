@@ -20,7 +20,7 @@ public abstract class CustomerParams
 /*Store Params*/
 public abstract class StoreParams
 {
-    public static int MAX_STORE_COUNT = 5;
+    public static int MAX_STORE_COUNT = 9;
     public static int STORE_STARTING_BALANCE = 500;
     public static int BASE_TAX = 50;
     public static int STOCK_LEVEL_ONE = 20;

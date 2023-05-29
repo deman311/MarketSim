@@ -9,18 +9,13 @@ public class CamController : MonoBehaviour
     [SerializeField] int SPEED = 100;
     [SerializeField] int DISPLAY_CAM_SPEED = 20;
 
-    float defaultProximity = 0.03f;
+    float defaultProximity = 0.03f; // should be the same as CUSTOMER_WAYPOINT_PROXIMITY
 
     // Define a Vector3 to store the initial position of the camera
     Vector3 initialPosition, targetPosition;
     GameObject target;
 
     bool isFollowing, isDisplayCam = true;
-
-    public void Awake()
-    {
-        defaultProximity = CustomerParams.CUSTOMER_WAYPOINT_PROXIMITY;
-    }
 
     void Start()
     {

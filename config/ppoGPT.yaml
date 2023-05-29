@@ -5,12 +5,12 @@ behaviors:
     hyperparameters:
       batch_size: 128
       buffer_size: 2048
-      learning_rate: 1e-4
+      learning_rate: 1e-5
       beta: 5.0e-3
-      epsilon: 0.1
-      lambd: 0.9
+      epsilon: 0.2
+      lambd: 0.95
       num_epoch: 1
-      shared_critic: true
+      shared_critic: false
       learning_rate_schedule: linear
       beta_schedule: linear
       epsilon_schedule: linear
@@ -35,11 +35,11 @@ behaviors:
           goal_conditioning_type: hyper
           deterministic: false
     init_path: null
-    keep_checkpoints: 5
-    checkpoint_interval: 5000
-    max_steps: 500000
-    time_horizon: 64
-    summary_freq: 5000
+    keep_checkpoints: 10
+    checkpoint_interval: 1000
+    max_steps: 50000
+    time_horizon: 128
+    summary_freq: 1000
     threaded: false
     self_play: null
     behavioral_cloning: null
