@@ -8,17 +8,20 @@ Welcome to "Simulation of a Supply and Demand System to Define a Winning Company
 
 The simulation models a dynamic market with stores, products, and customer behaviors, exploring the effects of supply and demand.
 
-Key Components
-Stores and Products: Detailed simulation of market entities. (Suggestion: Include a screenshot of store models from the simulation)
-Customer Behaviors: Algorithms simulating realistic customer actions. (Suggestion: Video clip showing customer interactions in the simulation)
-AI Models: Proximal Policy Optimization (PPO) and Soft Actor-Critic (SAC) compared. (Suggestion: Graphs showing model performance)
-Technologies Used
+## Key Components
 
-Unity 3D Game Engine: For simulation creation.
-MLAgents: Integrating machine learning in the simulation.
-Python and PyTorch: For data analysis and AI model development.
-RNN and LSTM: Employed in AI models for sequential data processing.
-Installation and Usage
+* Stores and Products: Detailed simulation of market entities. (Suggestion: Include a screenshot of store models from the simulation)
+* Customer Behaviors: Algorithms simulating realistic customer actions. (Suggestion: Video clip showing customer interactions in the simulation)
+* AI Models: Proximal Policy Optimization (PPO) and Soft Actor-Critic (SAC) compared. (Suggestion: Graphs showing model performance)
+
+## Technologies Used
+
+* Unity 3D Game Engine: For simulation creation.
+* MLAgents: Integrating machine learning in the simulation.
+* Python and PyTorch: For data analysis and AI model development.
+* RNN and LSTM: Employed in AI models for sequential data processing.
+
+## Installation and Usage
 
 Detailed setup instructions provided.
 
